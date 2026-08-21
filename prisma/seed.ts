@@ -8,6 +8,7 @@
 import { hashSync } from 'bcryptjs';
 
 import { prisma } from '../src/lib/prisma';
+import { slugify } from '../src/lib/utils/slugify';
 import catalog from './seed-data/catalog.json';
 
 // --- deterministic pseudo-random helpers (stable across re-seeds) ---------
@@ -19,15 +20,6 @@ function hash(input: string): number {
     h = Math.imul(h, 16777619);
   }
   return (h >>> 0) / 0xffffffff; // [0, 1)
-}
-
-function slugify(input: string): string {
-  return input
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
 }
 
 const PRICE_RANGES_COP: Record<string, [number, number]> = {
