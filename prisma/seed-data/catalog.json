@@ -1,0 +1,843 @@
+{
+  "categories": [
+    {
+      "slug": "ropa",
+      "name": "Ropa",
+      "parentSlug": null,
+      "image": "/images/categories/chaqueta.jpg"
+    },
+    {
+      "slug": "ropa-hombre",
+      "name": "Hombre",
+      "parentSlug": "ropa",
+      "image": "/images/categories/hombre.jpg"
+    },
+    {
+      "slug": "ropa-mujer",
+      "name": "Mujer",
+      "parentSlug": "ropa",
+      "image": "/images/categories/mujer-1.jpg"
+    },
+    {
+      "slug": "ropa-ninos",
+      "name": "Niños",
+      "parentSlug": "ropa",
+      "image": null
+    },
+    {
+      "slug": "tecnologia",
+      "name": "Tecnología",
+      "parentSlug": null,
+      "image": "/images/categories/celulares.jpg"
+    },
+    {
+      "slug": "tecnologia-celulares",
+      "name": "Celulares",
+      "parentSlug": "tecnologia",
+      "image": "/images/categories/celulares.jpg"
+    },
+    {
+      "slug": "tecnologia-computadores",
+      "name": "Computadores",
+      "parentSlug": "tecnologia",
+      "image": "/images/categories/computadores.jpeg"
+    },
+    {
+      "slug": "tecnologia-accesorios",
+      "name": "Accesorios",
+      "parentSlug": "tecnologia",
+      "image": "/images/categories/accesorios.jpeg"
+    },
+    {
+      "slug": "hogar",
+      "name": "Hogar",
+      "parentSlug": null,
+      "image": "/images/categories/decoracion.jpeg"
+    },
+    {
+      "slug": "hogar-decoracion",
+      "name": "Decoración",
+      "parentSlug": "hogar",
+      "image": "/images/categories/decoracion.jpeg"
+    },
+    {
+      "slug": "hogar-jardin",
+      "name": "Jardín",
+      "parentSlug": "hogar",
+      "image": "/images/categories/jardin.jpeg"
+    },
+    {
+      "slug": "hogar-muebles",
+      "name": "Muebles",
+      "parentSlug": "hogar",
+      "image": "/images/categories/muebles.jpeg"
+    },
+    {
+      "slug": "deportes",
+      "name": "Deportes",
+      "parentSlug": null,
+      "image": "/images/categories/futbol.jpeg"
+    },
+    {
+      "slug": "deportes-futbol",
+      "name": "Fútbol",
+      "parentSlug": "deportes",
+      "image": "/images/categories/futbol.jpeg"
+    },
+    {
+      "slug": "deportes-baloncesto",
+      "name": "Baloncesto",
+      "parentSlug": "deportes",
+      "image": "/images/categories/baloncesto.jpeg"
+    },
+    {
+      "slug": "deportes-ciclismo",
+      "name": "Ciclismo",
+      "parentSlug": "deportes",
+      "image": null
+    },
+    {
+      "slug": "deportes-boxeo",
+      "name": "Boxeo",
+      "parentSlug": "deportes",
+      "image": null
+    },
+    {
+      "slug": "deportes-tenis",
+      "name": "Tenis",
+      "parentSlug": "deportes",
+      "image": null
+    },
+    {
+      "slug": "deportes-accesorios",
+      "name": "Accesorios",
+      "parentSlug": "deportes",
+      "image": null
+    },
+    {
+      "slug": "variedad",
+      "name": "Variedad",
+      "parentSlug": null,
+      "image": "/images/categories/variedad.jpeg"
+    }
+  ],
+  "products": [
+    {
+      "name": "Adaptador HDMI",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/adaptador-hdmi.jpg"
+      ]
+    },
+    {
+      "name": "Adaptador USB",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/adaptador-usb.jpg"
+      ]
+    },
+    {
+      "name": "Adaptador VGA",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/adaptador-vga.jpg"
+      ]
+    },
+    {
+      "name": "Auriculares Bluetooth",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/auriculares-bluetooth.jpg"
+      ]
+    },
+    {
+      "name": "Auriculares Deportivos",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/auriculares-deportivos.jpg"
+      ]
+    },
+    {
+      "name": "Auriculares Noise Cancelling",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/auriculares-noise-cancelling.jpg"
+      ]
+    },
+    {
+      "name": "Cargador Inalámbrico",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/cargador-inalambrico.jpg"
+      ]
+    },
+    {
+      "name": "Cargador Rápido USB-C",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/cargador-rapido-usb-c.jpg"
+      ]
+    },
+    {
+      "name": "Cargador para Auto",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/cargador-para-auto.jpg"
+      ]
+    },
+    {
+      "name": "Power Bank 10000mAh",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/power-bank-10000m-ah.jpg"
+      ]
+    },
+    {
+      "name": "Power Bank Carga Rápida",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/power-bank-carga-rapida.jpg"
+      ]
+    },
+    {
+      "name": "Power Bank Solar",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/power-bank-solar.jpg"
+      ]
+    },
+    {
+      "name": "Ratón Gaming",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/raton-gaming.jpg"
+      ]
+    },
+    {
+      "name": "Ratón Inalámbrico",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/raton-inalambrico.jpg"
+      ]
+    },
+    {
+      "name": "Ratón Vertical",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/raton-vertical.jpg"
+      ]
+    },
+    {
+      "name": "Soporte de Escritorio",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/soporte-de-escritorio.jpg"
+      ]
+    },
+    {
+      "name": "Soporte para Celular",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/soporte-para-celular.jpg"
+      ]
+    },
+    {
+      "name": "Soporte para Tablet",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/soporte-para-tablet.jpg"
+      ]
+    },
+    {
+      "name": "Teclado Compacto",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/teclado-compacto.jpg"
+      ]
+    },
+    {
+      "name": "Teclado Mecánico",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/teclado-mecanico.jpg"
+      ]
+    },
+    {
+      "name": "Teclado RGB",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/teclado-rgb.jpg"
+      ]
+    },
+    {
+      "name": "Funda para Google Pixel",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/funda-para-google-pixel.jpg"
+      ]
+    },
+    {
+      "name": "Funda para Samsung Galaxy",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/funda-para-samsung-galaxy.jpg"
+      ]
+    },
+    {
+      "name": "Funda para iPhone 14",
+      "categorySlug": "tecnologia-accesorios",
+      "images": [
+        "/images/products/tecnologia-accesorios/funda-para-i-phone-14.jpg"
+      ]
+    },
+    {
+      "name": "Google Pixel 6",
+      "categorySlug": "tecnologia-celulares",
+      "images": [
+        "/images/products/tecnologia-celulares/google-pixel-6.jpg"
+      ]
+    },
+    {
+      "name": "OnePlus 9",
+      "categorySlug": "tecnologia-celulares",
+      "images": [
+        "/images/products/tecnologia-celulares/one-plus-9.jpg"
+      ]
+    },
+    {
+      "name": "Samsung Galaxy S21",
+      "categorySlug": "tecnologia-celulares",
+      "images": [
+        "/images/products/tecnologia-celulares/samsung-galaxy-s-21.jpg"
+      ]
+    },
+    {
+      "name": "Xiaomi Mi 11",
+      "categorySlug": "tecnologia-celulares",
+      "images": [
+        "/images/products/tecnologia-celulares/xiaomi-mi-11.jpg"
+      ]
+    },
+    {
+      "name": "iPhone 13",
+      "categorySlug": "tecnologia-celulares",
+      "images": [
+        "/images/products/tecnologia-celulares/iphone-13.jpg"
+      ]
+    },
+    {
+      "name": "Motorola Edge 20 Lite",
+      "categorySlug": "tecnologia-celulares",
+      "images": [
+        "/images/products/tecnologia-celulares/motorola-edge-20-lite.jpg"
+      ]
+    },
+    {
+      "name": "Computadora de Escritorio Dell Inspiron",
+      "categorySlug": "tecnologia-computadores",
+      "images": [
+        "/images/products/tecnologia-computadores/computadora-de-escritorio-dell-inspiron.jpg"
+      ]
+    },
+    {
+      "name": "Laptop HP Pavilion",
+      "categorySlug": "tecnologia-computadores",
+      "images": [
+        "/images/products/tecnologia-computadores/laptop-hp-pavilion.jpg"
+      ]
+    },
+    {
+      "name": "MacBook Pro",
+      "categorySlug": "tecnologia-computadores",
+      "images": [
+        "/images/products/tecnologia-computadores/mac-book-pro.jpg"
+      ]
+    },
+    {
+      "name": "Monitor Gamer UltraGear",
+      "categorySlug": "tecnologia-computadores",
+      "images": [
+        "/images/products/tecnologia-computadores/monitor-gamer-ultra-gear.jpg"
+      ]
+    },
+    {
+      "name": "Monitor LG UltraWide",
+      "categorySlug": "tecnologia-computadores",
+      "images": [
+        "/images/products/tecnologia-computadores/monitor-lg-ultra-wide.jpg"
+      ]
+    },
+    {
+      "name": "Monitor Samsung de 24\"",
+      "categorySlug": "tecnologia-computadores",
+      "images": [
+        "/images/products/tecnologia-computadores/monitor-samsung-de-24.jpg"
+      ]
+    },
+    {
+      "name": "PC para Juegos",
+      "categorySlug": "tecnologia-computadores",
+      "images": [
+        "/images/products/tecnologia-computadores/pc-para-juegos.jpg"
+      ]
+    },
+    {
+      "name": "Portátil Acer Nitro 5",
+      "categorySlug": "tecnologia-computadores",
+      "images": [
+        "/images/products/tecnologia-computadores/portatil-acer-nitro-5.jpg"
+      ]
+    },
+    {
+      "name": "iMac",
+      "categorySlug": "tecnologia-computadores",
+      "images": [
+        "/images/products/tecnologia-computadores/i-mac.jpg"
+      ]
+    },
+    {
+      "name": "Chaqueta Casual",
+      "categorySlug": "ropa-hombre",
+      "images": [
+        "/images/products/ropa-hombre/chaqueta-casual.jpg",
+        "/images/products/ropa-hombre/chaqueta-casual-men.jpg"
+      ]
+    },
+    {
+      "name": "Chaqueta de Cuero",
+      "categorySlug": "ropa-hombre",
+      "images": [
+        "/images/products/ropa-hombre/chaqueta-cuero.jpg",
+        "/images/products/ropa-hombre/chaqueta-cuero-men.jpg"
+      ]
+    },
+    {
+      "name": "Chaqueta Deportiva",
+      "categorySlug": "ropa-hombre",
+      "images": [
+        "/images/products/ropa-hombre/chaqueta-deportiva.jpg",
+        "/images/products/ropa-hombre/chaqueta-deportiva-men.jpg"
+      ]
+    },
+    {
+      "name": "Chaqueta Formal",
+      "categorySlug": "ropa-hombre",
+      "images": [
+        "/images/products/ropa-hombre/chaqueta-formal.jpg",
+        "/images/products/ropa-hombre/chaqueta-formal-men.jpg"
+      ]
+    },
+    {
+      "name": "Chaqueta de Invierno",
+      "categorySlug": "ropa-hombre",
+      "images": [
+        "/images/products/ropa-hombre/chaqueta-invierno.jpg",
+        "/images/products/ropa-hombre/chaqueta-invierno-men.jpg"
+      ]
+    },
+    {
+      "name": "Chaqueta Larga",
+      "categorySlug": "ropa-hombre",
+      "images": [
+        "/images/products/ropa-hombre/chaqueta-larga.jpg",
+        "/images/products/ropa-hombre/chaqueta-larga-men.jpg"
+      ]
+    },
+    {
+      "name": "Chaqueta Deportiva",
+      "categorySlug": "ropa-ninos",
+      "images": [
+        "/images/products/ropa-ninos/chaqueta-deportiva-nino.jpg"
+      ]
+    },
+    {
+      "name": "Chaqueta Gris",
+      "categorySlug": "ropa-ninos",
+      "images": [
+        "/images/products/ropa-ninos/chaqueta-gris-nino.jpg"
+      ]
+    },
+    {
+      "name": "Chaqueta Roja",
+      "categorySlug": "ropa-ninos",
+      "images": [
+        "/images/products/ropa-ninos/chaqueta-roja-nino.jpg"
+      ]
+    },
+    {
+      "name": "Chaqueta Casual",
+      "categorySlug": "ropa-mujer",
+      "images": [
+        "/images/products/ropa-mujer/chaqueta-mujer.jpg"
+      ]
+    },
+    {
+      "name": "Pantalón Cargo",
+      "categorySlug": "ropa-hombre",
+      "images": [
+        "/images/products/ropa-hombre/pantalon-cargo.jpg",
+        "/images/products/ropa-hombre/pantalon-cargo-men.jpg"
+      ]
+    },
+    {
+      "name": "Pantalón Chino",
+      "categorySlug": "ropa-hombre",
+      "images": [
+        "/images/products/ropa-hombre/pantalon-chino.jpg",
+        "/images/products/ropa-hombre/pantalon-chino-men.jpg"
+      ]
+    },
+    {
+      "name": "Pantalón Deportivo",
+      "categorySlug": "ropa-hombre",
+      "images": [
+        "/images/products/ropa-hombre/pantalon-deportivo.jpg",
+        "/images/products/ropa-hombre/pantalon-deportivo-men.jpg"
+      ]
+    },
+    {
+      "name": "Pantalón Formal",
+      "categorySlug": "ropa-hombre",
+      "images": [
+        "/images/products/ropa-hombre/pantalon-formal.jpg",
+        "/images/products/ropa-hombre/pantalon-formal-men.jpg"
+      ]
+    },
+    {
+      "name": "Jeans",
+      "categorySlug": "ropa-hombre",
+      "images": [
+        "/images/products/ropa-hombre/pantalon-jeans.jpg",
+        "/images/products/ropa-hombre/pantalon-jeans-men.jpg"
+      ]
+    },
+    {
+      "name": "Pantalón Negro",
+      "categorySlug": "ropa-hombre",
+      "images": [
+        "/images/products/ropa-hombre/pantalon-negro.jpg",
+        "/images/products/ropa-hombre/pantalon-negro-men.jpg"
+      ]
+    },
+    {
+      "name": "Pantalón Deportivo",
+      "categorySlug": "ropa-ninos",
+      "images": [
+        "/images/products/ropa-ninos/pantalon-deportivo-nino.jpg"
+      ]
+    },
+    {
+      "name": "Pantalón Negro",
+      "categorySlug": "ropa-ninos",
+      "images": [
+        "/images/products/ropa-ninos/pantalon-negro-nino.jpg"
+      ]
+    },
+    {
+      "name": "Pantalón Verde",
+      "categorySlug": "ropa-ninos",
+      "images": [
+        "/images/products/ropa-ninos/pantalon-verde-nino.jpg"
+      ]
+    },
+    {
+      "name": "Pantalón",
+      "categorySlug": "ropa-mujer",
+      "images": [
+        "/images/products/ropa-mujer/pantalon.jpg",
+        "/images/products/ropa-mujer/pantalon-mujer.jpg"
+      ]
+    },
+    {
+      "name": "Camiseta Amarilla",
+      "categorySlug": "ropa-hombre",
+      "images": [
+        "/images/products/ropa-hombre/camiseta-amarilla.jpg",
+        "/images/products/ropa-hombre/camiseta-amarilla-hombre.jpg"
+      ]
+    },
+    {
+      "name": "Camiseta Azul",
+      "categorySlug": "ropa-hombre",
+      "images": [
+        "/images/products/ropa-hombre/camiseta-azul.jpg"
+      ]
+    },
+    {
+      "name": "Camiseta Blanca",
+      "categorySlug": "ropa-hombre",
+      "images": [
+        "/images/products/ropa-hombre/camiseta-blanca.jpg",
+        "/images/products/ropa-hombre/camiseta-blanca-hombre.jpg"
+      ]
+    },
+    {
+      "name": "Camiseta Gris",
+      "categorySlug": "ropa-hombre",
+      "images": [
+        "/images/products/ropa-hombre/camiseta-gris.jpg",
+        "/images/products/ropa-hombre/camiseta-gris-hombre.jpg"
+      ]
+    },
+    {
+      "name": "Camiseta Negra",
+      "categorySlug": "ropa-hombre",
+      "images": [
+        "/images/products/ropa-hombre/camiseta-negra.jpg",
+        "/images/products/ropa-hombre/camiseta-negra-hombre.jpg"
+      ]
+    },
+    {
+      "name": "Camiseta Roja",
+      "categorySlug": "ropa-hombre",
+      "images": [
+        "/images/products/ropa-hombre/camiseta-roja.jpg",
+        "/images/products/ropa-hombre/camiseta-roja-hombre.webp"
+      ]
+    },
+    {
+      "name": "Camiseta Amarilla",
+      "categorySlug": "ropa-ninos",
+      "images": [
+        "/images/products/ropa-ninos/camiseta-amarilla-nino.jpg"
+      ]
+    },
+    {
+      "name": "Camiseta Azul",
+      "categorySlug": "ropa-ninos",
+      "images": [
+        "/images/products/ropa-ninos/camiseta-azul-nino.jpg"
+      ]
+    },
+    {
+      "name": "Camiseta Roja",
+      "categorySlug": "ropa-ninos",
+      "images": [
+        "/images/products/ropa-ninos/camiseta-roja-nino.jpg"
+      ]
+    },
+    {
+      "name": "Camiseta",
+      "categorySlug": "ropa-mujer",
+      "images": [
+        "/images/products/ropa-mujer/camiseta-mujer.png",
+        "/images/products/ropa-mujer/camiseta.jpg"
+      ]
+    },
+    {
+      "name": "Alfombra",
+      "categorySlug": "hogar-decoracion",
+      "images": [
+        "/images/products/hogar-decoracion/alfombra.jpg",
+        "/images/products/hogar-decoracion/alfombra-2.jpg",
+        "/images/products/hogar-decoracion/alfombra-3.jpg"
+      ]
+    },
+    {
+      "name": "Balón de Fútbol",
+      "categorySlug": "deportes-futbol",
+      "images": [
+        "/images/products/deportes-futbol/balon.jpg",
+        "/images/products/deportes-futbol/balon-2.jpg",
+        "/images/products/deportes-futbol/balon-3.jpg"
+      ]
+    },
+    {
+      "name": "Balón de Baloncesto",
+      "categorySlug": "deportes-baloncesto",
+      "images": [
+        "/images/products/deportes-baloncesto/balon-basket.jpg",
+        "/images/products/deportes-baloncesto/balon-basket-2.jpg",
+        "/images/products/deportes-baloncesto/balon-basket-3.jpg"
+      ]
+    },
+    {
+      "name": "Canasta de Baloncesto",
+      "categorySlug": "deportes-baloncesto",
+      "images": [
+        "/images/products/deportes-baloncesto/canasta-basket.jpg",
+        "/images/products/deportes-baloncesto/canasta-basket-2.jpg",
+        "/images/products/deportes-baloncesto/canasta-basket-3.jpg"
+      ]
+    },
+    {
+      "name": "Casco de Ciclismo",
+      "categorySlug": "deportes-ciclismo",
+      "images": [
+        "/images/products/deportes-ciclismo/casco-ciclismo.jpg",
+        "/images/products/deportes-ciclismo/casco-ciclismo-2.jpg",
+        "/images/products/deportes-ciclismo/casco-ciclismo-3.jpg"
+      ]
+    },
+    {
+      "name": "Cuadro Decorativo",
+      "categorySlug": "hogar-decoracion",
+      "images": [
+        "/images/products/hogar-decoracion/cuadro.jpg",
+        "/images/products/hogar-decoracion/cuadro-2.jpg",
+        "/images/products/hogar-decoracion/cuadro-3.jpg"
+      ]
+    },
+    {
+      "name": "Estantería",
+      "categorySlug": "hogar-muebles",
+      "images": [
+        "/images/products/hogar-muebles/estanteria.jpg",
+        "/images/products/hogar-muebles/estanteria-2.jpg",
+        "/images/products/hogar-muebles/estanteria-3.jpg"
+      ]
+    },
+    {
+      "name": "Guantes Deportivos",
+      "categorySlug": "deportes-accesorios",
+      "images": [
+        "/images/products/deportes-accesorios/guantes.jpg",
+        "/images/products/deportes-accesorios/guantes-2.jpg",
+        "/images/products/deportes-accesorios/guantes-3.jpg"
+      ]
+    },
+    {
+      "name": "Guantes de Boxeo",
+      "categorySlug": "deportes-boxeo",
+      "images": [
+        "/images/products/deportes-boxeo/guantes-boxeo.jpg",
+        "/images/products/deportes-boxeo/guantes-boxeo-2.jpg",
+        "/images/products/deportes-boxeo/guantes-boxeo-3.jpg"
+      ]
+    },
+    {
+      "name": "Hamaca",
+      "categorySlug": "hogar-jardin",
+      "images": [
+        "/images/products/hogar-jardin/hamaca.jpg",
+        "/images/products/hogar-jardin/hamaca-2.jpg",
+        "/images/products/hogar-jardin/hamaca-3.jpg"
+      ]
+    },
+    {
+      "name": "Jarrón Decorativo",
+      "categorySlug": "hogar-decoracion",
+      "images": [
+        "/images/products/hogar-decoracion/jarron.jpg",
+        "/images/products/hogar-decoracion/jarron-2.jpg",
+        "/images/products/hogar-decoracion/jarron-3.jpg"
+      ]
+    },
+    {
+      "name": "Lámpara",
+      "categorySlug": "hogar-decoracion",
+      "images": [
+        "/images/products/hogar-decoracion/lampara.jpg",
+        "/images/products/hogar-decoracion/lampara-2.jpg",
+        "/images/products/hogar-decoracion/lampara-3.jpg"
+      ]
+    },
+    {
+      "name": "Luces Decorativas",
+      "categorySlug": "hogar-decoracion",
+      "images": [
+        "/images/products/hogar-decoracion/luces.jpg",
+        "/images/products/hogar-decoracion/luces-2.jpg",
+        "/images/products/hogar-decoracion/luces-3.jpg"
+      ]
+    },
+    {
+      "name": "Maceta",
+      "categorySlug": "hogar-jardin",
+      "images": [
+        "/images/products/hogar-jardin/maceta.jpg",
+        "/images/products/hogar-jardin/maceta-2.jpg",
+        "/images/products/hogar-jardin/maceta-3.jpg"
+      ]
+    },
+    {
+      "name": "Mesa",
+      "categorySlug": "hogar-muebles",
+      "images": [
+        "/images/products/hogar-muebles/mesa.jpg",
+        "/images/products/hogar-muebles/mesa-2.jpg",
+        "/images/products/hogar-muebles/mesa-3.jpg"
+      ]
+    },
+    {
+      "name": "Raqueta de Tenis",
+      "categorySlug": "deportes-tenis",
+      "images": [
+        "/images/products/deportes-tenis/raqueta-tenis.jpg",
+        "/images/products/deportes-tenis/raqueta-tenis-2.jpg",
+        "/images/products/deportes-tenis/raqueta-tenis-3.jpg"
+      ]
+    },
+    {
+      "name": "Regadera",
+      "categorySlug": "hogar-jardin",
+      "images": [
+        "/images/products/hogar-jardin/regadera.jpg",
+        "/images/products/hogar-jardin/regadera-2.jpg",
+        "/images/products/hogar-jardin/regadera-3.jpg"
+      ]
+    },
+    {
+      "name": "Silla",
+      "categorySlug": "hogar-muebles",
+      "images": [
+        "/images/products/hogar-muebles/silla.jpg",
+        "/images/products/hogar-muebles/silla-2.jpg",
+        "/images/products/hogar-muebles/silla-3.jpg"
+      ]
+    },
+    {
+      "name": "Sofá",
+      "categorySlug": "hogar-muebles",
+      "images": [
+        "/images/products/hogar-muebles/sofa.jpg",
+        "/images/products/hogar-muebles/sofa-2.jpg",
+        "/images/products/hogar-muebles/sofa-3.jpg"
+      ]
+    },
+    {
+      "name": "Tacos de Fútbol",
+      "categorySlug": "deportes-futbol",
+      "images": [
+        "/images/products/deportes-futbol/tacos.jpg",
+        "/images/products/deportes-futbol/tacos-2.jpg",
+        "/images/products/deportes-futbol/tacos-3.jpg"
+      ]
+    },
+    {
+      "name": "Uniforme Deportivo",
+      "categorySlug": "deportes-futbol",
+      "images": [
+        "/images/products/deportes-futbol/uniforme.jpg",
+        "/images/products/deportes-futbol/uniforme-2.jpg",
+        "/images/products/deportes-futbol/uniforme-3.jpg"
+      ]
+    },
+    {
+      "name": "Uniforme de Baloncesto",
+      "categorySlug": "deportes-baloncesto",
+      "images": [
+        "/images/products/deportes-baloncesto/uniforme-basket.jpg",
+        "/images/products/deportes-baloncesto/uniforme-basket-2.jpg",
+        "/images/products/deportes-baloncesto/uniforme-basket-3.jpg"
+      ]
+    },
+    {
+      "name": "Zapatos de Baloncesto",
+      "categorySlug": "deportes-baloncesto",
+      "images": [
+        "/images/products/deportes-baloncesto/zapatos-basket.jpg",
+        "/images/products/deportes-baloncesto/zapatos-basket-2.jpg",
+        "/images/products/deportes-baloncesto/zapatos-basket-3.jpg"
+      ]
+    }
+  ],
+  "brand": {
+    "logo": "/images/brand/logopaca.png",
+    "heroSlides": [
+      "/images/brand/carrusel-1.jpg",
+      "/images/brand/carrusel-2.jpg",
+      "/images/brand/carrusel-3.jpg"
+    ]
+  }
+}
