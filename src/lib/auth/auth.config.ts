@@ -21,7 +21,7 @@ export const authConfig = {
       if (pathname.startsWith('/admin')) {
         return isLoggedIn && (role === 'ADMIN' || role === 'SUPERADMIN');
       }
-      if (pathname.startsWith('/cuenta')) {
+      if (pathname.startsWith('/cuenta') || pathname.startsWith('/checkout')) {
         return isLoggedIn;
       }
       return true;

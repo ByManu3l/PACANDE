@@ -11,6 +11,9 @@ export interface SiteConfig {
   currencySymbol: string;
   contactEmail: string;
   contactPhone: string;
+  /** Flat shipping cost applied to every order, in the smallest display
+   * unit of defaultCurrency (e.g. whole pesos for COP). */
+  flatShippingCost: number;
   social: {
     facebook?: string;
     instagram?: string;
@@ -25,6 +28,7 @@ export const siteConfig: SiteConfig = {
   currencySymbol: '$',
   contactEmail: 'contacto@pacande.test',
   contactPhone: '+57 300 000 0000',
+  flatShippingCost: 10_000,
   social: {
     facebook: 'https://facebook.com',
     instagram: 'https://instagram.com',
