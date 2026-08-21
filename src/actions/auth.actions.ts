@@ -2,8 +2,9 @@
 
 import { AuthError } from 'next-auth';
 
+import { mergeGuestCartAction } from '@/actions/cart.actions';
 import { signIn, signOut } from '@/lib/auth';
-import { registerUser } from '@/lib/services/user.service';
+import { registerUser, verifyCredentials } from '@/lib/services/user.service';
 import { runAction } from '@/lib/utils/action-result';
 import { loginSchema, registerSchema } from '@/lib/validations/auth';
 
@@ -17,6 +18,14 @@ export async function loginAction(formData: FormData) {
       throw new Error(parsed.error.issues[0]?.message ?? 'Datos inválidos.');
     }
 
+    // Verified once here (not just inside the Credentials provider) so we
+    // have the user id up front — auth() can't be trusted to see the new
+    // session cookie within this same Server Action invocation yet.
+    const user = await verifyCredentials(parsed.data.email, parsed.data.password);
+    if (!user) {
+      throw new Error('Correo o contraseña incorrectos.');
+    }
+
     try {
       await signIn('credentials', { ...parsed.data, redirect: false });
     } catch (err) {
@@ -25,6 +34,8 @@ export async function loginAction(formData: FormData) {
       }
       throw err;
     }
+
+    await mergeGuestCartAction(user.id);
 
     return { redirectTo: '/' };
   });
@@ -45,12 +56,13 @@ export async function registerAction(formData: FormData) {
       throw new Error(parsed.error.issues[0]?.message ?? 'Datos inválidos.');
     }
 
-    await registerUser(parsed.data);
+    const user = await registerUser(parsed.data);
     await signIn('credentials', {
       email: parsed.data.email,
       password: parsed.data.password,
       redirect: false,
     });
+    await mergeGuestCartAction(user.id);
 
     return { redirectTo: '/' };
   });

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { AddToCartButton } from '@/components/shared/add-to-cart-button';
 import { Badge } from '@/components/ui/badge';
 import { getProductBySlug } from '@/lib/services/product.service';
 import { formatPrice } from '@/lib/utils/currency';
@@ -71,8 +72,7 @@ export default async function ProductPage({ params }: PageProps<'/producto/[slug
           {product.stock > 0 ? `${product.stock} disponibles` : 'Agotado'}
         </p>
 
-        {/* El botón de "Añadir al carrito" se conecta cuando el carrito
-            persistido queda implementado. */}
+        <AddToCartButton productId={product.id} stock={product.stock} />
       </div>
     </div>
   );

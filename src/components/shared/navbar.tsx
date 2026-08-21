@@ -1,15 +1,23 @@
 import { Search, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 
+import { getCartAction } from '@/actions/cart.actions';
 import { UserMenu } from '@/components/shared/user-menu';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { auth } from '@/lib/auth';
 import { siteConfig } from '@/lib/config/site.config';
+import { cartTotals } from '@/lib/services/cart.service';
 import { listCategoriesForNav } from '@/lib/services/category.service';
 
 export async function Navbar() {
-  const [session, categories] = await Promise.all([auth(), listCategoriesForNav()]);
+  const [session, categories, cart] = await Promise.all([
+    auth(),
+    listCategoriesForNav(),
+    getCartAction(),
+  ]);
+  const itemCount = cart ? cartTotals(cart).itemCount : 0;
 
   return (
     <header className="bg-background/95 sticky top-0 z-40 border-b backdrop-blur">
@@ -43,8 +51,14 @@ export async function Navbar() {
             nativeButton={false}
             variant="ghost"
             size="icon"
+            className="relative"
           >
             <ShoppingCart className="size-5" />
+            {itemCount > 0 && (
+              <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px]">
+                {itemCount}
+              </Badge>
+            )}
           </Button>
 
           {session?.user ? (
