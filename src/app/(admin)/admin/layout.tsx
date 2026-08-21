@@ -31,14 +31,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             {item.label}
           </Link>
         ))}
-        {session.user.role === 'SUPERADMIN' && (
-          <Link
-            href="/admin/superadmin/usuarios"
-            className="hover:bg-muted block rounded-lg px-3 py-2 text-sm font-medium"
-          >
-            Roles (Superadmin)
-          </Link>
-        )}
       </nav>
       <div className="md:col-span-4">{children}</div>
     </div>
