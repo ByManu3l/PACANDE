@@ -2,7 +2,7 @@
 
 import { AuthError } from 'next-auth';
 
-import { signIn } from '@/lib/auth';
+import { signIn, signOut } from '@/lib/auth';
 import { registerUser } from '@/lib/services/user.service';
 import { runAction } from '@/lib/utils/action-result';
 import { loginSchema, registerSchema } from '@/lib/validations/auth';
@@ -28,6 +28,10 @@ export async function loginAction(formData: FormData) {
 
     return { redirectTo: '/' };
   });
+}
+
+export async function logoutAction() {
+  await signOut({ redirectTo: '/' });
 }
 
 export async function registerAction(formData: FormData) {
