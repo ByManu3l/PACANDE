@@ -46,6 +46,30 @@ export async function changePassword(userId: string, currentPassword: string, ne
   await prisma.user.update({ where: { id: userId }, data: { passwordHash } });
 }
 
+export async function getUserById(userId: string) {
+  return prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, name: true, email: true, image: true, role: true, createdAt: true },
+  });
+}
+
+export async function updateProfile(userId: string, input: { name: string; email: string }) {
+  const existing = await prisma.user.findUnique({ where: { email: input.email } });
+  if (existing && existing.id !== userId) {
+    throw new ConflictError('Ya existe una cuenta con ese correo.');
+  }
+
+  return prisma.user.update({
+    where: { id: userId },
+    data: { name: input.name, email: input.email },
+    select: { id: true, name: true, email: true, image: true, role: true },
+  });
+}
+
+export async function updateAvatar(userId: string, imagePath: string) {
+  return prisma.user.update({ where: { id: userId }, data: { image: imagePath } });
+}
+
 /**
  * A Superadmin can never delete or change the role of their own account —
  * unlike the legacy backend, this applies with no role-based exception.

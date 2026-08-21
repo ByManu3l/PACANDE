@@ -44,4 +44,6 @@ next-env.d.ts
 # prisma generated client (regenerated via `npm run postinstall` / `prisma generate`)
 /src/generated/
 
-/src/generated/prisma
+# user-uploaded files saved by the local-disk storage adapter (dev only —
+# see lib/services/storage.service.ts)
+/public/uploads/
