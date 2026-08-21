@@ -181,3 +181,10 @@ export async function listOrdersForUser(userId: string) {
     include: { items: true, shipment: true },
   });
 }
+
+export async function listAllOrders() {
+  return prisma.order.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: { items: true, shipment: true, user: { select: { name: true, email: true } } },
+  });
+}
