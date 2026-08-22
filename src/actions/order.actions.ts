@@ -9,6 +9,18 @@ import * as shipmentService from '@/lib/services/shipment.service';
 import { runAction } from '@/lib/utils/action-result';
 import { checkoutSchema } from '@/lib/validations/checkout';
 
+/**
+ * Compra y gestion de pedidos.
+ *
+ * Nota de seguridad sobre `checkoutAction`: el formulario recoge datos de
+ * tarjeta, pero **no llegan aqui**. El navegador solo envia los campos de
+ * `CHECKOUT_SERVER_FIELDS` (direccion y metodo de pago); los de la tarjeta
+ * los consume la pasarela simulada en el cliente y se descartan. Mantener
+ * el numero de tarjeta fuera del servidor evita que aparezca en registros,
+ * copias de seguridad o trazas de error, y deja el proyecto fuera del
+ * alcance de PCI-DSS. Ver `lib/validations/checkout.ts`.
+ */
+
 export async function checkoutAction(formData: FormData) {
   return runAction(async () => {
     const user = await requireSession();
@@ -32,9 +44,10 @@ export async function checkoutAction(formData: FormData) {
 export async function listAllOrdersAction() {
   await requireRole(['ADMIN', 'SUPERADMIN']);
   const orders = await orderService.listAllOrders();
-  // Decimal fields aren't serializable across the Server Action -> Client
-  // Component boundary (see cart.actions.ts / product.actions.ts for the
-  // same fix) — this table is refetched directly from a Client Component.
+  // Los `Decimal` de Prisma no son serializables al cruzar de Server
+  // Action a Client Component, y esta tabla se recarga desde el cliente.
+  // Se convierten a texto, incluidos los de cada linea: `items` es un
+  // arreglo anidado y el limite RSC tambien lo alcanza.
   return orders.map((o) => ({
     ...o,
     subtotal: o.subtotal.toString(),

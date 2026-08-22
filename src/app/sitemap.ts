@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 
-import { prisma } from '@/lib/prisma';
+import { listActiveCategorySlugs } from '@/lib/services/category.service';
+import { listActiveProductSlugs } from '@/lib/services/product.service';
 
 /** URL pública del sitio. En local no importa; en despliegue debe apuntar
  * al dominio real o el sitemap listará URLs que no existen. */
@@ -20,14 +21,8 @@ const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [categories, products] = await Promise.all([
-    prisma.category.findMany({
-      where: { isActive: true },
-      select: { slug: true, updatedAt: true },
-    }),
-    prisma.product.findMany({
-      where: { isActive: true },
-      select: { slug: true, updatedAt: true },
-    }),
+    listActiveCategorySlugs(),
+    listActiveProductSlugs(),
   ]);
 
   const staticRoutes: MetadataRoute.Sitemap = [

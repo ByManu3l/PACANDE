@@ -7,6 +7,16 @@ import * as userService from '@/lib/services/user.service';
 import { runAction } from '@/lib/utils/action-result';
 import { adminUpdateUserSchema, type AdminUpdateUserInput } from '@/lib/validations/admin-user';
 
+/**
+ * Administracion de cuentas ajenas.
+ *
+ * `requireRole` solo comprueba que quien actua sea ADMIN o SUPERADMIN. La
+ * regla fina — un ADMIN no puede tocar a otro ADMIN, nadie puede
+ * cambiarse el rol ni borrarse a si mismo — vive en `user.service.ts`,
+ * que recibe `actor.id` y `actor.role` para poder decidirlo. Por eso
+ * ambos se pasan siempre desde aqui y nunca desde el cliente.
+ */
+
 export async function listUsersAction() {
   await requireRole(['ADMIN', 'SUPERADMIN']);
   return userService.listUsers();
@@ -20,6 +30,7 @@ export async function adminUpdateUserAction(targetId: string, input: AdminUpdate
     await userService.adminUpdateUser(actor.id, actor.role, targetId, {
       name: parsed.name,
       email: parsed.email,
+      // Cadena vacia = "no cambiar la contrasena" (ver el esquema).
       password: parsed.password || undefined,
       role: parsed.role,
     });

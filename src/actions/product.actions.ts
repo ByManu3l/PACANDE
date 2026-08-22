@@ -6,10 +6,9 @@ import { extname } from 'node:path';
 import { revalidatePath } from 'next/cache';
 
 import { requireRole } from '@/lib/auth/guards';
-import { prisma } from '@/lib/prisma';
+import * as productService from '@/lib/services/product.service';
 import { isUserUpload, storage } from '@/lib/services/storage.service';
 import { runAction } from '@/lib/utils/action-result';
-import { ConflictError } from '@/lib/utils/errors';
 import {
   ALLOWED_PRODUCT_IMAGE_TYPES,
   MAX_PRODUCT_IMAGE_SIZE_BYTES,
@@ -17,21 +16,41 @@ import {
   productSchema,
 } from '@/lib/validations/product';
 
+/**
+ * Gestión del catálogo desde el panel.
+ *
+ * Sigue la misma secuencia descrita en `category.actions.ts`, y añade una
+ * responsabilidad propia: mantener el almacenamiento de imágenes en
+ * sincronía con la base de datos. Los servicios devuelven qué archivos
+ * quedaron huérfanos y aquí se borran — así la lógica de datos se puede
+ * probar sin tocar el disco.
+ */
+
+/** Lectura para la tabla del panel. Ver la nota en `listCategoriesAction`. */
 export async function listProductsAction() {
   await requireRole(['ADMIN', 'SUPERADMIN']);
-  const products = await prisma.product.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: { category: true },
-  });
-  // Called directly from ProductsTable (a Client Component), not just from
-  // the admin page's Server Component — Prisma's Decimal isn't serializable
-  // across that boundary (same issue fixed for the cart in cart.actions.ts).
+  const products = await productService.listProductsForAdmin();
+
+  // `price` es un `Decimal` de Prisma, que no es serializable al cruzar de
+  // Server Action a Client Component (la tabla del panel es cliente y
+  // vuelve a llamar a esta acción tras cada cambio). Se envía como texto y
+  // se formatea con `formatPrice`, que ya acepta cadenas.
   return products.map((p) => ({ ...p, price: p.price.toString() }));
 }
 
-/** Uploads product images ahead of create/update, returning their public
- * paths — kept separate from createProductAction/updateProductAction so
- * those two stay plain JSON-serializable calls, not FormData. */
+/**
+ * Sube las imágenes y devuelve sus rutas públicas.
+ *
+ * Va aparte de crear/actualizar porque los archivos obligan a usar
+ * `FormData`, mientras que las otras dos acciones reciben un objeto JSON
+ * normal. Separarlas evita que todo el formulario tenga que serializarse
+ * como `FormData` solo por las imágenes.
+ *
+ * Consecuencia a tener en cuenta: si la subida funciona y después falla el
+ * guardado, los archivos quedan en disco sin producto que los referencie.
+ * Es un caso poco frecuente y sin impacto para el usuario; limpiarlo
+ * exigiría subidas transaccionales, que no compensan aquí.
+ */
 export async function uploadProductImagesAction(formData: FormData) {
   return runAction(async () => {
     await requireRole(['ADMIN', 'SUPERADMIN']);
@@ -43,12 +62,16 @@ export async function uploadProductImagesAction(formData: FormData) {
 
     const paths: string[] = [];
     for (const file of files) {
+      // El tipo y el tamaño se revalidan aquí aunque el navegador ya los
+      // filtre: `formData` puede venir de cualquier cliente.
       if (!ALLOWED_PRODUCT_IMAGE_TYPES.includes(file.type)) {
         throw new Error(`Formato no soportado: ${file.name}`);
       }
       if (file.size > MAX_PRODUCT_IMAGE_SIZE_BYTES) {
         throw new Error(`"${file.name}" supera 5MB.`);
       }
+      // Nombre aleatorio: el original puede traer rutas, tildes o repetirse
+      // y sobrescribir la imagen de otro producto.
       const filename = `${randomUUID()}${extname(file.name) || '.jpg'}`;
       paths.push(await storage.save(file, 'uploads/products', filename));
     }
@@ -62,16 +85,15 @@ export async function createProductAction(input: ProductInput & { images: string
     await requireRole(['ADMIN', 'SUPERADMIN']);
     const { images, ...rest } = input;
     const parsed = productSchema.parse(rest);
+
+    // Fuera del esquema zod porque `images` no viene del formulario sino
+    // de `uploadProductImagesAction`, que corre antes.
     if (images.length === 0) {
       throw new Error('El producto necesita al menos una imagen.');
     }
 
-    const existing = await prisma.product.findUnique({ where: { slug: parsed.slug } });
-    if (existing) throw new ConflictError('Ya existe un producto con ese slug.');
-
-    await prisma.product.create({ data: { ...parsed, images } });
-    revalidatePath('/admin/productos');
-    revalidatePath('/categoria', 'layout');
+    await productService.createProduct(parsed, images);
+    revalidateProductPages();
   });
 }
 
@@ -84,24 +106,10 @@ export async function updateProductAction(id: string, input: ProductInput & { im
       throw new Error('El producto necesita al menos una imagen.');
     }
 
-    const existing = await prisma.product.findUnique({ where: { slug: parsed.slug } });
-    if (existing && existing.id !== id) {
-      throw new ConflictError('Ya existe un producto con ese slug.');
-    }
+    const { orphanedImages } = await productService.updateProduct(id, parsed, images);
+    await deleteOrphanedUploads(orphanedImages);
 
-    const current = await prisma.product.findUniqueOrThrow({
-      where: { id },
-      select: { images: true },
-    });
-
-    await prisma.product.update({ where: { id }, data: { ...parsed, images } });
-
-    // Las imágenes que el admin quitó del producto ya no las referencia
-    // nadie. Sin este barrido, cada edición deja archivos muertos en disco.
-    await deleteOrphanedUploads(current.images.filter((img) => !images.includes(img)));
-
-    revalidatePath('/admin/productos');
-    revalidatePath('/categoria', 'layout');
+    revalidateProductPages();
     revalidatePath('/producto', 'layout');
   });
 }
@@ -110,20 +118,26 @@ export async function deleteProductAction(id: string) {
   return runAction(async () => {
     await requireRole(['ADMIN', 'SUPERADMIN']);
 
-    // OrderItem.productId es onDelete: SetNull (el pedido conserva su
-    // instantánea de nombre/precio) y CartItem.productId es onDelete:
-    // Cascade — borrar un producto es seguro por diseño del schema.
-    const deleted = await prisma.product.delete({ where: { id }, select: { images: true } });
-    await deleteOrphanedUploads(deleted.images);
+    const { orphanedImages } = await productService.deleteProduct(id);
+    await deleteOrphanedUploads(orphanedImages);
 
-    revalidatePath('/admin/productos');
-    revalidatePath('/categoria', 'layout');
+    revalidateProductPages();
   });
 }
 
-/** Borra del almacenamiento las rutas que sean subidas de usuario. Las
- * imágenes del catálogo semilla (`/images/...`) se ignoran: están
- * versionadas y las comparten varios productos de ejemplo. */
+/**
+ * Borra del almacenamiento las rutas que sean subidas de usuario.
+ *
+ * El filtro `isUserUpload` es imprescindible: las imágenes del catálogo de
+ * ejemplo viven en `/images/...`, están versionadas en el repositorio y
+ * varios productos semilla comparten la misma. Borrar una dejaría rotos
+ * los demás y no se podría recuperar sin volver a clonar.
+ */
 async function deleteOrphanedUploads(paths: string[]) {
   await Promise.all(paths.filter(isUserUpload).map((path) => storage.delete(path)));
+}
+
+function revalidateProductPages() {
+  revalidatePath('/admin/productos');
+  revalidatePath('/categoria', 'layout');
 }

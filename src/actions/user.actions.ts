@@ -16,6 +16,16 @@ import {
   updateProfileSchema,
 } from '@/lib/validations/user';
 
+/**
+ * Acciones sobre la propia cuenta, en `/cuenta`.
+ *
+ * Todas empiezan por `requireSession()` y operan **solo** sobre
+ * `user.id`, tomado de la sesion. Ninguna acepta un identificador de
+ * usuario como parametro: si lo hiciera, cualquiera podria enviar el id
+ * de otra persona y editar su cuenta. Para administrar cuentas ajenas
+ * esta `admin-user.actions.ts`, que si comprueba el rol.
+ */
+
 export async function updateProfileAction(formData: FormData) {
   return runAction(async () => {
     const user = await requireSession();
@@ -59,6 +69,9 @@ export async function uploadAvatarAction(formData: FormData) {
       throw new Error('La imagen no puede superar 5MB.');
     }
 
+    // El id va delante para poder rastrear a quien pertenece un archivo;
+    // el UUID evita colisiones y que se pueda adivinar la URL del avatar
+    // de otra persona a partir de su id.
     const filename = `${user.id}-${randomUUID()}${extname(file.name) || '.jpg'}`;
     const publicPath = await storage.save(file, 'uploads/avatars', filename);
     const { previousImage } = await userService.updateAvatar(user.id, publicPath);

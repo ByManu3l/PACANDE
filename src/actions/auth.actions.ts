@@ -8,6 +8,15 @@ import { registerUser, verifyCredentials } from '@/lib/services/user.service';
 import { runAction } from '@/lib/utils/action-result';
 import { loginSchema, registerSchema } from '@/lib/validations/auth';
 
+/**
+ * Acceso, registro y cierre de sesion.
+ *
+ * Las dos primeras hacen algo mas que autenticar: al iniciar sesion hay
+ * que trasladar el carrito que el visitante llenaba de forma anonima a su
+ * cuenta. Si no, el carrito parece vaciarse justo al entrar, que es el
+ * momento en el que mas gente abandona la compra.
+ */
+
 export async function loginAction(formData: FormData) {
   return runAction(async () => {
     const credentials = loginSchema.parse({
@@ -15,9 +24,10 @@ export async function loginAction(formData: FormData) {
       password: formData.get('password'),
     });
 
-    // Verified once here (not just inside the Credentials provider) so we
-    // have the user id up front — auth() can't be trusted to see the new
-    // session cookie within this same Server Action invocation yet.
+    // Se verifica aqui ademas de dentro del proveedor de credenciales
+    // para tener el id del usuario por adelantado: dentro de esta misma
+    // invocacion, `auth()` todavia no ve la cookie de sesion recien
+    // creada, y ese id hace falta para fusionar el carrito mas abajo.
     const user = await verifyCredentials(credentials.email, credentials.password);
     if (!user) {
       throw new Error('Correo o contraseña incorrectos.');
@@ -34,6 +44,9 @@ export async function loginAction(formData: FormData) {
 
     await mergeGuestCartIntoSession(user.id);
 
+    // Se devuelve la ruta en vez de llamar a `redirect()`: dentro de
+    // `runAction` un redirect se propaga como excepcion y el `catch` lo
+    // convertiria en un mensaje de error. Quien navega es el cliente.
     return { redirectTo: '/' };
   });
 }

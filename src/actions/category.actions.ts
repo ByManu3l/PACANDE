@@ -3,79 +3,70 @@
 import { revalidatePath } from 'next/cache';
 
 import { requireRole } from '@/lib/auth/guards';
-import { prisma } from '@/lib/prisma';
+import * as categoryService from '@/lib/services/category.service';
 import { runAction } from '@/lib/utils/action-result';
-import { ConflictError, ValidationError } from '@/lib/utils/errors';
 import { type CategoryInput, categorySchema } from '@/lib/validations/category';
 
+/**
+ * Gestión del árbol de categorías desde el panel.
+ *
+ * Toda acción de esta carpeta sigue la misma secuencia, y conviene
+ * respetarla al añadir nuevas:
+ *
+ *   1. `requireRole(...)` — **siempre lo primero**. Una Server Action es
+ *      un endpoint HTTP invocable directamente; `proxy.ts` no la protege.
+ *   2. `schema.parse(...)` — nunca confiar en la validación del navegador.
+ *   3. llamar al servicio — aquí no se toca Prisma (ver `ARQUITECTURA.md`).
+ *   4. `revalidatePath(...)` — invalidar lo que acaba de quedar obsoleto.
+ *
+ * Los pasos 2–4 van envueltos en `runAction`, que traduce cualquier error
+ * de dominio al `{ ok: false, error }` que el formulario sabe mostrar.
+ */
+
+/**
+ * Lectura para la tabla del panel.
+ *
+ * No usa `runAction` porque no es una mutación: si falla, debe romper el
+ * render en vez de devolver un objeto de error que la tabla ignoraría.
+ */
 export async function listCategoriesAction() {
   await requireRole(['ADMIN', 'SUPERADMIN']);
-  return prisma.category.findMany({
-    orderBy: [{ parentId: 'asc' }, { position: 'asc' }, { name: 'asc' }],
-    include: { parent: true, _count: { select: { products: true, children: true } } },
-  });
+  return categoryService.listCategoriesForAdmin();
 }
 
 export async function createCategoryAction(input: CategoryInput) {
   return runAction(async () => {
     await requireRole(['ADMIN', 'SUPERADMIN']);
-    const parsed = categorySchema.parse(input);
-
-    const existing = await prisma.category.findUnique({ where: { slug: parsed.slug } });
-    if (existing) throw new ConflictError('Ya existe una categoría con ese slug.');
-
-    await prisma.category.create({
-      data: { ...parsed, parentId: parsed.parentId || null },
-    });
-    revalidatePath('/admin/categorias');
-    revalidatePath('/categoria', 'layout');
+    await categoryService.createCategory(categorySchema.parse(input));
+    revalidateCategoryPages();
   });
 }
 
 export async function updateCategoryAction(id: string, input: CategoryInput) {
   return runAction(async () => {
     await requireRole(['ADMIN', 'SUPERADMIN']);
-    const parsed = categorySchema.parse(input);
-
-    if (parsed.parentId === id) {
-      throw new ValidationError('Una categoría no puede ser su propio padre.');
-    }
-
-    const existing = await prisma.category.findUnique({ where: { slug: parsed.slug } });
-    if (existing && existing.id !== id) {
-      throw new ConflictError('Ya existe una categoría con ese slug.');
-    }
-
-    await prisma.category.update({
-      where: { id },
-      data: { ...parsed, parentId: parsed.parentId || null },
-    });
-    revalidatePath('/admin/categorias');
-    revalidatePath('/categoria', 'layout');
+    await categoryService.updateCategory(id, categorySchema.parse(input));
+    revalidateCategoryPages();
   });
 }
 
 export async function deleteCategoryAction(id: string) {
   return runAction(async () => {
     await requireRole(['ADMIN', 'SUPERADMIN']);
-
-    const [productCount, childCount] = await Promise.all([
-      prisma.product.count({ where: { categoryId: id } }),
-      prisma.category.count({ where: { parentId: id } }),
-    ]);
-    if (productCount > 0) {
-      throw new ValidationError(
-        `No se puede eliminar: tiene ${productCount} producto(s). Muévelos o elimínalos primero.`,
-      );
-    }
-    if (childCount > 0) {
-      throw new ValidationError(
-        `No se puede eliminar: tiene ${childCount} subcategoría(s). Elimínalas primero.`,
-      );
-    }
-
-    await prisma.category.delete({ where: { id } });
-    revalidatePath('/admin/categorias');
-    revalidatePath('/categoria', 'layout');
+    await categoryService.deleteCategory(id);
+    revalidateCategoryPages();
   });
+}
+
+/**
+ * Invalida todo lo que depende del árbol de categorías.
+ *
+ * El `'layout'` es necesario: sin él solo se refrescaría `/categoria`
+ * exacta, y las páginas afectadas son las de cada slug. Además el menú de
+ * navegación lista categorías en el layout raíz, así que un cambio aquí
+ * se ve en toda la tienda, no solo en la página de la categoría.
+ */
+function revalidateCategoryPages() {
+  revalidatePath('/admin/categorias');
+  revalidatePath('/categoria', 'layout');
 }
