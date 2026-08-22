@@ -1,9 +1,11 @@
 import { notFound } from 'next/navigation';
 
 import { CategoryCard } from '@/components/shared/category-card';
+import { PaginationNav } from '@/components/shared/pagination-nav';
 import { ProductCard } from '@/components/shared/product-card';
-import { getCategoryBySlug } from '@/lib/services/category.service';
+import { getCategoryBySlug, getCategoryProducts } from '@/lib/services/category.service';
 import { NotFoundError } from '@/lib/utils/errors';
+import { parsePageParam } from '@/lib/utils/pagination';
 
 async function findCategory(slug: string) {
   return getCategoryBySlug(slug).catch((err) => {
@@ -34,8 +36,11 @@ export async function generateMetadata({ params }: PageProps<'/categoria/[slug]'
   };
 }
 
-export default async function CategoryPage({ params }: PageProps<'/categoria/[slug]'>) {
-  const { slug } = await params;
+export default async function CategoryPage({
+  params,
+  searchParams,
+}: PageProps<'/categoria/[slug]'>) {
+  const [{ slug }, { page: pageParam }] = await Promise.all([params, searchParams]);
   const category = await findCategory(slug);
 
   if (!category) {
@@ -43,6 +48,12 @@ export default async function CategoryPage({ params }: PageProps<'/categoria/[sl
   }
 
   const hasChildren = category.children.length > 0;
+  // Los productos solo se consultan si la categoría es hoja: una categoría
+  // con subcategorías nunca los muestra, así que pedirlos sería una
+  // consulta desperdiciada en cada visita.
+  const products = hasChildren
+    ? null
+    : await getCategoryProducts(category.id, parsePageParam(pageParam));
 
   return (
     <div className="space-y-6">
@@ -59,16 +70,23 @@ export default async function CategoryPage({ params }: PageProps<'/categoria/[sl
             <CategoryCard key={child.slug} category={child} />
           ))}
         </div>
-      ) : category.products.length > 0 ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {category.products.map((product, index) => (
-            <ProductCard
-              key={product.slug}
-              product={{ ...product, price: product.price.toString() }}
-              priority={index === 0}
-            />
-          ))}
-        </div>
+      ) : products && products.total > 0 ? (
+        <>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {products.items.map((product, index) => (
+              <ProductCard
+                key={product.slug}
+                product={{ ...product, price: product.price.toString() }}
+                priority={index === 0}
+              />
+            ))}
+          </div>
+          <PaginationNav
+            page={products.page}
+            pageCount={products.pageCount}
+            basePath={`/categoria/${category.slug}`}
+          />
+        </>
       ) : (
         <p className="text-muted-foreground">Todavía no hay productos en esta categoría.</p>
       )}
