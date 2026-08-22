@@ -146,6 +146,22 @@ export function CategoryFormDialog({
               </SelectContent>
             </Select>
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="position">Orden</Label>
+            <Input
+              id="position"
+              type="number"
+              step="1"
+              {...register('position', { valueAsNumber: true })}
+            />
+            <p className="text-muted-foreground text-xs">
+              Menor número aparece primero en el menú. Si dos comparten número, se ordenan
+              alfabéticamente.
+            </p>
+            {errors.position && (
+              <p className="text-destructive text-sm">{errors.position.message}</p>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             <Checkbox
               id="isActive"

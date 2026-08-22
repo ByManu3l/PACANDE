@@ -4,7 +4,7 @@ import { NotFoundError } from '@/lib/utils/errors';
 export async function getTopLevelCategories() {
   return prisma.category.findMany({
     where: { parentId: null, isActive: true },
-    orderBy: { position: 'asc' },
+    orderBy: [{ position: 'asc' }, { name: 'asc' }],
   });
 }
 
@@ -18,7 +18,7 @@ export async function getCategoryBySlug(slug: string) {
     where: { slug, isActive: true },
     include: {
       parent: true,
-      children: { where: { isActive: true }, orderBy: { position: 'asc' } },
+      children: { where: { isActive: true }, orderBy: [{ position: 'asc' }, { name: 'asc' }] },
       products: {
         where: { isActive: true },
         orderBy: { createdAt: 'desc' },
@@ -36,9 +36,9 @@ export async function getCategoryBySlug(slug: string) {
 export async function listCategoriesForNav() {
   return prisma.category.findMany({
     where: { parentId: null, isActive: true },
-    orderBy: { position: 'asc' },
+    orderBy: [{ position: 'asc' }, { name: 'asc' }],
     include: {
-      children: { where: { isActive: true }, orderBy: { position: 'asc' } },
+      children: { where: { isActive: true }, orderBy: [{ position: 'asc' }, { name: 'asc' }] },
     },
   });
 }

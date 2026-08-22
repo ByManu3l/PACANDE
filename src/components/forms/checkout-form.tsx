@@ -10,7 +10,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { type CheckoutInput, checkoutSchema } from '@/lib/validations/checkout';
+import {
+  CHECKOUT_SERVER_FIELDS,
+  type CheckoutFormInput,
+  checkoutFormSchema,
+} from '@/lib/validations/checkout';
 
 export function CheckoutForm() {
   const router = useRouter();
@@ -20,18 +24,22 @@ export function CheckoutForm() {
     handleSubmit,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<CheckoutInput>({
-    resolver: zodResolver(checkoutSchema),
+  } = useForm<CheckoutFormInput>({
+    resolver: zodResolver(checkoutFormSchema),
     defaultValues: { country: 'CO', paymentMethod: 'tarjeta_simulada' },
   });
 
   const paymentMethod = watch('paymentMethod');
 
-  const onSubmit = async (values: CheckoutInput) => {
+  const onSubmit = async (values: CheckoutFormInput) => {
+    // Solo se envían las claves que el servidor declara aceptar. Los datos
+    // de tarjeta se validaron arriba y se quedan en el navegador — nunca
+    // deben tocar el backend (ver el porqué en validations/checkout.ts).
     const formData = new FormData();
-    Object.entries(values).forEach(([key, value]) => {
-      if (value) formData.set(key, value);
-    });
+    for (const field of CHECKOUT_SERVER_FIELDS) {
+      const value = values[field];
+      if (value) formData.set(field, value);
+    }
 
     const result = await checkoutAction(formData);
     if (!result.success) {

@@ -17,20 +17,43 @@ export interface CheckoutInput {
   paymentMethod: 'tarjeta_simulada' | 'contra_entrega';
 }
 
-function formatOrderNumber(sequence: number) {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, '0');
-  const d = String(now.getDate()).padStart(2, '0');
-  return `PCD-${y}${m}${d}-${String(sequence).padStart(4, '0')}`;
+/** Día actual en UTC como AAAAMMDD. Se usa UTC a propósito: con la hora
+ * local del servidor, un cambio de zona horaria o un despliegue en otra
+ * región movería el corte del día y podría repetir consecutivos. */
+function utcDayKey(now = new Date()) {
+  return now.toISOString().slice(0, 10).replace(/-/g, '');
 }
 
+/**
+ * Reserva el siguiente consecutivo del día en una sola sentencia atómica.
+ *
+ * La alternativa obvia — contar los pedidos de hoy y sumar uno — falla de
+ * dos maneras: la consulta se vuelve más lenta conforme crece la tienda, y
+ * dos checkouts simultáneos leen el mismo total, generan el mismo número y
+ * chocan contra el índice único de `Order.orderNumber`.
+ *
+ * `INSERT ... ON CONFLICT DO UPDATE ... RETURNING` deja que Postgres
+ * resuelva la contención por fila: cada llamada recibe un valor distinto
+ * sin lecturas previas que puedan solaparse.
+ *
+ * **Compromiso asumido:** al ejecutarse dentro de la transacción del
+ * pedido, la fila del día queda bloqueada hasta que esa transacción
+ * termina, así que los checkouts simultáneos se serializan en este punto.
+ * Es el precio de tener consecutivos legibles y sin huecos, y es
+ * despreciable frente a lo que tarda el resto del checkout. Si alguna vez
+ * estorba, la salida es renunciar al consecutivo por día y usar un id
+ * opaco (ULID) como número de pedido.
+ */
 async function nextOrderNumber(tx: Prisma.TransactionClient) {
-  const startOfDay = new Date();
-  startOfDay.setHours(0, 0, 0, 0);
+  const day = utcDayKey();
 
-  const countToday = await tx.order.count({ where: { createdAt: { gte: startOfDay } } });
-  return formatOrderNumber(countToday + 1);
+  const [{ value }] = await tx.$queryRaw<Array<{ value: number }>>`
+    INSERT INTO "OrderCounter" ("day", "value") VALUES (${day}, 1)
+    ON CONFLICT ("day") DO UPDATE SET "value" = "OrderCounter"."value" + 1
+    RETURNING "value"
+  `;
+
+  return `PCD-${day}-${String(value).padStart(4, '0')}`;
 }
 
 /**
@@ -54,9 +77,6 @@ async function reserveOrder(userId: string, input: CheckoutInput) {
     for (const item of cart.items) {
       if (!item.product.isActive) {
         throw new ValidationError(`"${item.product.name}" ya no está disponible.`);
-      }
-      if (item.product.stock < item.quantity) {
-        throw new ValidationError(`No hay suficiente stock de "${item.product.name}".`);
       }
     }
 
@@ -98,32 +118,29 @@ async function reserveOrder(userId: string, input: CheckoutInput) {
       },
     });
 
+    // Descuento de stock condicional: el `where` incluye `stock >= cantidad`,
+    // así que la comprobación y el descuento ocurren en la MISMA sentencia
+    // SQL y Postgres los serializa por fila.
+    //
+    // Comprobar antes y descontar después (`if (stock < qty) throw` y luego
+    // un `decrement` incondicional) parece equivalente pero no lo es: bajo
+    // el nivel de aislamiento por defecto (READ COMMITTED), dos checkouts
+    // simultáneos leen ambos `stock = 1`, ambos pasan la comprobación, y
+    // ambos descuentan → stock queda en -1 y se vendió una unidad que no
+    // existe. Con `updateMany` condicional, el segundo no afecta ninguna
+    // fila (`count === 0`) y la transacción entera revierte.
     for (const item of cart.items) {
-      await tx.product.update({
-        where: { id: item.productId },
+      const { count } = await tx.product.updateMany({
+        where: { id: item.productId, stock: { gte: item.quantity } },
         data: { stock: { decrement: item.quantity } },
       });
+      if (count === 0) {
+        throw new ValidationError(`No hay suficiente stock de "${item.product.name}".`);
+      }
     }
 
     return order;
   });
-}
-
-const ORDER_NUMBER_UNIQUE_VIOLATION = 'P2002';
-
-async function reserveOrderWithRetry(userId: string, input: CheckoutInput, attempts = 5) {
-  for (let attempt = 1; attempt <= attempts; attempt++) {
-    try {
-      return await reserveOrder(userId, input);
-    } catch (err) {
-      const isOrderNumberClash =
-        err instanceof Prisma.PrismaClientKnownRequestError &&
-        err.code === ORDER_NUMBER_UNIQUE_VIOLATION &&
-        attempt < attempts;
-      if (!isOrderNumberClash) throw err;
-    }
-  }
-  throw new Error('No se pudo generar un número de pedido único.');
 }
 
 export async function checkout(userId: string | undefined, input: CheckoutInput) {
@@ -131,7 +148,7 @@ export async function checkout(userId: string | undefined, input: CheckoutInput)
     throw new UnauthorizedError('Debes iniciar sesión para completar la compra.');
   }
 
-  const order = await reserveOrderWithRetry(userId, input);
+  const order = await reserveOrder(userId, input);
 
   // Cash-on-delivery has nothing to charge right now — money changes hands
   // at the door, not at checkout — so only the simulated card gateway can

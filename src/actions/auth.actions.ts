@@ -2,7 +2,7 @@
 
 import { AuthError } from 'next-auth';
 
-import { mergeGuestCartAction } from '@/actions/cart.actions';
+import { mergeGuestCartIntoSession } from '@/lib/cart-session';
 import { signIn, signOut } from '@/lib/auth';
 import { registerUser, verifyCredentials } from '@/lib/services/user.service';
 import { runAction } from '@/lib/utils/action-result';
@@ -35,7 +35,7 @@ export async function loginAction(formData: FormData) {
       throw err;
     }
 
-    await mergeGuestCartAction(user.id);
+    await mergeGuestCartIntoSession(user.id);
 
     return { redirectTo: '/' };
   });
@@ -62,7 +62,7 @@ export async function registerAction(formData: FormData) {
       password: parsed.data.password,
       redirect: false,
     });
-    await mergeGuestCartAction(user.id);
+    await mergeGuestCartIntoSession(user.id);
 
     return { redirectTo: '/' };
   });

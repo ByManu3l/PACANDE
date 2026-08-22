@@ -11,7 +11,7 @@ import { type CategoryInput, categorySchema } from '@/lib/validations/category';
 export async function listCategoriesAction() {
   await requireRole(['ADMIN', 'SUPERADMIN']);
   return prisma.category.findMany({
-    orderBy: [{ parentId: 'asc' }, { position: 'asc' }],
+    orderBy: [{ parentId: 'asc' }, { position: 'asc' }, { name: 'asc' }],
     include: { parent: true, _count: { select: { products: true, children: true } } },
   });
 }

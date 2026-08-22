@@ -1,4 +1,4 @@
-import { compare, hash } from 'bcryptjs';
+import { compare, hash, hashSync } from 'bcryptjs';
 
 import { prisma } from '@/lib/prisma';
 import {
@@ -10,12 +10,33 @@ import {
 
 const BCRYPT_ROUNDS = 10;
 
+/**
+ * Hash descartable contra el que se compara cuando el correo no existe,
+ * para gastar el mismo tiempo de CPU (ver `verifyCredentials`). El texto
+ * plano que lo generó es irrelevante: nunca puede coincidir con éxito.
+ *
+ * **Invariante:** debe generarse con el mismo `BCRYPT_ROUNDS` que los
+ * hashes almacenados. Si algún día se sube el coste, hay que rehashear las
+ * contraseñas existentes o el señuelo volverá a tardar distinto y
+ * reintroducirá la fuga de tiempo que existe para evitar.
+ */
+const DUMMY_HASH = hashSync('placeholder-para-igualar-el-tiempo-de-respuesta', BCRYPT_ROUNDS);
+
+/**
+ * Verifica credenciales y devuelve el usuario, o `null` si no coinciden.
+ *
+ * Siempre ejecuta un `compare` de bcrypt, incluso cuando el correo no
+ * existe. Salir antes con un `return null` haría la respuesta
+ * perceptiblemente más rápida para correos no registrados (bcrypt con
+ * coste 10 tarda ~100 ms), y esa diferencia de tiempo permite a un
+ * atacante enumerar qué correos tienen cuenta sin necesidad de adivinar
+ * ninguna contraseña.
+ */
 export async function verifyCredentials(email: string, password: string) {
   const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) return null;
 
-  const valid = await compare(password, user.passwordHash);
-  if (!valid) return null;
+  const valid = await compare(password, user?.passwordHash ?? DUMMY_HASH);
+  if (!user || !valid) return null;
 
   return { id: user.id, name: user.name, email: user.email, role: user.role };
 }
@@ -71,8 +92,20 @@ export async function updateProfile(userId: string, input: { name: string; email
   });
 }
 
+/**
+ * Cambia la foto de perfil y devuelve la ruta de la anterior, para que
+ * quien llama pueda borrar el archivo que quedó huérfano. Sin ese dato,
+ * cada cambio de avatar deja un archivo muerto en disco para siempre.
+ */
 export async function updateAvatar(userId: string, imagePath: string) {
-  return prisma.user.update({ where: { id: userId }, data: { image: imagePath } });
+  const previous = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { image: true },
+  });
+
+  await prisma.user.update({ where: { id: userId }, data: { image: imagePath } });
+
+  return { previousImage: previous?.image ?? null };
 }
 
 /**

@@ -1,13 +1,13 @@
 import { redirect } from 'next/navigation';
 
-import { getCartAction } from '@/actions/cart.actions';
+import { getCurrentCart } from '@/lib/cart-session';
 import { CheckoutForm } from '@/components/forms/checkout-form';
 import { cartTotals } from '@/lib/services/cart.service';
 import { formatPrice } from '@/lib/utils/currency';
 import { siteConfig } from '@/lib/config/site.config';
 
 export default async function CheckoutPage() {
-  const cart = await getCartAction();
+  const cart = await getCurrentCart();
   if (!cart || cart.items.length === 0) {
     redirect('/carrito');
   }

@@ -1,13 +1,13 @@
 import Link from 'next/link';
 
-import { getCartAction } from '@/actions/cart.actions';
+import { getCurrentCart } from '@/lib/cart-session';
 import { CartItemRow } from '@/components/shared/cart-item-row';
 import { Button } from '@/components/ui/button';
 import { cartTotals } from '@/lib/services/cart.service';
 import { formatPrice } from '@/lib/utils/currency';
 
 export default async function CartPage() {
-  const cart = await getCartAction();
+  const cart = await getCurrentCart();
   const items = cart?.items ?? [];
 
   if (items.length === 0) {

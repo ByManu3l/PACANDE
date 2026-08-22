@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto';
 import { revalidatePath } from 'next/cache';
 
 import { requireSession } from '@/lib/auth/guards';
-import { storage } from '@/lib/services/storage.service';
+import { isUserUpload, storage } from '@/lib/services/storage.service';
 import * as userService from '@/lib/services/user.service';
 import { runAction } from '@/lib/utils/action-result';
 import {
@@ -67,7 +67,14 @@ export async function uploadAvatarAction(formData: FormData) {
 
     const filename = `${user.id}-${randomUUID()}${extname(file.name) || '.jpg'}`;
     const publicPath = await storage.save(file, 'uploads/avatars', filename);
-    await userService.updateAvatar(user.id, publicPath);
+    const { previousImage } = await userService.updateAvatar(user.id, publicPath);
+
+    // El avatar anterior ya no lo referencia nadie: si no se borra aquí,
+    // se queda en disco para siempre. Solo se borran subidas de usuario —
+    // una imagen del catálogo semilla nunca debe eliminarse.
+    if (previousImage && isUserUpload(previousImage)) {
+      await storage.delete(previousImage);
+    }
 
     revalidatePath('/cuenta');
     return { image: publicPath };

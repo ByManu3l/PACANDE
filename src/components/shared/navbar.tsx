@@ -1,7 +1,7 @@
 import { Search, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 
-import { getCartAction } from '@/actions/cart.actions';
+import { getCurrentCart } from '@/lib/cart-session';
 import { UserMenu } from '@/components/shared/user-menu';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,7 @@ export async function Navbar() {
   const [session, categories, cart] = await Promise.all([
     auth(),
     listCategoriesForNav(),
-    getCartAction(),
+    getCurrentCart(),
   ]);
   const itemCount = cart ? cartTotals(cart).itemCount : 0;
 

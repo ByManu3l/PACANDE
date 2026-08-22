@@ -7,7 +7,7 @@ import { revalidatePath } from 'next/cache';
 
 import { requireRole } from '@/lib/auth/guards';
 import { prisma } from '@/lib/prisma';
-import { storage } from '@/lib/services/storage.service';
+import { isUserUpload, storage } from '@/lib/services/storage.service';
 import { runAction } from '@/lib/utils/action-result';
 import { ConflictError } from '@/lib/utils/errors';
 import {
@@ -89,7 +89,17 @@ export async function updateProductAction(id: string, input: ProductInput & { im
       throw new ConflictError('Ya existe un producto con ese slug.');
     }
 
+    const current = await prisma.product.findUniqueOrThrow({
+      where: { id },
+      select: { images: true },
+    });
+
     await prisma.product.update({ where: { id }, data: { ...parsed, images } });
+
+    // Las imágenes que el admin quitó del producto ya no las referencia
+    // nadie. Sin este barrido, cada edición deja archivos muertos en disco.
+    await deleteOrphanedUploads(current.images.filter((img) => !images.includes(img)));
+
     revalidatePath('/admin/productos');
     revalidatePath('/categoria', 'layout');
     revalidatePath('/producto', 'layout');
@@ -99,11 +109,21 @@ export async function updateProductAction(id: string, input: ProductInput & { im
 export async function deleteProductAction(id: string) {
   return runAction(async () => {
     await requireRole(['ADMIN', 'SUPERADMIN']);
-    // OrderItem.productId is onDelete: SetNull (the order keeps its
-    // productName/unitPrice snapshot), CartItem.productId is onDelete:
-    // Cascade — deleting a product is safe by design, no FK blocker.
-    await prisma.product.delete({ where: { id } });
+
+    // OrderItem.productId es onDelete: SetNull (el pedido conserva su
+    // instantánea de nombre/precio) y CartItem.productId es onDelete:
+    // Cascade — borrar un producto es seguro por diseño del schema.
+    const deleted = await prisma.product.delete({ where: { id }, select: { images: true } });
+    await deleteOrphanedUploads(deleted.images);
+
     revalidatePath('/admin/productos');
     revalidatePath('/categoria', 'layout');
   });
+}
+
+/** Borra del almacenamiento las rutas que sean subidas de usuario. Las
+ * imágenes del catálogo semilla (`/images/...`) se ignoran: están
+ * versionadas y las comparten varios productos de ejemplo. */
+async function deleteOrphanedUploads(paths: string[]) {
+  await Promise.all(paths.filter(isUserUpload).map((path) => storage.delete(path)));
 }
