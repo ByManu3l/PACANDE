@@ -49,6 +49,27 @@ enum PaymentStatus {
   DECLINED
 }
 
+/// Estado de moderación de una reseña.
+///
+/// Las reseñas no se publican solas: una tienda con opiniones sin filtrar
+/// acaba mostrando insultos y enlaces de spam en su propia ficha de
+/// producto. PENDING es el estado inicial y el panel decide.
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+/// Cómo se calcula un descuento.
+///
+/// PERCENTAGE aplica `value` como porcentaje; FIXED lo resta como importe.
+/// Se guarda el tipo y no solo el resultado porque el importe depende del
+/// carrito y se calcula en cada compra.
+enum CouponType {
+  PERCENTAGE
+  FIXED
+}
+
 /// Estado logístico, separado de OrderStatus a propósito: un pedido puede
 /// estar PAID y su envío todavía PENDING.
 enum ShipmentStatus {
@@ -62,21 +83,24 @@ enum ShipmentStatus {
 model User {
   id String @id @default(cuid())
 
-  name String
+  name         String
   /// Identificador de acceso. Es único y es lo que se pide en el login.
-  email String @unique
+  email        String   @unique
   /// Hash bcrypt. Nunca se expone: todas las consultas de lectura usan
   /// `select` explícito para no arrastrarlo por accidente.
   passwordHash String
   /// Ruta pública del avatar (`/uploads/avatars/…`), o null si no subió.
-  image     String?
-  role      UserRole @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  image        String?
+  role         UserRole @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   /// Un usuario tiene como mucho un carrito activo (ver Cart.userId).
-  cart   Cart?
-  orders Order[]
+  cart      Cart?
+  orders    Order[]
+  reviews   Review[]
+  wishlist  WishlistItem[]
+  addresses Address[]
 
   /// El panel de administración filtra y agrupa por rol.
   @@index([role])
@@ -92,20 +116,20 @@ model User {
 model Category {
   id String @id @default(cuid())
 
-  name String
+  name        String
   /// Identificador en la URL (`/categoria/<slug>`). Único en todo el
   /// árbol, no solo entre hermanas, porque la ruta es plana.
   slug        String  @unique
   description String?
   /// Imagen de portada de la categoría. Ruta pública.
-  image String?
+  image       String?
   /// Orden en el menú y en las grillas: menor aparece primero. Ante
   /// empate se desempata por nombre, de modo que el orden sea siempre
   /// determinista aunque todas valgan 0.
-  position Int     @default(0)
+  position    Int     @default(0)
   /// Oculta la categoría del storefront sin borrarla ni perder sus
   /// productos. El panel de administración sí la sigue viendo.
-  isActive Boolean @default(true)
+  isActive    Boolean @default(true)
 
   parentId String?
   /// Cascade: borrar una categoría raíz se lleva sus subcategorías. En la
@@ -125,39 +149,57 @@ model Category {
 model Product {
   id String @id @default(cuid())
 
-  name String
+  name        String
   /// Identificador en la URL (`/producto/<slug>`).
-  slug        String @unique
+  slug        String   @unique
   description String
   /// Decimal, nunca Float: los flotantes binarios no representan importes
   /// decimales con exactitud y los errores se acumulan al sumar líneas de
   /// un pedido. 12 dígitos con 2 decimales cubre importes grandes incluso
   /// en monedas sin centavos como el peso colombiano.
-  price Decimal @db.Decimal(12, 2)
+  price       Decimal  @db.Decimal(12, 2)
   /// Unidades disponibles. El checkout lo descuenta con un UPDATE
   /// condicional (`where stock >= cantidad`) para que no pueda quedar
   /// negativo bajo compras simultáneas — ver `order.service.ts`.
-  stock Int     @default(0)
+  stock       Int      @default(0)
   /// Rutas públicas. La primera es la que se usa como miniatura.
-  images String[]
+  images      String[]
   /// Retira el producto del storefront conservando su historial de
   /// pedidos. Es la alternativa preferible a borrarlo.
-  isActive   Boolean @default(true)
+  isActive    Boolean  @default(true)
   /// Lo muestra en la sección "Destacados" de la portada.
-  isFeatured Boolean @default(false)
+  isFeatured  Boolean  @default(false)
 
   categoryId String
   /// Restrict: no se puede borrar una categoría que aún tenga productos.
   /// Obliga a moverlos o eliminarlos primero, en vez de que desaparezcan
   /// en silencio junto con la categoría.
-  category   Category    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  category   Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   cartItems  CartItem[]
   orderItems OrderItem[]
+  reviews    Review[]
+  wishlist   WishlistItem[]
+
+  /// Valoración media y número de reseñas aprobadas, **desnormalizados**.
+  ///
+  /// Se guardan aquí en vez de calcularse con un AVG en cada consulta
+  /// porque las tarjetas de producto los muestran en todas las grillas del
+  /// escaparate: una portada con 24 productos haría 24 agregaciones sobre
+  /// la tabla de reseñas en cada visita.
+  ///
+  /// El precio de esta decisión es que hay que recalcularlos cuando una
+  /// reseña se aprueba, se rechaza o se borra. Ese recálculo vive en
+  /// `review.service.ts` y va dentro de la misma transacción que el cambio
+  /// que lo provoca, para que no puedan quedar desincronizados.
+  ratingAverage Decimal @default(0) @db.Decimal(3, 2)
+  ratingCount   Int     @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([categoryId])
+  /// Ordenar el catálogo por valoración es una de las opciones de filtro.
+  @@index([ratingAverage])
 }
 
 /// Carrito persistente, de un usuario autenticado **o** de un visitante
@@ -173,7 +215,7 @@ model Cart {
   userId String? @unique
   /// Cascade: al borrar la cuenta, su carrito se va con ella. No es
   /// historial — no hay nada que conservar.
-  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   /// Token opaco del carrito anónimo. Único para poder buscar por él.
   guestToken String? @unique
@@ -193,7 +235,7 @@ model CartItem {
   /// Cascade: si el producto desaparece del catálogo, desaparece de los
   /// carritos. Lo contrario dejaría líneas apuntando a la nada que el
   /// checkout tendría que filtrar.
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   quantity Int @default(1)
 
@@ -217,7 +259,7 @@ model Order {
   userId String
   /// Restrict: no se puede borrar un usuario con pedidos. El historial de
   /// compras tiene valor contable y debe sobrevivir a la cuenta.
-  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
 
   status        OrderStatus   @default(PENDING_PAYMENT)
   paymentStatus PaymentStatus @default(PENDING)
@@ -226,15 +268,27 @@ model Order {
   /// aparecen métodos nuevos sin necesidad de migrar la base.
   paymentMethod String
 
-  /// Importes congelados. `subtotal` es la suma de las líneas y `total`
-  /// incluye el envío; se guardan calculados en vez de derivarse al leer,
-  /// para que el pedido siga cuadrando aunque cambien las reglas de envío.
+  /// Importes congelados. `subtotal` es la suma de las líneas y `total` es
+  /// `subtotal - discountAmount + shippingCost`; se guardan calculados en
+  /// vez de derivarse al leer, para que el pedido siga cuadrando aunque
+  /// cambien las reglas de envío o las promociones.
   subtotal     Decimal @db.Decimal(12, 2)
   shippingCost Decimal @db.Decimal(12, 2)
   total        Decimal @db.Decimal(12, 2)
   /// Moneda vigente al comprar, para que un cambio futuro de moneda de la
   /// tienda no reinterprete importes históricos.
-  currency String @default("COP")
+  currency     String  @default("COP")
+
+  /// Cupón aplicado, congelado igual que los precios.
+  ///
+  /// `couponCode` y `discountAmount` se copian; la relación a `Coupon` es
+  /// opcional y `SetNull` para poder consultar «qué pedidos usaron esta
+  /// promoción» mientras el cupón exista, sin que borrarlo destruya el
+  /// registro de cuánto se descontó y por qué.
+  couponId       String?
+  coupon         Coupon? @relation(fields: [couponId], references: [id], onDelete: SetNull)
+  couponCode     String?
+  discountAmount Decimal @default(0) @db.Decimal(12, 2)
 
   /// Instantánea de la dirección de envío, como texto plano. No hay
   /// relación a una tabla de direcciones: el pedido debe conservar a dónde
@@ -281,7 +335,7 @@ model OrderItem {
   quantity     Int
   /// `unitPrice * quantity`, guardado en vez de recalculado por la misma
   /// razón que los totales de Order.
-  lineTotal Decimal @db.Decimal(12, 2)
+  lineTotal    Decimal @db.Decimal(12, 2)
 
   @@index([orderId])
 }
@@ -296,9 +350,9 @@ model OrderItem {
 /// valor en una sola sentencia, sin lecturas previas que puedan solaparse.
 model OrderCounter {
   /// Día en formato AAAAMMDD (UTC), p. ej. "20260822".
-  day String @id
+  day   String @id
   /// Último consecutivo entregado para ese día.
-  value Int @default(0)
+  value Int    @default(0)
 }
 
 /// Seguimiento logístico. Se crea cuando el pago se aprueba, no antes: un
@@ -318,13 +372,177 @@ model Shipment {
   trackingNumber String?
   /// Se estampan automáticamente en la primera transición a SHIPPED y
   /// DELIVERED, y no se sobrescriben si el estado vuelve a cambiar.
-  shippedAt   DateTime?
-  deliveredAt DateTime?
-  notes       String?
+  shippedAt      DateTime?
+  deliveredAt    DateTime?
+  notes          String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   /// El panel filtra los envíos pendientes de despachar.
   @@index([status])
+}
+
+// ---------------------------------------------------------------------------
+// Funciones de tienda: opiniones, promociones, favoritos y libreta de
+// direcciones. Ninguna es imprescindible para vender, y todas son de las
+// que un negocio da por supuestas.
+// ---------------------------------------------------------------------------
+
+/// Opinión de un cliente sobre un producto.
+///
+/// **Pasa por moderación.** Una tienda que publica opiniones sin filtrar
+/// termina mostrando insultos y enlaces de spam en su propia ficha de
+/// producto. El estado inicial es PENDING y el panel decide.
+///
+/// Solo puede opinar quien compró: la comprobación vive en
+/// `review.service.ts`, no en el schema, porque «haber comprado» es
+/// consultar los pedidos del usuario y eso una restricción de base de
+/// datos no lo puede expresar.
+model Review {
+  id String @id @default(cuid())
+
+  productId String
+  /// Cascade: si el producto desaparece del catálogo, sus opiniones se van
+  /// con él. No son historial contable —a diferencia de un pedido— y
+  /// conservarlas dejaría reseñas huérfanas que nada puede mostrar.
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  userId String
+  /// Cascade: borrar una cuenta retira sus opiniones. Es lo que espera
+  /// alguien que pide que se eliminen sus datos.
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// De 1 a 5. El rango se valida en `lib/validations/review.ts`; Postgres
+  /// no tiene un tipo entero acotado y añadir un CHECK exigiría SQL
+  /// manual en la migración para algo que la capa de servicio ya cubre.
+  rating Int
+  title  String?
+  body   String
+
+  status         ReviewStatus @default(PENDING)
+  /// Nota interna de moderación. Solo la ve el panel.
+  moderationNote String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// Una opinión por persona y producto. Sin esto, alguien podría inflar
+  /// la valoración de un producto publicando veinte reseñas de cinco
+  /// estrellas.
+  @@unique([productId, userId])
+  /// La ficha de producto lista solo las aprobadas, más recientes primero.
+  @@index([productId, status])
+  /// La cola de moderación filtra por estado.
+  @@index([status])
+}
+
+/// Cupón de descuento.
+///
+/// El importe se **recalcula siempre en el servidor** a partir del carrito
+/// real (`coupon.service.ts`). El navegador solo envía el código: aceptar
+/// un descuento calculado por el cliente permitiría comprar a un céntimo.
+model Coupon {
+  id String @id @default(cuid())
+
+  /// Se guarda y se busca en mayúsculas para que «verano25» y «VERANO25»
+  /// sean el mismo cupón. La normalización la hace el servicio.
+  code String @unique
+
+  /// Descripción interna: para qué campaña es. No se muestra al cliente.
+  description String?
+
+  type  CouponType
+  /// Porcentaje (0–100) si el tipo es PERCENTAGE, importe si es FIXED.
+  /// Decimal por la misma razón que los precios.
+  value Decimal    @db.Decimal(12, 2)
+
+  /// Compra mínima para poder aplicarlo. Null = sin mínimo.
+  minPurchase Decimal? @db.Decimal(12, 2)
+  /// Tope de descuento para los porcentuales, que sobre un carrito grande
+  /// pueden costar mucho más de lo previsto. Null = sin tope.
+  maxDiscount Decimal? @db.Decimal(12, 2)
+
+  /// Usos totales permitidos. Null = ilimitado.
+  maxUses   Int?
+  /// Usos consumidos. Se incrementa con un UPDATE condicional dentro de la
+  /// transacción del pedido, igual que el stock: comprobar y después
+  /// incrementar permitiría superar el tope con compras simultáneas.
+  usedCount Int  @default(0)
+
+  /// Vigencia. Null en cualquiera de los dos extremos = sin límite por ese
+  /// lado.
+  startsAt DateTime?
+  endsAt   DateTime?
+
+  /// Permite desactivarlo sin borrarlo, conservando los pedidos que lo
+  /// usaron y la posibilidad de reactivarlo.
+  isActive Boolean @default(true)
+
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive, endsAt])
+}
+
+/// Producto guardado por un cliente para más tarde.
+///
+/// Deliberadamente mínimo: es una relación entre usuario y producto, sin
+/// listas con nombre ni posibilidad de compartirlas. Eso es otra función,
+/// y añadirla «por si acaso» sería justo el tipo de complejidad que esta
+/// plantilla evita.
+///
+/// Solo para usuarios con sesión: un favorito anónimo se perdería al
+/// cambiar de dispositivo, que es precisamente cuando sirve.
+model WishlistItem {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  /// Marcar dos veces el mismo producto no crea dos entradas.
+  @@unique([userId, productId])
+  /// La página de favoritos lista los del usuario, más recientes primero.
+  @@index([userId, createdAt])
+}
+
+/// Dirección guardada de un cliente.
+///
+/// **No es la dirección de un pedido.** Un pedido guarda su propia copia
+/// en texto plano (ver `Order`), precisamente para que editar o borrar
+/// esta no altere a dónde se envió una compra pasada. Esto es solo la
+/// libreta que rellena el formulario de checkout.
+model Address {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// Nombre que le da el cliente: «Casa», «Oficina».
+  label String @default("Casa")
+
+  recipientName String
+  line1         String
+  line2         String?
+  city          String
+  region        String
+  postalCode    String
+  country       String
+  phone         String
+
+  /// La que se preselecciona en el checkout. El servicio garantiza que no
+  /// haya dos marcadas a la vez para el mismo usuario.
+  isDefault Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }

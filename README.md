@@ -166,5 +166,13 @@ cambiar.
 
 ## Licencia
 
-MIT — ver [`LICENSE`](LICENSE). Puedes usarla en proyectos comerciales,
-modificarla y redistribuirla; solo hay que conservar el aviso de copyright.
+**Licencia de uso comercial** — ver [`LICENSE`](LICENSE). No es software
+de código abierto.
+
+En una frase: **puedes construir y vender tu tienda; no puedes vender la
+herramienta con la que la construiste.**
+
+- Puedes usarla, modificarla y desplegarla con fines comerciales.
+- El código que escribas encima es tuyo, igual que los ingresos que genere.
+- No puedes redistribuirla ni revenderla como plantilla, tema o kit de
+  inicio, ni publicarla en un repositorio abierto.

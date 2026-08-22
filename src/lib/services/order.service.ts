@@ -2,6 +2,7 @@ import { Prisma } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 import { siteConfig } from '@/lib/config/site.config';
 import * as cartService from '@/lib/services/cart.service';
+import { calculateDiscount, normalizeCode, redeemCoupon } from '@/lib/services/coupon.service';
 import { paymentProvider } from '@/lib/services/payment.service';
 import { UnauthorizedError, ValidationError } from '@/lib/utils/errors';
 
@@ -22,6 +23,9 @@ import { UnauthorizedError, ValidationError } from '@/lib/utils/errors';
  *
  * 3. **Todo importe se calcula con `Decimal`**, jamás con `number`.
  *
+ * 4. **El descuento se recalcula aquí.** Del cliente solo llega el código
+ *    del cupón; el importe sale de aplicar sus reglas al carrito real.
+ *
  * El flujo completo es: reservar (pedido + stock) → cobrar → confirmar o
  * revertir. Se reserva *antes* de cobrar a propósito: cobrar primero y
  * descubrir después que no hay stock obligaría a devolver el dinero.
@@ -37,6 +41,14 @@ export interface CheckoutInput {
   country: string;
   phone: string;
   paymentMethod: 'tarjeta_simulada' | 'contra_entrega';
+  /**
+   * Código escrito por el cliente, opcional.
+   *
+   * Llega el **código**, nunca el importe del descuento. Aceptar un
+   * importe calculado por el navegador sería la misma vulnerabilidad que
+   * aceptar precios del navegador.
+   */
+  couponCode?: string;
 }
 
 /**
@@ -134,7 +146,16 @@ async function reserveOrder(userId: string, input: CheckoutInput) {
       new Prisma.Decimal(0),
     );
     const shippingCost = new Prisma.Decimal(siteConfig.flatShippingCost);
-    const total = subtotal.add(shippingCost);
+
+    // El cupón se revalida y se recalcula **dentro de la transacción**,
+    // aunque el cliente ya lo hubiera visto aplicado en el carrito. Entre
+    // aquel momento y este, el cupón pudo caducar, agotarse o desactivarse,
+    // y el carrito pudo cambiar de importe y dejar de alcanzar el mínimo.
+    const cupon = input.couponCode ? await resolverCupon(tx, input.couponCode, subtotal) : null;
+    const discountAmount = cupon?.discount ?? new Prisma.Decimal(0);
+
+    // El descuento se resta de la mercancía, no del envío.
+    const total = subtotal.sub(discountAmount).add(shippingCost);
 
     const orderNumber = await nextOrderNumber(tx);
 
@@ -148,6 +169,11 @@ async function reserveOrder(userId: string, input: CheckoutInput) {
         subtotal,
         shippingCost,
         total,
+        // Congelados igual que los precios: el pedido debe seguir
+        // explicando su propio importe aunque el cupón se borre después.
+        couponId: cupon?.couponId ?? null,
+        couponCode: cupon?.code ?? null,
+        discountAmount,
         currency: siteConfig.defaultCurrency,
         shippingRecipientName: input.recipientName,
         shippingLine1: input.line1,
@@ -182,8 +208,50 @@ async function reserveOrder(userId: string, input: CheckoutInput) {
       }
     }
 
+    // Consumir el uso va al final: si algo anterior falla, la transacción
+    // revierte y el cupón no queda gastado por una compra que no ocurrió.
+    if (cupon) await redeemCoupon(tx, cupon.couponId);
+
     return order;
   });
+}
+
+/**
+ * Revalida un cupón contra el carrito real, ya dentro de la transacción.
+ *
+ * Repite el trabajo de `validateCoupon` en lugar de reutilizarlo porque
+ * aquella función usa el cliente global y esta necesita el de transacción:
+ * leer el cupón fuera de la transacción abriría exactamente la ventana que
+ * el `UPDATE` condicional de `redeemCoupon` se encarga de cerrar.
+ *
+ * @throws {ValidationError} con el motivo por el que ya no aplica.
+ */
+async function resolverCupon(
+  tx: Prisma.TransactionClient,
+  rawCode: string,
+  subtotal: Prisma.Decimal,
+) {
+  const code = normalizeCode(rawCode);
+  const coupon = await tx.coupon.findUnique({ where: { code } });
+
+  const ahora = new Date();
+  const vigente =
+    coupon &&
+    coupon.isActive &&
+    (!coupon.startsAt || coupon.startsAt <= ahora) &&
+    (!coupon.endsAt || coupon.endsAt >= ahora) &&
+    (coupon.maxUses === null || coupon.usedCount < coupon.maxUses) &&
+    (!coupon.minPurchase || subtotal.gte(coupon.minPurchase));
+
+  if (!coupon || !vigente) {
+    throw new ValidationError('El cupón ya no es válido para esta compra.');
+  }
+
+  return {
+    couponId: coupon.id,
+    code: coupon.code,
+    discount: calculateDiscount(coupon, subtotal),
+  };
 }
 
 /**
