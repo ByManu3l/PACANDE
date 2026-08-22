@@ -56,8 +56,11 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  /* Brand color — the only thing here specific to Pacandé. Change this
-     pair (and its .dark counterpart below) to re-skin the template. */
+  /* Color de marca: lo único de este archivo específico de la tienda.
+     Cambia este par (y su equivalente en .dark, más abajo) para re-marcar
+     la plantilla. Los valores son oklch(luminosidad croma tono); mover
+     solo el tono (0-360) da otro color de la misma intensidad.
+     Ver docs/PERSONALIZACION.md. */
   --primary: oklch(0.55 0.22 25);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);

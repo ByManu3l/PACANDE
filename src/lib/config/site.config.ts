@@ -1,8 +1,12 @@
 /**
- * The one file (plus the palette in globals.css) a new project built from
- * this template needs to edit to re-brand it — name, currency, contact
- * details. Everything here is public, non-secret content; secrets belong
- * in .env instead.
+ * Identidad de la tienda.
+ *
+ * Junto con el token `--primary` de `globals.css`, este es el único
+ * archivo que hay que editar para re-marcar la plantilla. Ver
+ * `docs/PERSONALIZACION.md`.
+ *
+ * Todo lo que hay aquí es **público**: acaba en el HTML que se envía al
+ * navegador. Las claves y secretos van en `.env`, nunca en este archivo.
  */
 export interface SiteConfig {
   name: string;
@@ -16,11 +20,20 @@ export interface SiteConfig {
    * `es-MX`, `en-US`. Debe cambiarse junto con `defaultCurrency`: es lo
    * que decide si se escribe `1.234,56` o `1,234.56`. */
   locale: string;
+  /** Se muestra en el pie y en la página de contacto. */
   contactEmail: string;
   contactPhone: string;
-  /** Flat shipping cost applied to every order, in the smallest display
-   * unit of defaultCurrency (e.g. whole pesos for COP). */
+  /**
+   * Costo de envío fijo, aplicado a todos los pedidos, en la unidad
+   * principal de `defaultCurrency` (pesos enteros para COP).
+   *
+   * Se guarda en cada pedido (`Order.shippingCost`), así que cambiarlo no
+   * altera los pedidos ya emitidos. Para reglas más elaboradas —por peso,
+   * por región, envío gratis a partir de cierto importe— el punto a tocar
+   * es `reserveOrder` en `order.service.ts`.
+   */
   flatShippingCost: number;
+  /** Las redes que dejes sin definir desaparecen del pie de página. */
   social: {
     facebook?: string;
     instagram?: string;

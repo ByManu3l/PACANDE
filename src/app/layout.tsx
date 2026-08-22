@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
  * Metadatos base que heredan todas las páginas.
  *
  * - `title.template` hace que cada página solo declare su propia parte
- *   («Camiseta Roja») y el resultado sea «Camiseta Roja | Pacandé».
+ *   («Camiseta Roja») y se le añada el nombre de la tienda de site.config.
  * - `metadataBase` es obligatorio para que las URLs de Open Graph salgan
  *   absolutas; sin él, al compartir un producto la miniatura no carga.
  *   En despliegue debe apuntar al dominio real vía `NEXT_PUBLIC_SITE_URL`.

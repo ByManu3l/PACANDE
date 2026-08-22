@@ -57,5 +57,7 @@
     "tsx": "^4.23.12",
     "typescript": "^5",
     "vitest": "^4.1.11"
-  }
+  },
+  "license": "MIT",
+  "description": "Plantilla de E-commerce full-stack con Next.js, TypeScript, Prisma y PostgreSQL."
 }

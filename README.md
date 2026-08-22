@@ -89,7 +89,23 @@ directamente — siempre pasan por `lib/services/*`. Eso es lo que hace
 testeable la lógica de negocio sin levantar HTTP, y el único lugar que hay
 que tocar si cambia el ORM.
 
+## Documentación
+
+| Documento                                            | Para qué                                                 |
+| ---------------------------------------------------- | -------------------------------------------------------- |
+| [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md)       | Cómo está organizado el proyecto. **Empieza por aquí.**  |
+| [`docs/PERSONALIZACION.md`](docs/PERSONALIZACION.md) | Convertir la plantilla en tu tienda                      |
+| [`docs/DECISIONES.md`](docs/DECISIONES.md)           | Por qué se eligió cada tecnología, y qué se descartó     |
+| [`docs/CONTRIBUIR.md`](docs/CONTRIBUIR.md)           | Trabajar en el código sin romper las reglas              |
+| [`docs/AUDITORIA.md`](docs/AUDITORIA.md)             | Estado verificado: qué se corrigió y qué queda pendiente |
+
+El modelo de datos está documentado campo por campo, con el motivo de cada
+`onDelete`, en [`prisma/schema.prisma`](prisma/schema.prisma).
+
 ## Re-marcar esta plantilla para un negocio nuevo
+
+Resumen; el procedimiento completo está en
+[`docs/PERSONALIZACION.md`](docs/PERSONALIZACION.md).
 
 Dos archivos concentran todo lo específico de "Pacandé":
 
@@ -147,3 +163,8 @@ cambiar.
   pública sin autenticación — fue reemplazado por un solo `defaultCurrency`
   en `site.config.ts`. `formatPrice()` es el único lugar a tocar si un
   proyecto necesita soportar varias.
+
+## Licencia
+
+MIT — ver [`LICENSE`](LICENSE). Puedes usarla en proyectos comerciales,
+modificarla y redistribuirla; solo hay que conservar el aviso de copyright.
