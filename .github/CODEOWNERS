@@ -1,0 +1,10 @@
+# Quién revisa qué. GitHub pide su revisión automáticamente en cada PR
+# que toque estas rutas.
+* @ByManu3l
+
+# Rutas donde un error cuesta dinero o datos: conviene que nunca se
+# fusionen sin mirarlas dos veces.
+/src/lib/services/order.service.ts @ByManu3l
+/src/lib/services/payment.service.ts @ByManu3l
+/src/lib/auth/ @ByManu3l
+/prisma/ @ByManu3l

@@ -22,6 +22,20 @@ cámbialo.
 
 ---
 
+## 1.b Decisiones tomadas antes de empezar
+
+Confirmadas con el autor; no se reabren durante la ejecución.
+
+- **Alcance del eje A: los cuatro modelos nuevos** — reseñas, cupones,
+  favoritos y direcciones guardadas. Cada uno con migración, servicio,
+  pruebas y pantalla de administración. Ninguno se entrega a medias.
+- **Licencia: pendiente de análisis.** Antes de tocar `LICENSE` hay que
+  estudiar las opciones (comercial propietaria, doble licencia, MIT) con
+  sus implicaciones reales y presentar una recomendación argumentada. La
+  decisión la toma el autor sobre ese análisis, no por inercia.
+
+---
+
 ## 2. El diagnóstico de partida
 
 La plantilla es **correcta** —75 pruebas unitarias, 11 end-to-end, cero

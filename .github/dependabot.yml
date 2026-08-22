@@ -1,0 +1,26 @@
+version: 2
+updates:
+  # Dependencias de npm. Agrupadas para no recibir quince pull requests
+  # sueltas cada lunes: las de parche y menores van juntas, y las mayores
+  # llegan por separado porque exigen leer el registro de cambios.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      dependencias-menores:
+        update-types: [minor, patch]
+    commit-message:
+      prefix: chore
+      include: scope
+
+  # Las acciones de GitHub caducan: quedarse atrás termina en flujos que
+  # dejan de ejecutarse sin aviso previo.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci

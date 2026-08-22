@@ -1,0 +1,61 @@
+name: Reportar un fallo
+description: Algo no funciona como debería.
+labels: [fallo]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Antes de abrirlo: si es un fallo de **seguridad**, no lo publiques
+        aquí. Sigue lo que indica `SECURITY.md`.
+
+  - type: textarea
+    id: que-pasa
+    attributes:
+      label: Qué ocurre
+      description: Qué esperabas y qué pasó en su lugar.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproducir
+    attributes:
+      label: Cómo reproducirlo
+      description: Los pasos exactos. Un fallo que no se reproduce no se puede arreglar.
+      placeholder: |
+        1. Entrar como usuario
+        2. Añadir un producto agotado al carrito
+        3. Ir a /checkout
+        4. ...
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Versión o commit
+      placeholder: v1.2.0, o el hash del commit
+    validations:
+      required: true
+
+  - type: dropdown
+    id: donde
+    attributes:
+      label: Dónde ocurre
+      options:
+        - Tienda (lo que ve el cliente)
+        - Panel de administración
+        - Checkout o pagos
+        - Instalación o arranque
+        - Otro
+    validations:
+      required: true
+
+  - type: textarea
+    id: entorno
+    attributes:
+      label: Entorno
+      placeholder: |
+        Node: 24.x
+        Sistema: Windows 11 / macOS 15 / Ubuntu 24.04
+        Navegador: Chrome 140
+        Base de datos: Postgres 16 en Docker

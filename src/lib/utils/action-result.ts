@@ -11,11 +11,18 @@ import { AppError } from './errors';
  */
 export type ActionResult<T> = { success: true; data: T } | { success: false; error: string };
 
-export function ok<T>(data: T): ActionResult<T> {
+/**
+ * Constructores internos del resultado.
+ *
+ * No se exportan: `runAction` es la única forma prevista de producir un
+ * `ActionResult`, y exponer estos dos invitaría a construirlo a mano
+ * saltándose la traducción de errores.
+ */
+function ok<T>(data: T): ActionResult<T> {
   return { success: true, data };
 }
 
-export function fail<T>(error: string): ActionResult<T> {
+function fail<T>(error: string): ActionResult<T> {
   return { success: false, error };
 }
 

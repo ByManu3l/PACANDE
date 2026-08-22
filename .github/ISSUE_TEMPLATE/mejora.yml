@@ -1,0 +1,37 @@
+name: Proponer una mejora
+description: Una función o cambio que haría la plantilla más útil.
+labels: [mejora]
+body:
+  - type: textarea
+    id: problema
+    attributes:
+      label: Qué problema resuelve
+      description: >
+        Empieza por el problema, no por la solución. Una propuesta sin
+        problema detrás es difícil de valorar.
+    validations:
+      required: true
+
+  - type: textarea
+    id: propuesta
+    attributes:
+      label: Qué propones
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternativas
+    attributes:
+      label: Qué alternativas consideraste
+      description: Incluido "no hacer nada", que a veces es la correcta.
+
+  - type: checkboxes
+    id: alcance
+    attributes:
+      label: Alcance
+      description: >
+        Esta es una plantilla, no un SaaS. Hay cosas deliberadamente fuera
+        de alcance; están listadas en `docs/reauditoria-prompt.md`.
+      options:
+        - label: He comprobado que no está en la lista de anti-objetivos
+          required: true

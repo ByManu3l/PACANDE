@@ -1,0 +1,26 @@
+# Normaliza los finales de línea.
+#
+# Sin esto, Git avisa en cada commit hecho desde Windows de que va a
+# convertir LF a CRLF, y dos personas en sistemas distintos generan
+# diferencias fantasma en archivos que nadie tocó.
+#
+# `text=auto eol=lf` guarda todo en el repositorio con LF y deja que cada
+# quien trabaje con lo que su sistema use.
+* text=auto eol=lf
+
+# Binarios: nunca convertir.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+
+# Archivos generados: se excluyen de las estadísticas de lenguaje de
+# GitHub y se colapsan en las diferencias, para que un cambio de
+# dependencias no entierre el cambio real.
+package-lock.json linguist-generated=true -diff
+src/generated/** linguist-generated=true -diff

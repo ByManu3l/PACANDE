@@ -1,0 +1,19 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "src/app/**/{page,layout,loading,error,not-found,route,sitemap,robots}.{ts,tsx}",
+    "src/actions/**/*.ts",
+    "tests/**/*.{ts,tsx}"
+  ],
+  "project": ["src/**/*.{ts,tsx}"],
+  "ignore": ["src/generated/**", "src/components/ui/**"],
+  "ignoreDependencies": [
+    "@prisma/client",
+    "shadcn",
+    "tailwindcss",
+    "@tailwindcss/postcss",
+    "@tailwindcss/typography",
+    "tw-animate-css"
+  ],
+  "ignoreExportsUsedInFile": true
+}

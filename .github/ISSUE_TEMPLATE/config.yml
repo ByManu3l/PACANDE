@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Pregunta sobre cómo usar la plantilla
+    url: https://github.com/ByManu3l/PACANDE/discussions
+    about: Para dudas de uso o personalización, mejor una discusión que un issue.
+  - name: Reportar una vulnerabilidad
+    url: https://github.com/ByManu3l/PACANDE/security/advisories/new
+    about: Los fallos de seguridad NO se reportan como issue público. Ver SECURITY.md.
