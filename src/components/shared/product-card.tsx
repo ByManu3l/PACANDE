@@ -14,9 +14,12 @@ interface ProductCardProps {
     isFeatured: boolean;
     stock: number;
   };
+  /** Set for the first card in a grid so Next/Image can preload it — it's
+   * typically the Largest Contentful Paint element on category/search pages. */
+  priority?: boolean;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, priority }: ProductCardProps) {
   const image = product.images[0];
 
   return (
@@ -28,6 +31,7 @@ export function ProductCard({ product }: ProductCardProps) {
               src={image}
               alt={product.name}
               fill
+              priority={priority}
               sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
               className="object-cover"
             />

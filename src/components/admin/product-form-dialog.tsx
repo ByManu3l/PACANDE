@@ -215,7 +215,7 @@ export function ProductFormDialog({
             <div className="flex flex-wrap gap-2">
               {images.map((img) => (
                 <div key={img} className="relative size-16 overflow-hidden rounded-lg border">
-                  <Image src={img} alt="" fill className="object-cover" />
+                  <Image src={img} alt="" fill sizes="64px" className="object-cover" />
                   <button
                     type="button"
                     onClick={() => setImages((prev) => prev.filter((i) => i !== img))}

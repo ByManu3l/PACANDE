@@ -90,7 +90,13 @@ export function ProductsTable({ initialProducts, categoryOptions }: ProductsTabl
               <TableCell>
                 {product.images[0] && (
                   <div className="relative size-10 overflow-hidden rounded">
-                    <Image src={product.images[0]} alt="" fill className="object-cover" />
+                    <Image
+                      src={product.images[0]}
+                      alt=""
+                      fill
+                      sizes="40px"
+                      className="object-cover"
+                    />
                   </div>
                 )}
               </TableCell>

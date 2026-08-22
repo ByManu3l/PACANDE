@@ -47,3 +47,9 @@ next-env.d.ts
 # user-uploaded files saved by the local-disk storage adapter (dev only —
 # see lib/services/storage.service.ts)
 /public/uploads/
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

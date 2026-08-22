@@ -22,7 +22,14 @@ export default async function HomePage() {
     <div className="space-y-12">
       <section className="relative overflow-hidden rounded-xl">
         <div className="relative aspect-21/9 sm:aspect-3/1">
-          <Image src={HERO_IMAGE} alt={siteConfig.name} fill priority className="object-cover" />
+          <Image
+            src={HERO_IMAGE}
+            alt={siteConfig.name}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
           <div className="absolute inset-0 bg-black/40" />
         </div>
         <div className="absolute inset-0 flex flex-col items-start justify-center gap-4 p-6 sm:p-10">

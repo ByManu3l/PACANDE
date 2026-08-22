@@ -133,7 +133,14 @@ export async function checkout(userId: string | undefined, input: CheckoutInput)
 
   const order = await reserveOrderWithRetry(userId, input);
 
-  const paymentResult = await paymentProvider.charge(Number(order.total), input.paymentMethod);
+  // Cash-on-delivery has nothing to charge right now — money changes hands
+  // at the door, not at checkout — so only the simulated card gateway can
+  // decline. Routing COD through it too would mean an order confirmation
+  // screen that randomly fails for a payment that was never attempted.
+  const paymentResult =
+    input.paymentMethod === 'contra_entrega'
+      ? { approved: true as const }
+      : await paymentProvider.charge(Number(order.total), input.paymentMethod);
 
   if (paymentResult.approved) {
     await prisma.$transaction([
