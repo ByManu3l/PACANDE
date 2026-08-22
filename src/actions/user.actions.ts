@@ -20,15 +20,12 @@ export async function updateProfileAction(formData: FormData) {
   return runAction(async () => {
     const user = await requireSession();
 
-    const parsed = updateProfileSchema.safeParse({
+    const profile = updateProfileSchema.parse({
       name: formData.get('name'),
       email: formData.get('email'),
     });
-    if (!parsed.success) {
-      throw new Error(parsed.error.issues[0]?.message ?? 'Datos inválidos.');
-    }
 
-    await userService.updateProfile(user.id, parsed.data);
+    await userService.updateProfile(user.id, profile);
     revalidatePath('/cuenta');
   });
 }
@@ -37,16 +34,13 @@ export async function changePasswordAction(formData: FormData) {
   return runAction(async () => {
     const user = await requireSession();
 
-    const parsed = changePasswordSchema.safeParse({
+    const passwords = changePasswordSchema.parse({
       currentPassword: formData.get('currentPassword'),
       newPassword: formData.get('newPassword'),
       confirmPassword: formData.get('confirmPassword'),
     });
-    if (!parsed.success) {
-      throw new Error(parsed.error.issues[0]?.message ?? 'Datos inválidos.');
-    }
 
-    await userService.changePassword(user.id, parsed.data.currentPassword, parsed.data.newPassword);
+    await userService.changePassword(user.id, passwords.currentPassword, passwords.newPassword);
   });
 }
 

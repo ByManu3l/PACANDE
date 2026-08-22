@@ -1,9 +1,13 @@
+import { ZodError } from 'zod';
+
 import { AppError } from './errors';
 
 /**
- * Uniform return shape for Server Actions, so exceptions never cross the
- * server/client boundary uncaught — the client always gets {success, ...}
- * to branch on instead of a thrown error it has to unwrap.
+ * Forma de retorno uniforme de las Server Actions.
+ *
+ * Las excepciones nunca cruzan el límite servidor→cliente: quien llama
+ * siempre recibe `{ success, ... }` sobre el que ramificar, en vez de una
+ * promesa rechazada que tendría que envolver en try/catch.
  */
 export type ActionResult<T> = { success: true; data: T } | { success: false; error: string };
 
@@ -15,22 +19,37 @@ export function fail<T>(error: string): ActionResult<T> {
   return { success: false, error };
 }
 
-/** Runs a Server Action body, turning known AppErrors (and zod validation
- * errors) into a failed ActionResult instead of letting them throw.
+/**
+ * Ejecuta el cuerpo de una Server Action y traduce cualquier excepción a
+ * un `ActionResult` fallido.
  *
- * A message is shown to the user verbatim for AppError subclasses AND for
- * a *plain* `new Error('...')` — the shorthand used throughout actions/
- * for one-off validation messages (e.g. "Selecciona al menos una imagen.").
- * Anything else (TypeError, a Prisma error class, some other unexpected
- * exception) is logged and reported generically instead of leaking an
- * internal message to the client. Checking `err.constructor === Error`
- * rather than `instanceof Error` is what keeps that distinction — every
- * more specific error class fails the constructor check even though
- * `instanceof Error` would still be true for it. */
+ * Un mensaje llega al usuario tal cual en tres casos, que son los que el
+ * código lanza a propósito:
+ *
+ * - `AppError` y sus subclases (`ValidationError`, `ForbiddenError`, …),
+ *   la forma normal de reportar una regla de negocio incumplida.
+ * - `ZodError`, de validar con `schema.parse()`. Se toma el mensaje del
+ *   primer campo inválido, que es el que el formulario debe mostrar.
+ * - `new Error('…')` a secas, el atajo para validaciones puntuales que no
+ *   ameritan una clase propia (p. ej. "Selecciona al menos una imagen").
+ *
+ * Cualquier otra cosa — un `TypeError`, un error de Prisma, un fallo de
+ * red — se registra en el servidor y al cliente se le devuelve un mensaje
+ * genérico. Esos mensajes pueden contener nombres de tabla, rutas de
+ * archivo o fragmentos de consulta, y no deben llegar al navegador.
+ *
+ * La distinción entre "Error lanzado a propósito" y "excepción inesperada
+ * que hereda de Error" se hace con `err.constructor === Error`:
+ * `instanceof Error` sería cierto para ambos, mientras que la
+ * comprobación de constructor solo acepta la clase base exacta.
+ */
 export async function runAction<T>(fn: () => Promise<T>): Promise<ActionResult<T>> {
   try {
     return ok(await fn());
   } catch (err) {
+    if (err instanceof ZodError) {
+      return fail(err.issues[0]?.message ?? 'Datos inválidos.');
+    }
     if (err instanceof AppError || (err instanceof Error && err.constructor === Error)) {
       return fail(err.message);
     }
