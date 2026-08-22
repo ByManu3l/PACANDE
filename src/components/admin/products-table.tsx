@@ -1,23 +1,12 @@
 'use client';
 
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { Pencil, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
 import { deleteProductAction, listProductsAction } from '@/actions/product.actions';
+import { DeleteConfirmDialog } from '@/components/admin/delete-confirm-dialog';
 import { ProductFormDialog } from '@/components/admin/product-form-dialog';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -39,23 +28,9 @@ interface ProductsTableProps {
 
 export function ProductsTable({ initialProducts, categoryOptions }: ProductsTableProps) {
   const [products, setProducts] = useState(initialProducts);
-  // AlertDialogAction is a bare Button here (no built-in close-on-click,
-  // unlike Radix's) — the dialog's open state has to be driven explicitly.
-  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const refresh = async () => {
     setProducts(await listProductsAction());
-  };
-
-  const handleDelete = async (id: string) => {
-    const result = await deleteProductAction(id);
-    setDeletingId(null);
-    if (!result.success) {
-      toast.error(result.error);
-      return;
-    }
-    toast.success('Producto eliminado.');
-    refresh();
   };
 
   return (
@@ -119,7 +94,7 @@ export function ProductsTable({ initialProducts, categoryOptions }: ProductsTabl
               <TableCell className="flex justify-end gap-2">
                 <ProductFormDialog
                   trigger={
-                    <Button variant="ghost" size="icon">
+                    <Button variant="ghost" size="icon" aria-label={`Editar ${product.name}`}>
                       <Pencil className="size-4" />
                     </Button>
                   }
@@ -138,33 +113,13 @@ export function ProductsTable({ initialProducts, categoryOptions }: ProductsTabl
                   }}
                   onSaved={refresh}
                 />
-                <AlertDialog
-                  open={deletingId === product.id}
-                  onOpenChange={(open) => setDeletingId(open ? product.id : null)}
-                >
-                  <AlertDialogTrigger
-                    render={
-                      <Button variant="ghost" size="icon">
-                        <Trash2 className="text-destructive size-4" />
-                      </Button>
-                    }
-                  />
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>¿Eliminar &quot;{product.name}&quot;?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Esta acción no se puede deshacer. Los pedidos existentes conservan su
-                        información aunque el producto se elimine.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleDelete(product.id)}>
-                        Eliminar
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                <DeleteConfirmDialog
+                  itemName={product.name}
+                  description="Esta acción no se puede deshacer. Los pedidos existentes conservan su información aunque el producto se elimine."
+                  onConfirm={() => deleteProductAction(product.id)}
+                  onDeleted={refresh}
+                  successMessage="Producto eliminado."
+                />
               </TableCell>
             </TableRow>
           ))}

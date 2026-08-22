@@ -1,5 +1,6 @@
 import { hashSync } from 'bcryptjs';
 
+import type { UserRole } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 
 let counter = 0;
@@ -15,7 +16,7 @@ export async function createUser(
     name: string;
     email: string;
     password: string;
-    role: 'USER' | 'ADMIN' | 'SUPERADMIN';
+    role: UserRole;
   }> = {},
 ) {
   const email = overrides.email ?? `${unique('user')}@test.local`;

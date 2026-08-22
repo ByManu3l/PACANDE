@@ -4,6 +4,7 @@ import { LayoutDashboard, LogOut, Package, User } from 'lucide-react';
 import Link from 'next/link';
 
 import { logoutAction } from '@/actions/auth.actions';
+import type { UserRole } from '@/generated/prisma/client';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,7 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 interface UserMenuProps {
-  user: { name: string; email: string; role: 'USER' | 'ADMIN' | 'SUPERADMIN' };
+  user: { name: string; email: string; role: UserRole };
 }
 
 export function UserMenu({ user }: UserMenuProps) {

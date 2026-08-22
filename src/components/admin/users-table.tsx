@@ -1,22 +1,11 @@
 'use client';
 
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
 import { adminDeleteUserAction, listUsersAction } from '@/actions/admin-user.actions';
+import { DeleteConfirmDialog } from '@/components/admin/delete-confirm-dialog';
 import { UserFormDialog } from '@/components/admin/user-form-dialog';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -40,21 +29,9 @@ interface UsersTableProps {
 
 export function UsersTable({ initialUsers, currentUserId, currentUserRole }: UsersTableProps) {
   const [users, setUsers] = useState(initialUsers);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const refresh = async () => {
     setUsers(await listUsersAction());
-  };
-
-  const handleDelete = async (id: string) => {
-    const result = await adminDeleteUserAction(id);
-    setDeletingId(null);
-    if (!result.success) {
-      toast.error(result.error);
-      return;
-    }
-    toast.success('Usuario eliminado.');
-    refresh();
   };
 
   // Mirrors user.service.ts::assertCanManageTarget — an Admin can only
@@ -103,7 +80,7 @@ export function UsersTable({ initialUsers, currentUserId, currentUserRole }: Use
                   <>
                     <UserFormDialog
                       trigger={
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" aria-label={`Editar ${user.name}`}>
                           <Pencil className="size-4" />
                         </Button>
                       }
@@ -111,33 +88,13 @@ export function UsersTable({ initialUsers, currentUserId, currentUserRole }: Use
                       canChangeRole={currentUserRole === 'SUPERADMIN'}
                       onSaved={refresh}
                     />
-                    <AlertDialog
-                      open={deletingId === user.id}
-                      onOpenChange={(open) => setDeletingId(open ? user.id : null)}
-                    >
-                      <AlertDialogTrigger
-                        render={
-                          <Button variant="ghost" size="icon">
-                            <Trash2 className="text-destructive size-4" />
-                          </Button>
-                        }
-                      />
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>¿Eliminar a &quot;{user.name}&quot;?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Esta acción no se puede deshacer. Si el usuario tiene pedidos, no podrá
-                            eliminarse.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(user.id)}>
-                            Eliminar
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <DeleteConfirmDialog
+                      itemName={user.name}
+                      description="Esta acción no se puede deshacer. Un usuario con pedidos asociados no puede eliminarse: su historial de compras debe conservarse."
+                      onConfirm={() => adminDeleteUserAction(user.id)}
+                      onDeleted={refresh}
+                      successMessage="Usuario eliminado."
+                    />
                   </>
                 ) : (
                   <span className="text-muted-foreground text-xs">Sin permisos</span>

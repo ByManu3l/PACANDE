@@ -1,5 +1,7 @@
 import { compare, hash, hashSync } from 'bcryptjs';
 
+import type { UserRole } from '@/generated/prisma/client';
+
 import { prisma } from '@/lib/prisma';
 import {
   ConflictError,
@@ -119,8 +121,6 @@ export function assertNotActingOnSelf(actorId: string, targetId: string, action:
   }
 }
 
-type Role = 'USER' | 'ADMIN' | 'SUPERADMIN';
-
 export async function listUsers() {
   return prisma.user.findMany({
     orderBy: { createdAt: 'desc' },
@@ -131,7 +131,7 @@ export async function listUsers() {
 /** An Admin may only manage plain USER accounts — only a Superadmin can
  * touch another Admin or Superadmin. Mirrors the legacy adminController
  * restriction, now enforced in one place instead of duplicated per-route. */
-export function assertCanManageTarget(actorRole: Role, targetRole: Role) {
+export function assertCanManageTarget(actorRole: UserRole, targetRole: UserRole) {
   if (actorRole === 'ADMIN' && targetRole !== 'USER') {
     throw new ForbiddenError('Como Admin, solo puedes gestionar cuentas de Usuario.');
   }
@@ -139,9 +139,9 @@ export function assertCanManageTarget(actorRole: Role, targetRole: Role) {
 
 export async function adminUpdateUser(
   actorId: string,
-  actorRole: Role,
+  actorRole: UserRole,
   targetId: string,
-  input: { name: string; email: string; password?: string; role?: Role },
+  input: { name: string; email: string; password?: string; role?: UserRole },
 ) {
   const target = await prisma.user.findUnique({ where: { id: targetId } });
   if (!target) throw new ConflictError('Usuario no encontrado.');
@@ -174,7 +174,7 @@ export async function adminUpdateUser(
   });
 }
 
-export async function adminDeleteUser(actorId: string, actorRole: Role, targetId: string) {
+export async function adminDeleteUser(actorId: string, actorRole: UserRole, targetId: string) {
   assertNotActingOnSelf(actorId, targetId, 'eliminar');
 
   const target = await prisma.user.findUnique({ where: { id: targetId } });

@@ -1,3 +1,4 @@
+import type { UserRole } from '@/generated/prisma/client';
 import { auth } from '@/lib/auth';
 import { ForbiddenError, UnauthorizedError } from '@/lib/utils/errors';
 
@@ -14,7 +15,7 @@ export async function requireSession() {
   return session.user;
 }
 
-export async function requireRole(roles: Array<'USER' | 'ADMIN' | 'SUPERADMIN'>) {
+export async function requireRole(roles: UserRole[]) {
   const user = await requireSession();
   if (!roles.includes(user.role)) {
     throw new ForbiddenError('No tienes permisos para realizar esta acción.');

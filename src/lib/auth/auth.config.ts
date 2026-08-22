@@ -1,5 +1,7 @@
 import type { NextAuthConfig } from 'next-auth';
 
+import type { UserRole } from '@/generated/prisma/client';
+
 /**
  * Edge-safe half of the Auth.js config: no bcrypt, no Prisma (both need
  * the Node runtime). middleware.ts imports only this file. The Credentials
@@ -36,7 +38,7 @@ export const authConfig = {
     session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
-        session.user.role = token.role as 'USER' | 'ADMIN' | 'SUPERADMIN';
+        session.user.role = token.role as UserRole;
       }
       return session;
     },

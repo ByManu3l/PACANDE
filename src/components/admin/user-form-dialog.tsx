@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { adminUpdateUserAction } from '@/actions/admin-user.actions';
+import type { UserRole } from '@/generated/prisma/client';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -28,7 +29,7 @@ import { type AdminUpdateUserInput, adminUpdateUserSchema } from '@/lib/validati
 
 interface UserFormDialogProps {
   trigger: React.ReactNode;
-  user: { id: string; name: string; email: string; role: 'USER' | 'ADMIN' | 'SUPERADMIN' };
+  user: { id: string; name: string; email: string; role: UserRole };
   canChangeRole: boolean;
   onSaved: () => void;
 }
