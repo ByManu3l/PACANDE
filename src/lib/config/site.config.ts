@@ -7,8 +7,13 @@
 export interface SiteConfig {
   name: string;
   description: string;
+  /** Código ISO 4217, p. ej. `COP`, `USD`, `MXN`. Determina el símbolo y
+   * los decimales que muestra `formatPrice`. */
   defaultCurrency: string;
-  currencySymbol: string;
+  /** Locale BCP 47 para formatear precios y fechas, p. ej. `es-CO`,
+   * `es-MX`, `en-US`. Debe cambiarse junto con `defaultCurrency`: es lo
+   * que decide si se escribe `1.234,56` o `1,234.56`. */
+  locale: string;
   contactEmail: string;
   contactPhone: string;
   /** Flat shipping cost applied to every order, in the smallest display
@@ -25,7 +30,7 @@ export const siteConfig: SiteConfig = {
   name: 'Pacandé',
   description: 'Plantilla de E-commerce — moda, tecnología, hogar y deportes en un solo lugar.',
   defaultCurrency: 'COP',
-  currencySymbol: '$',
+  locale: 'es-CO',
   contactEmail: 'contacto@pacande.test',
   contactPhone: '+57 300 000 0000',
   flatShippingCost: 10_000,

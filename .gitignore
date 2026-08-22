@@ -53,3 +53,14 @@ next-env.d.ts
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Archivos que generan las herramientas de IA (Prisma instala su
+# documentación de skills al correr `prisma init`; Next.js reescribe
+# AGENTS.md en cada `next dev`). Son documentación de terceros duplicada,
+# no código de este proyecto: se quedan en local y fuera del repositorio.
+/.agents/
+/.claude/
+/.windsurf/
+/skills-lock.json
+/AGENTS.md
+/CLAUDE.md

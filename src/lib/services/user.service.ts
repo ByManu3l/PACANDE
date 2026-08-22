@@ -55,8 +55,9 @@ export async function registerUser(input: { name: string; email: string; passwor
   return { id: user.id, name: user.name, email: user.email, role: user.role };
 }
 
-/** Re-authentication before a sensitive action (change password, change own role, etc). */
-export async function verifyPassword(userId: string, password: string) {
+/** Comprueba la contraseña actual de un usuario. Interna a propósito: la
+ * usa `changePassword`, y no se exporta porque nada más la necesita. */
+async function verifyPassword(userId: string, password: string) {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) return false;
   return compare(password, user.passwordHash);
