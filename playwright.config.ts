@@ -11,7 +11,7 @@ export default defineConfig({
   fullyParallel: false, // shared seeded accounts/cart state — avoid cross-test interference
   retries: process.env.CI ? 1 : 0,
   workers: 1,
-  reporter: 'list',
+  reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
