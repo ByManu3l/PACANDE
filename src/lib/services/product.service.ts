@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { ConflictError, isUniqueViolation, NotFoundError } from '@/lib/utils/errors';
 import { buildPage, PAGE_SIZE, toSkipTake } from '@/lib/utils/pagination';
+import { type ProductFilters, toPrismaOrderBy, toPrismaWhere } from '@/lib/utils/product-filters';
 import type { ProductInput } from '@/lib/validations/product';
 
 export async function getFeaturedProducts(limit = 8) {
@@ -36,7 +37,7 @@ export async function getProductBySlug(slug: string) {
  * de texto completo nativa de Postgres (`tsvector` + índice GIN) antes que
  * incorporar un motor externo tipo Elasticsearch o Algolia.
  */
-export async function searchProducts(query: string, page: number) {
+export async function searchProducts(query: string, page: number, filters?: ProductFilters) {
   const trimmed = query.trim();
   if (!trimmed)
     return buildPage<Awaited<ReturnType<typeof prisma.product.findMany>>[number]>([], 0, 1);
@@ -47,10 +48,15 @@ export async function searchProducts(query: string, page: number) {
       { name: { contains: trimmed, mode: 'insensitive' as const } },
       { description: { contains: trimmed, mode: 'insensitive' as const } },
     ],
+    ...(filters ? toPrismaWhere(filters) : {}),
   };
 
   const [items, total] = await Promise.all([
-    prisma.product.findMany({ where, orderBy: { createdAt: 'desc' }, ...toSkipTake(page) }),
+    prisma.product.findMany({
+      where,
+      orderBy: filters ? toPrismaOrderBy(filters.sort) : [{ createdAt: 'desc' as const }],
+      ...toSkipTake(page),
+    }),
     prisma.product.count({ where }),
   ]);
 

@@ -1,7 +1,9 @@
 import { PaginationNav } from '@/components/shared/pagination-nav';
+import { ProductFiltersBar } from '@/components/shared/product-filters';
 import { ProductGrid } from '@/components/shared/product-grid';
 import { searchProducts } from '@/lib/services/product.service';
 import { parsePageParam } from '@/lib/utils/pagination';
+import { filtrosEnUrl, parseFilters } from '@/lib/utils/product-filters';
 
 export const metadata = {
   title: 'Buscar',
@@ -11,11 +13,12 @@ export const metadata = {
 };
 
 export default async function SearchPage({ searchParams }: PageProps<'/buscar'>) {
-  const { q, page: pageParam } = await searchParams;
-  const query = typeof q === 'string' ? q : '';
-  const page = parsePageParam(pageParam);
+  const sp = await searchParams;
+  const query = typeof sp.q === 'string' ? sp.q : '';
+  const page = parsePageParam(sp.page);
+  const filters = parseFilters(sp);
 
-  const results = await searchProducts(query, page);
+  const results = await searchProducts(query, page, filters);
 
   return (
     <div className="space-y-6">
@@ -36,13 +39,22 @@ export default async function SearchPage({ searchParams }: PageProps<'/buscar'>)
         </p>
       )}
 
+      {query && results.total > 0 && (
+        <ProductFiltersBar
+          basePath="/buscar"
+          searchParams={sp}
+          filters={filters}
+          total={results.total}
+        />
+      )}
+
       <ProductGrid products={results.items} />
 
       <PaginationNav
         page={results.page}
         pageCount={results.pageCount}
         basePath="/buscar"
-        params={{ q: query }}
+        params={{ q: query, ...filtrosEnUrl(sp) }}
       />
     </div>
   );

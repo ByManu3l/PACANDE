@@ -6,6 +6,7 @@ import {
   ValidationError,
 } from '@/lib/utils/errors';
 import { buildPage, PAGE_SIZE, toSkipTake } from '@/lib/utils/pagination';
+import { type ProductFilters, toPrismaOrderBy, toPrismaWhere } from '@/lib/utils/product-filters';
 import type { CategoryInput } from '@/lib/validations/category';
 
 export async function getTopLevelCategories() {
@@ -48,13 +49,21 @@ export async function getCategoryBySlug(slug: string) {
  * contarlo daría siempre `PAGE_SIZE` como máximo y la navegación entre
  * páginas nunca sabría cuántas hay.
  */
-export async function getCategoryProducts(categoryId: string, page: number) {
-  const where = { categoryId, isActive: true };
+export async function getCategoryProducts(
+  categoryId: string,
+  page: number,
+  filters?: ProductFilters,
+) {
+  const where = {
+    categoryId,
+    isActive: true,
+    ...(filters ? toPrismaWhere(filters) : {}),
+  };
 
   const [items, total] = await Promise.all([
     prisma.product.findMany({
       where,
-      orderBy: { createdAt: 'desc' },
+      orderBy: filters ? toPrismaOrderBy(filters.sort) : [{ createdAt: 'desc' as const }],
       ...toSkipTake(page),
     }),
     prisma.product.count({ where }),
