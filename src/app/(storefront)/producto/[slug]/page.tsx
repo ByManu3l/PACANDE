@@ -9,13 +9,46 @@ import { getProductBySlug } from '@/lib/services/product.service';
 import { formatPrice } from '@/lib/utils/currency';
 import { NotFoundError } from '@/lib/utils/errors';
 
-export default async function ProductPage({ params }: PageProps<'/producto/[slug]'>) {
-  const { slug } = await params;
-
-  const product = await getProductBySlug(slug).catch((err) => {
+/** Igual que en la página: devuelve `null` en vez de propagar cuando el
+ * producto no existe, para que `generateMetadata` no reviente en un 404. */
+async function findProduct(slug: string) {
+  return getProductBySlug(slug).catch((err) => {
     if (err instanceof NotFoundError) return null;
     throw err;
   });
+}
+
+/**
+ * Metadatos por producto: es lo que Google indexa y lo que se muestra al
+ * compartir el enlace en WhatsApp o redes. Sin esto, todas las fichas de
+ * producto comparten el título genérico del sitio y son indistinguibles
+ * para un buscador.
+ *
+ * Next.js deduplica la consulta entre `generateMetadata` y el componente,
+ * así que llamar dos veces a `findProduct` no significa dos viajes a la
+ * base de datos en la misma petición.
+ */
+export async function generateMetadata({ params }: PageProps<'/producto/[slug]'>) {
+  const { slug } = await params;
+  const product = await findProduct(slug);
+
+  if (!product) return { title: 'Producto no encontrado' };
+
+  return {
+    title: product.name,
+    description: product.description,
+    openGraph: {
+      title: product.name,
+      description: product.description,
+      type: 'website' as const,
+      images: product.images[0] ? [{ url: product.images[0] }] : undefined,
+    },
+  };
+}
+
+export default async function ProductPage({ params }: PageProps<'/producto/[slug]'>) {
+  const { slug } = await params;
+  const product = await findProduct(slug);
 
   if (!product) {
     notFound();

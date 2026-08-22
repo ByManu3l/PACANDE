@@ -5,13 +5,38 @@ import { ProductCard } from '@/components/shared/product-card';
 import { getCategoryBySlug } from '@/lib/services/category.service';
 import { NotFoundError } from '@/lib/utils/errors';
 
-export default async function CategoryPage({ params }: PageProps<'/categoria/[slug]'>) {
-  const { slug } = await params;
-
-  const category = await getCategoryBySlug(slug).catch((err) => {
+async function findCategory(slug: string) {
+  return getCategoryBySlug(slug).catch((err) => {
     if (err instanceof NotFoundError) return null;
     throw err;
   });
+}
+
+/** Metadatos por categoría. Ver la nota sobre deduplicación de consultas
+ * en `producto/[slug]/page.tsx`. */
+export async function generateMetadata({ params }: PageProps<'/categoria/[slug]'>) {
+  const { slug } = await params;
+  const category = await findCategory(slug);
+
+  if (!category) return { title: 'Categoría no encontrada' };
+
+  const description =
+    category.description ?? `Explora nuestra selección de ${category.name.toLowerCase()}.`;
+
+  return {
+    title: category.name,
+    description,
+    openGraph: {
+      title: category.name,
+      description,
+      images: category.image ? [{ url: category.image }] : undefined,
+    },
+  };
+}
+
+export default async function CategoryPage({ params }: PageProps<'/categoria/[slug]'>) {
+  const { slug } = await params;
+  const category = await findCategory(slug);
 
   if (!category) {
     notFound();

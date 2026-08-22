@@ -7,6 +7,8 @@
 export interface SiteConfig {
   name: string;
   description: string;
+  /** Idioma del contenido, para el atributo `lang` del documento. */
+  htmlLang: string;
   /** Código ISO 4217, p. ej. `COP`, `USD`, `MXN`. Determina el símbolo y
    * los decimales que muestra `formatPrice`. */
   defaultCurrency: string;
@@ -29,6 +31,7 @@ export interface SiteConfig {
 export const siteConfig: SiteConfig = {
   name: 'Pacandé',
   description: 'Plantilla de E-commerce — moda, tecnología, hogar y deportes en un solo lugar.',
+  htmlLang: 'es',
   defaultCurrency: 'COP',
   locale: 'es-CO',
   contactEmail: 'contacto@pacande.test',
