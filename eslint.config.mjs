@@ -22,9 +22,6 @@ const eslintConfig = defineConfig([
     'out/**',
     'build/**',
     'next-env.d.ts',
-    // Legacy MERN codebase, replaced incrementally — removed entirely once
-    // the rewrite reaches parity (see plan phase "eliminar legacy").
-    'pacande-full-main/**',
   ]),
 ]);
 
