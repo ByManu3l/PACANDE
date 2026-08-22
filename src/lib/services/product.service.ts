@@ -14,7 +14,9 @@ export async function getFeaturedProducts(limit = 8) {
 export async function getProductBySlug(slug: string) {
   const product = await prisma.product.findUnique({
     where: { slug, isActive: true },
-    include: { category: true },
+    // La categoría madre hace falta para las migas de pan: sin ella la
+    // ruta sería "Inicio › Celulares" y se perdería el nivel intermedio.
+    include: { category: { include: { parent: true } } },
   });
 
   if (!product) {
@@ -137,5 +139,24 @@ export async function listActiveProductSlugs() {
   return prisma.product.findMany({
     where: { isActive: true },
     select: { slug: true, updatedAt: true },
+  });
+}
+
+/**
+ * Otros productos de la misma categoría, excluyendo el actual.
+ *
+ * Es la recomendación más simple que funciona: quien mira un celular
+ * suele estar comparando celulares. No hay historial de navegación ni
+ * modelo de similitud detrás, y no hace falta — un motor de
+ * recomendaciones es un producto en sí mismo, no una función de plantilla.
+ *
+ * Se ordena por valoración y no al azar: si hay que sugerir cuatro
+ * productos, que sean los mejor valorados.
+ */
+export async function getRelatedProducts(categoryId: string, excludeId: string, limit = 4) {
+  return prisma.product.findMany({
+    where: { categoryId, isActive: true, id: { not: excludeId }, stock: { gt: 0 } },
+    orderBy: [{ ratingAverage: 'desc' }, { createdAt: 'desc' }],
+    take: limit,
   });
 }

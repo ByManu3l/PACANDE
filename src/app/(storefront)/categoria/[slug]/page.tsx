@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 
 import { CategoryCard } from '@/components/shared/category-card';
 import { PaginationNav } from '@/components/shared/pagination-nav';
-import { ProductCard } from '@/components/shared/product-card';
+import { ProductGrid } from '@/components/shared/product-grid';
 import { getCategoryBySlug, getCategoryProducts } from '@/lib/services/category.service';
 import { NotFoundError } from '@/lib/utils/errors';
 import { parsePageParam } from '@/lib/utils/pagination';
@@ -72,15 +72,7 @@ export default async function CategoryPage({
         </div>
       ) : products && products.total > 0 ? (
         <>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {products.items.map((product, index) => (
-              <ProductCard
-                key={product.slug}
-                product={{ ...product, price: product.price.toString() }}
-                priority={index === 0}
-              />
-            ))}
-          </div>
+          <ProductGrid products={products.items} />
           <PaginationNav
             page={products.page}
             pageCount={products.pageCount}

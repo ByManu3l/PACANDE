@@ -193,10 +193,193 @@ async function seedProducts(categoryIdBySlug: Map<string, string>) {
   console.log(`Seeded ${catalog.products.length} products.`);
 }
 
+/**
+ * Cupones de ejemplo.
+ *
+ * Cubren los tres casos que un administrador querrá copiar: porcentual
+ * con tope, importe fijo con compra mínima, y uno caducado para ver cómo
+ * se comporta la validación.
+ */
+async function seedCoupons() {
+  const cupones = [
+    {
+      code: 'BIENVENIDA10',
+      description: 'Primera compra: 10% con tope',
+      type: 'PERCENTAGE' as const,
+      value: 10,
+      maxDiscount: 50_000,
+      minPurchase: null,
+      maxUses: null,
+      isActive: true,
+    },
+    {
+      code: 'ENVIOGRATIS',
+      description: 'Descuento fijo equivalente al envío, desde $150.000',
+      type: 'FIXED' as const,
+      value: 10_000,
+      minPurchase: 150_000,
+      maxDiscount: null,
+      maxUses: 500,
+      isActive: true,
+    },
+    {
+      code: 'NAVIDAD2025',
+      description: 'Campaña vencida — sirve para probar el mensaje de caducidad',
+      type: 'PERCENTAGE' as const,
+      value: 25,
+      minPurchase: null,
+      maxDiscount: null,
+      maxUses: null,
+      isActive: true,
+      endsAt: new Date('2026-01-06T23:59:59Z'),
+    },
+  ];
+
+  for (const c of cupones) {
+    await prisma.coupon.upsert({
+      where: { code: c.code },
+      update: {},
+      create: c,
+    });
+  }
+
+  console.log(`Seeded ${cupones.length} coupons.`);
+}
+
+/**
+ * Opiniones de ejemplo, con sus pedidos correspondientes.
+ *
+ * Un pedido de verdad por reseña, y no filas sueltas en la tabla, porque
+ * el servicio exige haber comprado: sembrar reseñas sin pedido produciría
+ * datos que la propia aplicación considera imposibles.
+ *
+ * Se reparten notas distintas para que el desglose de estrellas tenga
+ * algo que mostrar y no salgan cinco barras iguales.
+ */
+async function seedReviews() {
+  const compradores = await prisma.user.findMany({
+    where: { role: 'USER' },
+    select: { id: true },
+  });
+  if (compradores.length === 0) return;
+
+  const productos = await prisma.product.findMany({
+    where: { isFeatured: true },
+    take: 6,
+    select: { id: true, name: true, price: true, images: true },
+  });
+
+  const OPINIONES = [
+    {
+      rating: 5,
+      title: 'Excelente compra',
+      body: 'Llegó antes de lo previsto y la calidad es justo la que esperaba. Repetiría sin dudarlo.',
+    },
+    {
+      rating: 4,
+      title: 'Muy bueno',
+      body: 'Cumple perfectamente con lo que promete. Le quito una estrella solo por el empaque, que llegó algo maltratado.',
+    },
+    {
+      rating: 5,
+      title: 'Recomendado',
+      body: 'Relación calidad-precio inmejorable. Lo compré por las opiniones y no me arrepiento.',
+    },
+    {
+      rating: 3,
+      title: 'Cumple, sin más',
+      body: 'Funciona bien pero esperaba algo más por el precio. No está mal, tampoco sorprende.',
+    },
+  ];
+
+  let creadas = 0;
+
+  for (const [i, producto] of productos.entries()) {
+    const opinion = OPINIONES[i % OPINIONES.length];
+    const comprador = compradores[i % compradores.length];
+
+    // Cada reseña necesita su propio pedido: el mismo usuario no puede
+    // opinar dos veces sobre el mismo producto, pero sí sobre productos
+    // distintos.
+    const dia = `2026080${(i % 9) + 1}`;
+    const orderNumber = `PCD-${dia}-9${String(i).padStart(3, '0')}`;
+
+    const existente = await prisma.order.findUnique({ where: { orderNumber } });
+    if (!existente) {
+      await prisma.order.create({
+        data: {
+          orderNumber,
+          userId: comprador.id,
+          status: 'COMPLETED',
+          paymentStatus: 'APPROVED',
+          paymentMethod: 'contra_entrega',
+          subtotal: producto.price,
+          shippingCost: 0,
+          total: producto.price,
+          discountAmount: 0,
+          shippingRecipientName: 'Cliente de ejemplo',
+          shippingLine1: 'Calle 100 #15-20',
+          shippingCity: 'Bogotá',
+          shippingRegion: 'Cundinamarca',
+          shippingPostalCode: '110111',
+          shippingCountry: 'CO',
+          shippingPhone: '3000000000',
+          items: {
+            create: {
+              productId: producto.id,
+              productName: producto.name,
+              productImage: producto.images[0] ?? null,
+              unitPrice: producto.price,
+              quantity: 1,
+              lineTotal: producto.price,
+            },
+          },
+        },
+      });
+    }
+
+    await prisma.review.upsert({
+      where: { productId_userId: { productId: producto.id, userId: comprador.id } },
+      update: {},
+      create: {
+        productId: producto.id,
+        userId: comprador.id,
+        rating: opinion.rating,
+        title: opinion.title,
+        body: opinion.body,
+        status: 'APPROVED',
+      },
+    });
+    creadas++;
+  }
+
+  // La media desnormalizada de Product se recalcula al moderar; como aquí
+  // se insertan ya aprobadas, hay que ponerla al día explícitamente.
+  for (const producto of productos) {
+    const agregado = await prisma.review.aggregate({
+      where: { productId: producto.id, status: 'APPROVED' },
+      _avg: { rating: true },
+      _count: true,
+    });
+
+    await prisma.product.update({
+      where: { id: producto.id },
+      data: {
+        ratingAverage: Number((agregado._avg.rating ?? 0).toFixed(2)),
+        ratingCount: agregado._count,
+      },
+    });
+  }
+
+  console.log(`Seeded ${creadas} reviews.`);
+}
+
 async function main() {
   await seedUsers();
   const categoryIdBySlug = await seedCategories();
   await seedProducts(categoryIdBySlug);
+  await seedCoupons();
+  await seedReviews();
 }
 
 main()

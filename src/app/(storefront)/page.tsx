@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { CategoryCard } from '@/components/shared/category-card';
-import { ProductCard } from '@/components/shared/product-card';
+import { ProductGrid } from '@/components/shared/product-grid';
 import { Button } from '@/components/ui/button';
 import { siteConfig } from '@/lib/config/site.config';
 import { getTopLevelCategories } from '@/lib/services/category.service';
@@ -53,14 +53,7 @@ export default async function HomePage() {
       {featuredProducts.length > 0 && (
         <section className="space-y-4">
           <h2 className="text-2xl font-semibold tracking-tight">Destacados</h2>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {featuredProducts.map((product) => (
-              <ProductCard
-                key={product.slug}
-                product={{ ...product, price: product.price.toString() }}
-              />
-            ))}
-          </div>
+          <ProductGrid products={featuredProducts} prioritizeFirst={false} />
         </section>
       )}
     </div>

@@ -1,5 +1,5 @@
 import { PaginationNav } from '@/components/shared/pagination-nav';
-import { ProductCard } from '@/components/shared/product-card';
+import { ProductGrid } from '@/components/shared/product-grid';
 import { searchProducts } from '@/lib/services/product.service';
 import { parsePageParam } from '@/lib/utils/pagination';
 
@@ -36,15 +36,7 @@ export default async function SearchPage({ searchParams }: PageProps<'/buscar'>)
         </p>
       )}
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        {results.items.map((product, index) => (
-          <ProductCard
-            key={product.slug}
-            product={{ ...product, price: product.price.toString() }}
-            priority={index === 0}
-          />
-        ))}
-      </div>
+      <ProductGrid products={results.items} />
 
       <PaginationNav
         page={results.page}
