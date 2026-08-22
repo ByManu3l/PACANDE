@@ -16,10 +16,11 @@ test('a visitor can register, land authenticated, log out, and log back in', asy
 
   await expect(page).toHaveURL('/');
   await page.goto('/cuenta');
-  // The profile page shows the email inside an <input>, not as plain text.
+  // La página de perfil muestra el correo dentro de un <input>, no como
+  // texto suelto, así que hay que comprobar su valor.
   await expect(page.getByLabel('Correo')).toHaveValue(email);
 
-  // Log out via the account menu's form.
+  // Cerrar sesión desde el formulario del menú de cuenta.
   await page.evaluate(async () => {
     const csrfRes = await fetch('/api/auth/csrf');
     const { csrfToken } = await csrfRes.json();
@@ -34,12 +35,14 @@ test('a visitor can register, land authenticated, log out, and log back in', asy
   await page.getByLabel('Correo').fill(email);
   await page.getByLabel('Contraseña').fill(password);
   // Scoped to the submit button — the Navbar also has an "Iniciar sesión"
-  // link (rendered with role=button) that a plain getByRole match collides with.
+  // enlace que se renderiza con role=button y colisionaría con un
+  // getByRole genérico.
   await page.locator('button[type="submit"]', { hasText: 'Iniciar sesión' }).click();
 
   await expect(page).toHaveURL('/');
   await page.goto('/cuenta');
-  // The profile page shows the email inside an <input>, not as plain text.
+  // La página de perfil muestra el correo dentro de un <input>, no como
+  // texto suelto, así que hay que comprobar su valor.
   await expect(page.getByLabel('Correo')).toHaveValue(email);
 });
 
@@ -48,7 +51,8 @@ test('login rejects an incorrect password with a visible error', async ({ page }
   await page.getByLabel('Correo').fill('superadmin@pacande.test');
   await page.getByLabel('Contraseña').fill('WrongPassword!');
   // Scoped to the submit button — the Navbar also has an "Iniciar sesión"
-  // link (rendered with role=button) that a plain getByRole match collides with.
+  // enlace que se renderiza con role=button y colisionaría con un
+  // getByRole genérico.
   await page.locator('button[type="submit"]', { hasText: 'Iniciar sesión' }).click();
 
   await expect(page.getByText('Correo o contraseña incorrectos.')).toBeVisible({ timeout: 10_000 });

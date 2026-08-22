@@ -4,8 +4,8 @@ import type { UserRole } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 
 let counter = 0;
-/** Deterministic-enough uniqueness within a single test run (no
- * Date.now()/crypto needed for this). */
+/** Unicidad suficiente dentro de una misma ejecución de pruebas, sin
+ * necesidad de Date.now() ni crypto. */
 function unique(prefix: string) {
   counter += 1;
   return `${prefix}-${counter}`;

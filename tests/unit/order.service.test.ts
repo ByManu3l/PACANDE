@@ -16,9 +16,10 @@ const SHIPPING_ADDRESS = {
   postalCode: '110111',
   country: 'CO',
   phone: '3000000000',
-  // tarjeta_simulada so tests that mock paymentProvider.charge() actually
-  // exercise it — contra_entrega bypasses the gateway entirely (see the
-  // dedicated test below) since nothing is charged until delivery.
+  // Se usa `tarjeta_simulada` para que las pruebas que sustituyen
+  // `paymentProvider.charge()` lo ejerciten de verdad: `contra_entrega`
+  // no pasa por la pasarela (hay una prueba propia más abajo), porque no
+  // se cobra nada hasta la entrega.
   paymentMethod: 'tarjeta_simulada' as const,
 };
 
@@ -37,7 +38,7 @@ describe('order.service.checkout', () => {
   });
 
   it('computes the order total from the CURRENT database price, not any client-supplied value', async () => {
-    // This is the test for the exact vulnerability the rewrite set out to
+    // Esta es la prueba de la vulnerabilidad exacta que la reescritura
     // close: the legacy shipmentController trusted a "precio" field sent
     // in the request body. checkout()'s signature has no price parameter
     // at all — the only way to influence the total is Product.price in

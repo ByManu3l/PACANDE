@@ -5,6 +5,28 @@ import * as cartService from '@/lib/services/cart.service';
 import { paymentProvider } from '@/lib/services/payment.service';
 import { UnauthorizedError, ValidationError } from '@/lib/utils/errors';
 
+/**
+ * Creación de pedidos: la parte más delicada del proyecto.
+ *
+ * Aquí se concentran las tres reglas que no se pueden relajar, y conviene
+ * entenderlas antes de tocar nada de este archivo:
+ *
+ * 1. **El cliente nunca envía precios.** Solo llegan direcciones y método
+ *    de pago; los importes se releen de `Product.price` dentro de la
+ *    transacción. Confiar en un precio enviado por el navegador permitiría
+ *    a cualquiera comprar a un céntimo modificando la petición.
+ *
+ * 2. **El stock se descuenta de forma condicional, en una sola sentencia.**
+ *    Comprobar y después descontar no es equivalente y produce ventas de
+ *    unidades inexistentes (ver el comentario en `reserveOrder`).
+ *
+ * 3. **Todo importe se calcula con `Decimal`**, jamás con `number`.
+ *
+ * El flujo completo es: reservar (pedido + stock) → cobrar → confirmar o
+ * revertir. Se reserva *antes* de cobrar a propósito: cobrar primero y
+ * descubrir después que no hay stock obligaría a devolver el dinero.
+ */
+
 export interface CheckoutInput {
   recipientName: string;
   line1: string;
@@ -17,9 +39,13 @@ export interface CheckoutInput {
   paymentMethod: 'tarjeta_simulada' | 'contra_entrega';
 }
 
-/** Día actual en UTC como AAAAMMDD. Se usa UTC a propósito: con la hora
- * local del servidor, un cambio de zona horaria o un despliegue en otra
- * región movería el corte del día y podría repetir consecutivos. */
+/**
+ * Día actual en UTC como AAAAMMDD.
+ *
+ * Se usa UTC a propósito: con la hora local del servidor, un cambio de
+ * zona horaria o un despliegue en otra región movería el corte del día y
+ * podría repetir consecutivos ya entregados.
+ */
 function utcDayKey(now = new Date()) {
   return now.toISOString().slice(0, 10).replace(/-/g, '');
 }
@@ -57,12 +83,17 @@ async function nextOrderNumber(tx: Prisma.TransactionClient) {
 }
 
 /**
- * Reserves stock and creates the order in PENDING_PAYMENT — this is the
- * only place order totals are computed, and it always reads Product.price
- * fresh from the database inside the transaction. The client never sends
- * a price; it only sends productId/quantity via the persisted cart. This
- * closes the integrity gap in the legacy shipmentController, which
- * trusted the price the client put in the request body.
+ * Crea el pedido en `PENDING_PAYMENT` y reserva su stock.
+ *
+ * Es el **único** lugar del proyecto donde se calculan importes de pedido,
+ * y siempre releyendo `Product.price` de la base de datos dentro de la
+ * transacción. El navegador solo aporta `productId` y cantidad, a través
+ * del carrito ya persistido.
+ *
+ * Todo va en una transacción porque el pedido, sus líneas y el descuento
+ * de stock forman una única operación: un pedido creado cuyo stock no se
+ * descontó vendería dos veces la misma unidad, y un stock descontado sin
+ * pedido perdería inventario sin motivo.
  */
 async function reserveOrder(userId: string, input: CheckoutInput) {
   return prisma.$transaction(async (tx) => {
@@ -74,12 +105,17 @@ async function reserveOrder(userId: string, input: CheckoutInput) {
       throw new ValidationError('El carrito está vacío.');
     }
 
+    // Un producto puede haberse retirado del catálogo mientras estaba en
+    // el carrito. Se comprueba antes de cobrar, no después.
     for (const item of cart.items) {
       if (!item.product.isActive) {
         throw new ValidationError(`"${item.product.name}" ya no está disponible.`);
       }
     }
 
+    // Instantánea de cada línea: nombre, imagen y precio quedan
+    // congelados. El pedido debe seguir siendo legible aunque el producto
+    // cambie de precio o desaparezca del catálogo.
     const itemsData = cart.items.map((item) => ({
       productId: item.productId,
       productName: item.product.name,
@@ -89,9 +125,16 @@ async function reserveOrder(userId: string, input: CheckoutInput) {
       lineTotal: item.product.price.mul(item.quantity),
     }));
 
-    const subtotal = itemsData.reduce((sum, item) => sum + Number(item.lineTotal), 0);
-    const shippingCost = siteConfig.flatShippingCost;
-    const total = subtotal + shippingCost;
+    // Aritmética en `Decimal` de principio a fin. Sumar con `Number` daría
+    // el resultado correcto en la mayoría de casos, pero este es el
+    // importe que se cobra y se guarda: no es un sitio donde valga
+    // "casi siempre bien". `Decimal` es exacto en base 10 por diseño.
+    const subtotal = itemsData.reduce(
+      (sum, item) => sum.add(item.lineTotal),
+      new Prisma.Decimal(0),
+    );
+    const shippingCost = new Prisma.Decimal(siteConfig.flatShippingCost);
+    const total = subtotal.add(shippingCost);
 
     const orderNumber = await nextOrderNumber(tx);
 
@@ -143,6 +186,16 @@ async function reserveOrder(userId: string, input: CheckoutInput) {
   });
 }
 
+/**
+ * Ejecuta la compra completa.
+ *
+ * Devuelve el pedido tanto si el pago se aprueba como si se rechaza: la
+ * pantalla de confirmación necesita poder explicar qué ocurrió, y un
+ * pedido rechazado sigue siendo un registro válido en el historial.
+ *
+ * @throws {UnauthorizedError} si no hay sesión — comprar exige cuenta,
+ *   porque el pedido tiene que quedar asociado a alguien a quien enviarlo.
+ */
 export async function checkout(userId: string | undefined, input: CheckoutInput) {
   if (!userId) {
     throw new UnauthorizedError('Debes iniciar sesión para completar la compra.');
@@ -150,16 +203,19 @@ export async function checkout(userId: string | undefined, input: CheckoutInput)
 
   const order = await reserveOrder(userId, input);
 
-  // Cash-on-delivery has nothing to charge right now — money changes hands
-  // at the door, not at checkout — so only the simulated card gateway can
-  // decline. Routing COD through it too would mean an order confirmation
-  // screen that randomly fails for a payment that was never attempted.
+  // El pago contra entrega no tiene nada que cobrar ahora: el dinero
+  // cambia de manos en la puerta. Pasarlo por la pasarela simulada haría
+  // que la confirmación fallara al azar para un cobro que nunca se
+  // intentó.
   const paymentResult =
     input.paymentMethod === 'contra_entrega'
       ? { approved: true as const }
       : await paymentProvider.charge(Number(order.total), input.paymentMethod);
 
   if (paymentResult.approved) {
+    // El envío se crea junto con el cambio de estado, en la misma
+    // transacción: un pedido pagado sin envío quedaría invisible para el
+    // panel de despachos.
     await prisma.$transaction([
       prisma.order.update({
         where: { id: order.id },
@@ -167,12 +223,16 @@ export async function checkout(userId: string | undefined, input: CheckoutInput)
       }),
       prisma.shipment.create({ data: { orderId: order.id, status: 'PENDING' } }),
     ]);
+    // Vaciar el carrito es lo último: si algo falla antes, el cliente
+    // conserva lo que había reunido.
     await cartService.clearCart({ userId });
     return { order, approved: true as const };
   }
 
-  // Payment declined: release the reserved stock and leave the cart intact
-  // so the customer can retry without re-adding everything.
+  // Pago rechazado: se devuelve el stock reservado y el carrito se deja
+  // intacto para que el cliente pueda reintentar sin volver a añadirlo
+  // todo. El pedido queda como CANCELLED, no se borra: es la evidencia de
+  // que hubo un intento, útil para soporte.
   await prisma.$transaction(async (tx) => {
     await tx.order.update({
       where: { id: order.id },
@@ -180,6 +240,8 @@ export async function checkout(userId: string | undefined, input: CheckoutInput)
     });
     const items = await tx.orderItem.findMany({ where: { orderId: order.id } });
     for (const item of items) {
+      // `productId` es nulo si el producto se borró entre la reserva y el
+      // rechazo. No hay a qué devolver el stock; se ignora la línea.
       if (!item.productId) continue;
       await tx.product.update({
         where: { id: item.productId },
@@ -191,6 +253,14 @@ export async function checkout(userId: string | undefined, input: CheckoutInput)
   return { order, approved: false as const, declineReason: paymentResult.declineReason };
 }
 
+/**
+ * Un pedido concreto del cliente.
+ *
+ * El `userId` va en el `where`, no se comprueba después: así es imposible
+ * que alguien vea el pedido de otra persona probando números de pedido.
+ * `findFirst` en lugar de `findUnique` porque la búsqueda combina dos
+ * campos y solo `orderNumber` es único.
+ */
 export async function getOrderByNumber(userId: string, orderNumber: string) {
   return prisma.order.findFirst({
     where: { orderNumber, userId },
@@ -198,6 +268,7 @@ export async function getOrderByNumber(userId: string, orderNumber: string) {
   });
 }
 
+/** Historial del cliente, del más reciente al más antiguo. */
 export async function listOrdersForUser(userId: string) {
   return prisma.order.findMany({
     where: { userId },
@@ -206,6 +277,15 @@ export async function listOrdersForUser(userId: string) {
   });
 }
 
+/**
+ * Todos los pedidos, para el panel.
+ *
+ * De `user` solo se traen nombre y correo: es lo que la tabla muestra, y
+ * evita arrastrar el hash de contraseña en cada consulta.
+ *
+ * Sin paginar. Con volúmenes altos conviene añadirla igual que en el
+ * catálogo (`lib/utils/pagination.ts`); ver `docs/AUDITORIA.md`.
+ */
 export async function listAllOrders() {
   return prisma.order.findMany({
     orderBy: { createdAt: 'desc' },

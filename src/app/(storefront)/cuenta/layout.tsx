@@ -9,10 +9,13 @@ const NAV = [
   { href: '/cuenta/pedidos', label: 'Mis pedidos' },
 ];
 
-// middleware.ts already redirects unauthenticated visits away from
-// /cuenta/**; this is the same defense-in-depth check applied at the
-// layout level (using redirect(), not the throwing requireSession() that
-// Server Actions use) so a direct RSC render can never skip it either.
+// `proxy.ts` ya redirige las visitas sin sesión fuera de /cuenta/**.
+// Esta es la misma comprobación aplicada en el layout, para que un render
+// directo de Server Component tampoco pueda saltársela.
+//
+// Aquí se usa `redirect()` y no el `requireSession()` que lanza: en una
+// página, lo correcto es llevar al visitante al login; lanzar mostraría
+// una pantalla de error para algo que no lo es.
 export default async function CuentaLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   if (!session?.user) {

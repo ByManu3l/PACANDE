@@ -15,7 +15,8 @@ interface ProductCardProps {
     stock: number;
   };
   /** Set for the first card in a grid so Next/Image can preload it — it's
-   * typically the Largest Contentful Paint element on category/search pages. */
+   * suele ser el elemento LCP (Largest Contentful Paint) de las páginas
+   * de categoría y búsqueda, y precargarlo mejora esa métrica. */
   priority?: boolean;
 }
 

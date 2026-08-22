@@ -5,8 +5,9 @@ import { ProductsTable } from '@/components/admin/products-table';
 export default async function AdminProductsPage() {
   const [products, categories] = await Promise.all([listProductsAction(), listCategoriesAction()]);
 
-  // Products only ever attach to leaf categories — a parent category
-  // renders a subcategory grid on the storefront, never a product grid.
+  // Los productos solo se asignan a categorías hoja: una categoría con
+  // hijas muestra una grilla de subcategorías en la tienda, nunca de
+  // productos, así que un producto colgado ahí sería invisible.
   const categoryOptions = categories
     .filter((c) => c._count.children === 0)
     .map((c) => ({ id: c.id, name: c.parent ? `${c.parent.name} / ${c.name}` : c.name }));

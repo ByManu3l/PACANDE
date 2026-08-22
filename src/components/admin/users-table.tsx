@@ -34,8 +34,11 @@ export function UsersTable({ initialUsers, currentUserId, currentUserRole }: Use
     setUsers(await listUsersAction());
   };
 
-  // Mirrors user.service.ts::assertCanManageTarget — an Admin can only
-  // touch plain USER accounts; a Superadmin can touch anyone but themself.
+  // Refleja `assertCanManageTarget` de user.service.ts: un ADMIN solo
+  // gestiona cuentas USER, y un SUPERADMIN a cualquiera menos a sí mismo.
+  //
+  // Esto solo oculta botones; la regla que de verdad protege es la del
+  // servicio. Duplicarla aquí evita ofrecer acciones que van a fallar.
   const canManage = (target: UserRow) => {
     if (target.id === currentUserId) return false;
     if (currentUserRole === 'ADMIN' && target.role !== 'USER') return false;

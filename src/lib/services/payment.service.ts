@@ -1,23 +1,53 @@
 import { randomUUID } from 'node:crypto';
 
+/**
+ * Pasarela de pago.
+ *
+ * **Este módulo es el punto de sustitución más importante de la
+ * plantilla.** El cobro está simulado a propósito: integrar Stripe, Wompi
+ * o Mercado Pago de verdad exige una cuenta, claves y webhooks propios de
+ * cada negocio, así que la plantilla define el contrato y deja la
+ * implementación real a quien la adopte.
+ *
+ * Todo lo que hay alrededor —descuento de stock, congelado de precios,
+ * numeración de pedidos, transacciones— **no** está simulado y no hay que
+ * rehacerlo. Ver `docs/PERSONALIZACION.md` para el procedimiento de
+ * sustitución.
+ */
+
 export interface PaymentResult {
   approved: boolean;
+  /** Referencia del cobro en la pasarela. Solo si fue aprobado. */
   reference?: string;
+  /** Motivo del rechazo, en texto mostrable al cliente. */
   declineReason?: string;
 }
 
 /**
- * The legacy checkout validated a card client-side and then simulated a
- * 10% random decline — no real gateway. Kept as-is on purpose (see the
- * template's README): a real integration means an external account and
- * API keys, which isn't what this template exists to demonstrate. This
- * interface is what a real provider (Stripe, Wompi, etc.) would implement
- * to replace SimulatedPaymentProvider without touching order.service.ts.
+ * Contrato que debe cumplir cualquier pasarela.
+ *
+ * Es deliberadamente mínimo: `order.service.ts` solo necesita saber si el
+ * cobro salió bien. Mientras una implementación respete esta interfaz,
+ * sustituirla no obliga a tocar la lógica de pedidos.
+ *
+ * Una integración real tendrá que añadir además un endpoint de webhook:
+ * las pasarelas confirman los pagos de forma asíncrona y ese aviso es la
+ * fuente de verdad, no el valor devuelto aquí.
+ *
+ * @param amount Importe total, en la unidad principal de la moneda.
+ * @param method Identificador del método (`Order.paymentMethod`).
  */
 export interface PaymentProvider {
   charge(amount: number, method: string): Promise<PaymentResult>;
 }
 
+/**
+ * Implementación de demostración: aprueba el 90 % de los intentos.
+ *
+ * El rechazo aleatorio existe para que la rama de error sea visible
+ * durante el desarrollo. Es la única parte del checkout que no refleja un
+ * comportamiento real, y está aislada aquí precisamente para que se note.
+ */
 class SimulatedPaymentProvider implements PaymentProvider {
   async charge(_amount: number, _method: string): Promise<PaymentResult> {
     const approved = Math.random() > 0.1;
@@ -28,4 +58,8 @@ class SimulatedPaymentProvider implements PaymentProvider {
   }
 }
 
+/**
+ * Instancia en uso. Cámbiala por tu implementación real: es el único
+ * punto del proyecto que hay que tocar para conectar una pasarela.
+ */
 export const paymentProvider: PaymentProvider = new SimulatedPaymentProvider();

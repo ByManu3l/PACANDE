@@ -12,7 +12,8 @@ async function login(page: import('@playwright/test').Page, email: string, passw
   await page.getByLabel('Correo').fill(email);
   await page.getByLabel('Contraseña').fill(password);
   // Scoped to the submit button — the Navbar also has an "Iniciar sesión"
-  // link (rendered with role=button) that a plain getByRole match collides with.
+  // enlace que se renderiza con role=button y colisionaría con un
+  // getByRole genérico.
   await page.locator('button[type="submit"]', { hasText: 'Iniciar sesión' }).click();
   await expect(page).toHaveURL('/');
 }
@@ -23,8 +24,8 @@ test.describe('route protection', () => {
   }) => {
     for (const path of ['/admin', '/cuenta', '/checkout']) {
       await page.goto(path);
-      // NextAuth appends ?callbackUrl=... so the user lands back where they
-      // were headed after signing in — just assert the /login part.
+      // Auth.js añade ?callbackUrl=... para devolver al visitante a donde
+      // iba tras iniciar sesión, así que solo se comprueba la parte /login.
       await expect(page).toHaveURL(/\/login/);
     }
   });

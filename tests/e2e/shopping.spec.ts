@@ -24,7 +24,8 @@ test('browse a category, view a product, add it to the cart, and see it in /carr
 test('guest checkout requires login, and completes end-to-end once authenticated', async ({
   page,
 }) => {
-  // Add to cart as a guest first, to also exercise the guest-cart-merge path.
+  // Se añade al carrito como invitado para ejercitar también la fusión
+  // del carrito anónimo al registrarse.
   await page.goto('/producto/tecnologia-accesorios-adaptador-hdmi');
   await page.getByRole('button', { name: 'Añadir al carrito' }).click();
   await expect(page.getByText('Producto agregado al carrito.')).toBeVisible();
@@ -41,7 +42,8 @@ test('guest checkout requires login, and completes end-to-end once authenticated
   await page.getByRole('button', { name: 'Crear cuenta' }).click();
   await expect(page).toHaveURL('/');
 
-  // Registering while the guest cart cookie was set should have merged it.
+  // Registrarse con la cookie de carrito anónimo puesta debe haberlo
+  // fusionado en el carrito de la cuenta.
   await page.goto('/carrito');
   await expect(page.getByText('Adaptador HDMI')).toBeVisible();
 
@@ -52,14 +54,16 @@ test('guest checkout requires login, and completes end-to-end once authenticated
   await page.getByLabel('Departamento').fill('Cundinamarca');
   await page.getByLabel('Código postal').fill('110111');
   await page.getByLabel('Teléfono').fill('3000000000');
-  // getByLabel matches both the visible span[role=radio] and the hidden
-  // native input Base UI renders for form semantics — target the role.
+  // getByLabel encajaría con el span[role=radio] visible y también con
+  // el input nativo oculto que Base UI renderiza por semántica de
+  // formulario. Se apunta al rol para desambiguar.
   await page.getByRole('radio', { name: 'Pago contra entrega' }).check();
   await page.getByRole('button', { name: 'Confirmar pedido' }).click();
 
   await expect(page).toHaveURL(/\/checkout\/confirmacion\/PCD-/);
-  // getByText also matches Next.js's route announcer (an off-screen live
-  // region echoing the new page's heading for accessibility) — scope to
-  // the actual heading to avoid that strict-mode collision.
+  // getByText también encaja con el anunciador de rutas de Next.js (una
+  // región live fuera de pantalla que repite el encabezado por
+  // accesibilidad). Se acota al encabezado real para evitar la colisión
+  // del modo estricto de Playwright.
   await expect(page.getByRole('heading', { name: '¡Gracias por tu compra!' })).toBeVisible();
 });
