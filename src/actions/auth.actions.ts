@@ -5,6 +5,7 @@ import { AuthError } from 'next-auth';
 import { mergeGuestCartIntoSession } from '@/lib/cart-session';
 import { signIn, signOut } from '@/lib/auth';
 import { registerUser, verifyCredentials } from '@/lib/services/user.service';
+import { enforceRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { runAction } from '@/lib/utils/action-result';
 import { loginSchema, registerSchema } from '@/lib/validations/auth';
 
@@ -23,6 +24,11 @@ export async function loginAction(formData: FormData) {
       email: formData.get('email'),
       password: formData.get('password'),
     });
+
+    // Antes de verificar nada: sin esto, probar contraseñas en bucle sale
+    // gratis. Se discrimina también por correo para que varias personas
+    // tras la misma IP —una oficina, un cibercafé— no se bloqueen entre sí.
+    await enforceRateLimit(RATE_LIMITS.login, 'login', credentials.email);
 
     // Se verifica aqui ademas de dentro del proveedor de credenciales
     // para tener el id del usuario por adelantado: dentro de esta misma
@@ -62,6 +68,8 @@ export async function registerAction(formData: FormData) {
       email: formData.get('email'),
       password: formData.get('password'),
     });
+
+    await enforceRateLimit(RATE_LIMITS.register, 'register');
 
     const user = await registerUser(input);
     await signIn('credentials', {

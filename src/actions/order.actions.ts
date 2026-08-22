@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import type { ShipmentStatus } from '@/generated/prisma/client';
 import { requireRole, requireSession } from '@/lib/auth/guards';
 import * as orderService from '@/lib/services/order.service';
+import { enforceRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import * as shipmentService from '@/lib/services/shipment.service';
 import { runAction } from '@/lib/utils/action-result';
 import { checkoutSchema } from '@/lib/validations/checkout';
@@ -24,6 +25,7 @@ import { checkoutSchema } from '@/lib/validations/checkout';
 export async function checkoutAction(formData: FormData) {
   return runAction(async () => {
     const user = await requireSession();
+    await enforceRateLimit(RATE_LIMITS.checkout, 'checkout', user.id);
 
     const shipping = checkoutSchema.parse(Object.fromEntries(formData));
 

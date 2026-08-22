@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { Toaster } from 'sonner';
 
 import { siteConfig } from '@/lib/config/site.config';
+import { env } from '@/lib/env';
 
 import './globals.css';
 
@@ -26,7 +27,7 @@ const geistMono = Geist_Mono({
  *   En despliegue debe apuntar al dominio real vía `NEXT_PUBLIC_SITE_URL`.
  */
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
+  metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
   title: {
     default: siteConfig.name,
     template: `%s | ${siteConfig.name}`,

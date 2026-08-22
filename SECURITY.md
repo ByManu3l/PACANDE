@@ -46,21 +46,23 @@ audit` hoy no son alcanzables.
 
 Para que sepas con qué cuentas, y con qué no:
 
-| Protección                                  | Estado                                                           |
-| ------------------------------------------- | ---------------------------------------------------------------- |
-| Contraseñas con bcrypt (coste 10)           | Sí                                                               |
-| Permisos verificados en cada Server Action  | Sí — el filtro de rutas no basta y no se usa como única barrera  |
-| Precios recalculados en el servidor         | Sí — el navegador nunca envía importes                           |
-| Stock descontado de forma atómica           | Sí — no se puede vender inventario inexistente                   |
-| Datos de tarjeta fuera del servidor         | Sí — nunca llegan al backend                                     |
-| Login de tiempo constante                   | Sí — no se pueden enumerar correos                               |
-| Rutas de archivo validadas                  | Sí — sin recorrido de directorios                                |
-| Validación en servidor con el mismo esquema | Sí                                                               |
-| Errores internos ocultos al usuario         | Sí                                                               |
-| Límite de intentos de acceso                | **No** — conviene resolverlo en el borde (Vercel, Cloudflare)    |
-| Verificación de correo                      | **No** — requiere un proveedor de correo que elige cada proyecto |
-| Segundo factor                              | **No**                                                           |
+| Protección                                    | Estado                                                           |
+| --------------------------------------------- | ---------------------------------------------------------------- |
+| Contraseñas con bcrypt (coste 10)             | Sí                                                               |
+| Permisos verificados en cada Server Action    | Sí — el filtro de rutas no basta y no se usa como única barrera  |
+| Precios recalculados en el servidor           | Sí — el navegador nunca envía importes                           |
+| Stock descontado de forma atómica             | Sí — no se puede vender inventario inexistente                   |
+| Datos de tarjeta fuera del servidor           | Sí — nunca llegan al backend                                     |
+| Login de tiempo constante                     | Sí — no se pueden enumerar correos                               |
+| Rutas de archivo validadas                    | Sí — sin recorrido de directorios                                |
+| Validación en servidor con el mismo esquema   | Sí                                                               |
+| Errores internos ocultos al usuario           | Sí                                                               |
+| Cabeceras de seguridad (CSP, HSTS, …)         | Sí — definidas y comentadas en `next.config.ts`                  |
+| Valores sensibles filtrados de los registros  | Sí — por nombre de clave, en `lib/logger.ts`                     |
+| Límite de intentos (acceso, registro, compra) | Sí — 5 accesos por cuarto de hora; ver `lib/rate-limit.ts`       |
+| Verificación de correo                        | **No** — requiere un proveedor de correo que elige cada proyecto |
+| Segundo factor                                | **No**                                                           |
 
-Las tres últimas son ausencias conocidas y deliberadas, no descuidos. Si
+Las dos últimas son ausencias conocidas y deliberadas, no descuidos. Si
 tu caso las necesita, están documentadas como ampliación en
 [`docs/AUDITORIA.md`](docs/AUDITORIA.md).

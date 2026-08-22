@@ -1,6 +1,8 @@
 import { mkdir, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
+import { logger } from '@/lib/logger';
+
 /**
  * Frontera de almacenamiento de archivos subidos por usuarios.
  *
@@ -68,7 +70,7 @@ class LocalDiskAdapter implements StorageAdapter {
       const isMissingFile =
         typeof err === 'object' && err !== null && 'code' in err && err.code === 'ENOENT';
       if (!isMissingFile) {
-        console.warn(`No se pudo borrar el archivo "${publicPath}":`, err);
+        logger.warn('No se pudo borrar un archivo huérfano', { publicPath, err: String(err) });
       }
     }
   }

@@ -73,7 +73,18 @@ Usa `select` explícito en cualquier consulta de usuarios. Es fácil de
 olvidar, y el hash acabaría viajando al navegador dentro de una tabla del
 panel.
 
-### 6. Los `Decimal` no cruzan al cliente
+### 6. Las variables de entorno se leen de `lib/env.ts`
+
+Nunca de `process.env` directamente. En `env.ts` están validadas y
+tipadas, así que un nombre mal escrito es un error de compilación en vez
+de un `undefined` silencioso. Añadir una variable nueva son tres pasos,
+descritos en la cabecera de ese archivo.
+
+Ese módulo es de servidor (`import 'server-only'`). Si lo necesitas en el
+navegador, la variable debe llevar el prefijo `NEXT_PUBLIC_` y leerse a
+través del esquema público.
+
+### 7. Los `Decimal` no cruzan al cliente
 
 Si una Server Action devuelve datos a un Client Component, convierte los
 `Decimal` a texto:
@@ -204,7 +215,7 @@ sorpresas: si te topas con alguna, ya se sabía.
 | Sin recuperación de contraseña                           | Requiere un proveedor de correo, que cada proyecto elige. Ver `AUDITORIA.md`.                          |
 | Las tablas del panel no están paginadas                  | El escaparate sí lo está. Con miles de pedidos hay que aplicar `lib/utils/pagination.ts` también aquí. |
 | Las imágenes subidas no se optimizan ni se redimensionan | Se validan tipo y tamaño; procesarlas exige otra dependencia.                                          |
-| Sin límite de intentos de acceso                         | Se implementa mejor en el borde (Vercel, Cloudflare) que en la aplicación.                             |
+| Sin verificación de correo al registrarse                | Requiere un proveedor de correo, que cada proyecto elige.                                              |
 
 El listado completo, con severidades y recomendaciones, está en
 [`AUDITORIA.md`](AUDITORIA.md).

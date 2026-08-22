@@ -1,11 +1,13 @@
 import type { MetadataRoute } from 'next';
 
+import { env } from '@/lib/env';
+
 import { listActiveCategorySlugs } from '@/lib/services/category.service';
 import { listActiveProductSlugs } from '@/lib/services/product.service';
 
 /** URL pública del sitio. En local no importa; en despliegue debe apuntar
  * al dominio real o el sitemap listará URLs que no existen. */
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+const baseUrl = env.NEXT_PUBLIC_SITE_URL;
 
 /**
  * Sitemap con las rutas indexables: estáticas, categorías activas y

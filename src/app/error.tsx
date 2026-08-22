@@ -25,7 +25,15 @@ export default function GlobalError({
     // observabilidad (Sentry, Highlight, etc.). El `digest` es el
     // identificador que Next.js también escribe en los logs del servidor,
     // y permite cruzar lo que vio el usuario con la traza completa.
-    console.error(error);
+    // Aquí se usa `console.error` y no el `logger` del proyecto: esto es
+    // un componente de cliente y el logger es de servidor (depende de
+    // `env`, que valida variables que en el navegador no existen).
+    //
+    // El error del servidor ya quedó registrado allí; `digest` es la
+    // referencia que permite cruzarlo con esta pantalla. Para capturar
+    // además los errores del navegador, este es el punto donde enganchar
+    // el SDK de navegador de Sentry o equivalente.
+    console.error('Error en la frontera de error', { digest: error.digest, error });
   }, [error]);
 
   return (

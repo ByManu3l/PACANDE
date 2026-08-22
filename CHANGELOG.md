@@ -11,6 +11,21 @@ datos.
 
 ### Añadido
 
+- **Validación de las variables de entorno al arrancar** (`src/lib/env.ts`).
+  Un `.env` incompleto detiene el arranque con la lista de lo que falta,
+  en vez de fallar más tarde en una petición cualquiera.
+- **Registro estructurado** (`src/lib/logger.ts`), con niveles, filtrado
+  de valores sensibles y destino sustituible para enchufar un servicio de
+  seguimiento de errores.
+- **Límite de intentos** en acceso, registro y compra
+  (`src/lib/rate-limit.ts`).
+- **Cabeceras de seguridad** en `next.config.ts`: CSP, HSTS,
+  `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` y
+  `Permissions-Policy`. Se retira además `X-Powered-By`.
+- **Comprobación de estado** en `/api/health`, que verifica la base de
+  datos y responde 503 cuando algo falla.
+- `.env.test.example`, para poder poner en marcha las pruebas sin
+  adivinar qué variables hacen falta.
 - Gobernanza del repositorio: `.editorconfig`, `.nvmrc`, `.gitattributes`,
   ajustes recomendados de VS Code.
 - Ganchos de git con husky: formato y lint sobre lo que cambia
@@ -23,6 +38,8 @@ datos.
 
 ### Cambiado
 
+- `console.error` y `console.warn` sustituidos por el registro
+  estructurado en toda la capa de servidor.
 - `.gitattributes` normaliza los finales de línea a LF. Elimina los avisos
   de CRLF que aparecían en cada commit hecho desde Windows.
 

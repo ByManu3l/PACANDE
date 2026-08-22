@@ -138,6 +138,9 @@ mostrar el mensaje sin envolver la llamada en `try/catch`.
 | `config/`         | `site.config.ts`: nombre, moneda, contacto                            |
 | `utils/`          | Errores, paginación, formato de precios, slugs                        |
 | `prisma.ts`       | El cliente único de base de datos                                     |
+| `env.ts`          | Variables de entorno validadas. **Úsalo en vez de `process.env`**     |
+| `logger.ts`       | Registro estructurado, con destino sustituible                        |
+| `rate-limit.ts`   | Límite de intentos por operación                                      |
 | `cart-session.ts` | Puente entre cookies/sesión y la identidad del carrito                |
 
 ### `src/components/`
@@ -216,6 +219,44 @@ Si mezclas los dos, el build falla al compilar el proxy.
 
 ---
 
+## Capa de producción
+
+Cuatro piezas que no cambian lo que hace la tienda, pero deciden si se
+puede operar cuando algo va mal.
+
+**`lib/env.ts` — validación al arrancar.** Las variables de entorno se
+comprueban con zod antes de que la aplicación acepte una sola petición.
+Un `.env` incompleto detiene el arranque con la lista de lo que falta, en
+vez de fallar más tarde en una compra cualquiera con un error que no dice
+nada. Lleva `import 'server-only'`, así que importarlo desde un componente
+de cliente es un error de compilación y no un fallo en producción.
+
+**`lib/logger.ts` — registro estructurado.** En producción emite JSON en
+una línea, que es lo que esperan los recolectores de registros; en
+desarrollo, texto legible. Filtra por nombre de clave los valores
+sensibles —contraseñas, tokens, datos de tarjeta— porque los registros se
+almacenan, se replican y se consultan desde paneles de terceros, y lo que
+llega ahí ya no se puede retirar. El destino es sustituible: conectar
+Sentry o equivalente es implementar `LogTransport`.
+
+**`lib/rate-limit.ts` — límite de intentos.** Cinco accesos fallidos por
+cuarto de hora, tres registros por hora, diez compras cada diez minutos.
+Protege operaciones concretas, no la infraestructura: la denegación de
+servicio se resuelve en el borde. El almacén por defecto es en memoria,
+con la limitación documentada de que cada instancia lleva su propia
+cuenta; sustituirlo por Redis es implementar `RateLimitStore`.
+
+**`/api/health` — comprobación de estado.** Consulta la base de datos, no
+solo que el proceso responda, y devuelve 503 cuando algo falla — los
+supervisores se guían por el código de estado, no por el cuerpo. Es lo que
+convierte «un cliente avisó de que no podía comprar» en «el supervisor
+avisó hace veinte minutos».
+
+Las cabeceras de seguridad se aplican en `next.config.ts`: CSP, HSTS y el
+resto, cada una comentada con lo que evita.
+
+---
+
 ## Seguridad
 
 El modelo es **defensa en profundidad**: dos barreras independientes, y
@@ -244,6 +285,9 @@ Otras decisiones de seguridad, con su razón:
 | Las acciones de `/cuenta` operan solo sobre la sesión | Si aceptaran un `userId`, cualquiera editaría la cuenta de otro                                   |
 | Las rutas de archivo se validan contra `public/`      | Sin ello, una ruta como `/../../.env` permitiría borrar archivos del servidor                     |
 | Los errores inesperados no se muestran al usuario     | Pueden contener nombres de tabla, rutas o fragmentos de consulta                                  |
+| Límite de intentos en acceso, registro y compra       | Sin él, probar contraseñas en bucle sale gratis                                                   |
+| Cabeceras de seguridad (CSP, HSTS, …)                 | Neutralizan inyección de scripts, secuestro de clics y degradación a http                         |
+| Los valores sensibles se filtran de los registros     | Lo que llega a un registro se replica y ya no se puede retirar                                    |
 
 ---
 

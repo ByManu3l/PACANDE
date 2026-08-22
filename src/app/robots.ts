@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next';
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+import { env } from '@/lib/env';
+
+const baseUrl = env.NEXT_PUBLIC_SITE_URL;
 
 /**
  * Reglas para rastreadores.

@@ -1,4 +1,5 @@
 import { ZodError } from 'zod';
+import { logger } from '@/lib/logger';
 
 import { AppError } from './errors';
 
@@ -60,7 +61,9 @@ export async function runAction<T>(fn: () => Promise<T>): Promise<ActionResult<T
     if (err instanceof AppError || (err instanceof Error && err.constructor === Error)) {
       return fail(err.message);
     }
-    console.error(err);
+    // Lo inesperado sí se registra con todo el detalle en el servidor;
+    // al cliente solo le llega un mensaje genérico.
+    logger.error('Error no controlado en una Server Action', err);
     return fail('Ocurrió un error inesperado. Intenta de nuevo.');
   }
 }
