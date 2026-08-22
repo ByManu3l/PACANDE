@@ -15,9 +15,30 @@
  */
 import { hashSync } from 'bcryptjs';
 
-import { prisma } from '../src/lib/prisma';
+import { PrismaPg } from '@prisma/adapter-pg';
+
+import { PrismaClient } from '../src/generated/prisma/client';
 import { slugify } from '../src/lib/utils/slugify';
 import catalog from './seed-data/catalog.json';
+
+/**
+ * Cliente propio, no el singleton de `src/lib/prisma.ts`.
+ *
+ * Ese singleton existe para sobrevivir al recargado en caliente de
+ * Next.js, algo que a un script de un solo uso no le aplica. Además
+ * importa `lib/env.ts`, que lleva `server-only` y por tanto lanza fuera
+ * del runtime de Next.js — este script corre con `tsx`, en Node a secas.
+ *
+ * Aquí se lee `DATABASE_URL` directamente: es la única variable que el
+ * seed necesita, y el script debe poder ejecutarse en CI sin depender del
+ * resto de la configuración de la aplicación.
+ */
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  throw new Error('Falta DATABASE_URL. Copia .env.example a .env antes de sembrar.');
+}
+
+const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
 
 // --- generación determinista, estable entre ejecuciones ------------------
 
