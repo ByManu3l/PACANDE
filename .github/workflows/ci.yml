@@ -53,6 +53,16 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      # Las reglas que ni ESLint ni TypeScript pueden comprobar: que solo
+      # lib/services toque Prisma, que las acciones de administración
+      # verifiquen el rol, que la marca no salga de site.config, y que el
+      # repositorio siga completo como producto.
+      - name: Auditoría de reglas y gobernanza
+        run: npm run audit:repo && npm run audit:governance
+
+      - name: Código y dependencias sin usar
+        run: npm run audit:deadcode
+
       - name: Unit tests (services, against the Postgres service container)
         run: npx vitest run
 

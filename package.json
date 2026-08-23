@@ -17,7 +17,10 @@
     "test": "dotenv -e .env.test -- vitest run",
     "test:watch": "dotenv -e .env.test -- vitest",
     "e2e": "playwright test",
+    "audit:repo": "node scripts/audit-repo.mjs",
+    "audit:governance": "node scripts/audit-governance.mjs",
     "audit:deadcode": "knip",
+    "audit": "npm run audit:repo && npm run audit:governance && npm run audit:deadcode",
     "prepare": "husky"
   },
   "dependencies": {

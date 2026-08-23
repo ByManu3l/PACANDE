@@ -42,4 +42,6 @@ export const moderateReviewSchema = z.object({
   moderationNote: z.string().trim().max(500).optional(),
 });
 
-export type ModerateReviewInput = z.infer<typeof moderateReviewSchema>;
+// El tipo no se exporta: nada fuera de este archivo lo necesita, porque
+// la acción de moderación recibe `unknown` y lo valida con el esquema.
+// Exportarlo "por consistencia" sería mantener código que nadie usa.
