@@ -479,7 +479,8 @@ libreta de direcciones conectada al checkout, filtros y ordenamiento,
 galería con miniaturas, migas de pan, productos relacionados y datos
 estructurados de schema.org.
 
-**Auto-auditoría.** `npm run audit` ejecuta tres comprobaciones:
+**Auto-auditoría.** `npm run audit` ejecuta tres comprobaciones, y
+`npm run audit:bundle` una cuarta sobre el resultado del build:
 
 ```
 Auditoría de reglas del proyecto
@@ -500,7 +501,22 @@ Auditoría de gobernanza del repositorio
   ✓ Ningún enlace roto en la documentación
 
 Gobernanza completa: 22 archivos, 0 enlaces rotos.
+
+Presupuesto de tamaño del paquete
+
+  ✓ JavaScript de cliente, total: 513.9 kB de 640 kB (80 %)
+  ✓ Fragmento individual más grande: 75.4 kB de 100 kB (75 %)
+
+El paquete está dentro del presupuesto.
 ```
+
+> **Sobre el presupuesto de rendimiento.** El plan preveía Lighthouse en
+> CI. Se descartó: sus métricas de tiempo dependen de la carga del runner,
+> así que el mismo commit pasa una vez y falla otra, y una comprobación
+> que se pone en rojo sin motivo enseña a ignorar el rojo. El tamaño del
+> paquete es determinista y es la causa que más veces está detrás de una
+> portada lenta. La accesibilidad, que Lighthouse también habría cubierto,
+> se verifica con `axe` y con más detalle.
 
 ---
 
@@ -583,14 +599,12 @@ Sin adornos, y con su coste estimado en
    día. Es lo primero que pedirá un cliente real.
 3. **Variantes de producto.** Una a dos semanas. Decidir antes de cargar
    catálogo.
-4. **Paginación de las tablas del panel.** El escaparate sí está paginado.
-5. **Presupuesto de rendimiento en CI** (Lighthouse con umbrales). La
-   accesibilidad ya se verifica automáticamente; el rendimiento no.
-6. **Demo pública desplegada.** Hoy hay que instalar para verlo.
-7. **Búsqueda de texto completo** cuando el catálogo supere unos miles de
+4. **Demo pública desplegada.** Hoy hay que instalar para verlo. Es lo
+   que más falta para enseñar la plantilla sin fricción.
+5. **Búsqueda de texto completo** cuando el catálogo supere unos miles de
    productos.
-8. **Segundo factor y verificación de correo**, si el negocio lo exige.
+6. **Segundo factor y verificación de correo**, si el negocio lo exige.
 
-Ninguna de las ocho es un defecto. Son decisiones que dependen del negocio
+Ninguna de las seis es un defecto. Son decisiones que dependen del negocio
 concreto o trabajo que la plantilla deja preparado pero no puede hacer por
 adelantado.

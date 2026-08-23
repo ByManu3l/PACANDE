@@ -19,6 +19,7 @@
     "e2e": "playwright test",
     "audit:repo": "node scripts/audit-repo.mjs",
     "audit:governance": "node scripts/audit-governance.mjs",
+    "audit:bundle": "node scripts/audit-bundle.mjs",
     "audit:deadcode": "knip",
     "audit": "npm run audit:repo && npm run audit:governance && npm run audit:deadcode",
     "prepare": "husky"

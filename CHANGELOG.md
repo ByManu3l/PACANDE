@@ -23,6 +23,9 @@ datos.
   relacionados y datos estructurados de schema.org.
 - **`npm run audit`**: comprueba las reglas del proyecto, la integridad
   del repositorio y el código muerto. Corre en CI.
+- **Presupuesto de tamaño del paquete** (`npm run audit:bundle`), que
+  rompe el build si el JavaScript de cliente se dispara.
+- **Paginación en las tablas del panel** (pedidos y productos).
 - **Auditoría de accesibilidad** con `axe` sobre 9 páginas (WCAG 2.1 AA).
 - `docs/QUE-INCLUYE.md`: qué está hecho, qué no y qué cuesta completarlo.
 

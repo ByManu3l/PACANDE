@@ -71,3 +71,9 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      # Después del build, que es lo que mide. El tamaño del paquete es
+      # determinista, a diferencia de las métricas de tiempo, que en un
+      # runner compartido varían y pondrían el rojo sin motivo.
+      - name: Presupuesto de tamaño del paquete
+        run: npm run audit:bundle

@@ -316,13 +316,15 @@ User ──< Order ──< OrderItem >── Product >── Category ──< Ca
 
 ## Verificación
 
-| Comando             | Qué comprueba                          |
-| ------------------- | -------------------------------------- |
-| `npm run lint`      | ESLint                                 |
-| `npm run typecheck` | Tipos (genera antes los tipos de ruta) |
-| `npm run test`      | Vitest contra la Postgres de pruebas   |
-| `npm run e2e`       | Playwright, navegador real             |
-| `npm run build`     | Compilación de producción              |
+| Comando                | Qué comprueba                                     |
+| ---------------------- | ------------------------------------------------- |
+| `npm run lint`         | ESLint                                            |
+| `npm run typecheck`    | Tipos (genera antes los tipos de ruta)            |
+| `npm run test`         | Vitest contra la Postgres de pruebas              |
+| `npm run e2e`          | Playwright, navegador real                        |
+| `npm run build`        | Compilación de producción                         |
+| `npm run audit`        | Reglas del proyecto, gobernanza y código muerto   |
+| `npm run audit:bundle` | Presupuesto de tamaño del paquete (tras el build) |
 
 Las pruebas unitarias corren contra una base de datos **real**, no
 simulada: las condiciones de carrera y las restricciones de integridad

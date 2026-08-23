@@ -92,7 +92,6 @@ posible, pero no es un añadido pequeño.
 ### 4. Otras ausencias conocidas
 
 - Segundo factor de autenticación y verificación de correo al registrarse.
-- Las tablas del panel no están paginadas (el escaparate sí lo está).
 - Las imágenes subidas no se redimensionan ni se optimizan.
 - Un solo idioma y una sola moneda.
 - Sin integración contable ni con transportadoras.

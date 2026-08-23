@@ -105,13 +105,22 @@ también con arreglos anidados, como las líneas de un pedido.
 npm run lint
 npm run typecheck
 npm run test
+npm run audit
 npm run build
+npm run audit:bundle
 ```
 
-Los cuatro en verde. Es exactamente lo que corre CI, así que si pasan en
-local, pasan allí.
+Todos en verde. Es exactamente lo que corre CI, así que si pasan en local,
+pasan allí.
 
-Playwright (`npm run e2e`) es más lento y va en un flujo aparte. Córrelo
+`npm run audit` comprueba las reglas del proyecto —las que ni ESLint ni
+TypeScript pueden verificar— y la integridad del repositorio.
+`audit:bundle` mide el JavaScript que se envía al navegador y necesita un
+build previo.
+
+Playwright (`npm run e2e`) es más lento y corre en su propio job de CI —
+también en cada push, desde que un flujo solo nocturno dejó pasar una
+regresión durante varios commits. Córrelo en local
 si tocaste flujos completos: autenticación, compra, permisos.
 
 ---
@@ -209,13 +218,13 @@ en `lib/prisma.ts`, y los errores de restricción única no traen
 Estas cosas están identificadas y **no** corregidas, con su motivo. No son
 sorpresas: si te topas con alguna, ya se sabía.
 
-| Qué                                                      | Por qué se dejó así                                                                                    |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| 4 avisos de lint por `watch()` de react-hook-form        | Vienen de la biblioteca, no del código propio. Son avisos, no errores.                                 |
-| Sin recuperación de contraseña                           | Requiere un proveedor de correo, que cada proyecto elige. Ver `AUDITORIA.md`.                          |
-| Las tablas del panel no están paginadas                  | El escaparate sí lo está. Con miles de pedidos hay que aplicar `lib/utils/pagination.ts` también aquí. |
-| Las imágenes subidas no se optimizan ni se redimensionan | Se validan tipo y tamaño; procesarlas exige otra dependencia.                                          |
-| Sin verificación de correo al registrarse                | Requiere un proveedor de correo, que cada proyecto elige.                                              |
+| Qué                                                      | Por qué se dejó así                                                           |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| 4 avisos de lint por `watch()` de react-hook-form        | Vienen de la biblioteca, no del código propio. Son avisos, no errores.        |
+| Sin recuperación de contraseña                           | Requiere un proveedor de correo, que cada proyecto elige. Ver `AUDITORIA.md`. |
+| Sin demo pública desplegada                              | Hay que instalar para verlo. Es lo siguiente que conviene hacer.              |
+| Las imágenes subidas no se optimizan ni se redimensionan | Se validan tipo y tamaño; procesarlas exige otra dependencia.                 |
+| Sin verificación de correo al registrarse                | Requiere un proveedor de correo, que cada proyecto elige.                     |
 
 El listado completo, con severidades y recomendaciones, está en
 [`AUDITORIA.md`](AUDITORIA.md).
