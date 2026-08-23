@@ -1,10 +1,45 @@
 # Pacandé
 
-Plantilla de E-commerce full-stack lista para producción: catálogo por
-categorías, carrito, checkout, cuentas de usuario y un panel de
-administración completo (categorías, productos, pedidos, envíos, usuarios
-con roles). Pensada para clonarse y re-marcarse como punto de partida de
-un negocio nuevo, no para usarse tal cual con la marca "Pacandé".
+**Una tienda en línea completa, lista para adaptar a tu negocio.**
+
+Catálogo con filtros, carrito persistente, cupones, opiniones de clientes,
+favoritos, checkout y un panel de administración que cubre catálogo,
+pedidos, promociones y usuarios. Se re-marca editando dos archivos.
+
+<p>
+  <img alt="CI" src="https://github.com/ByManu3l/PACANDE/actions/workflows/ci.yml/badge.svg" />
+  <img alt="E2E" src="https://github.com/ByManu3l/PACANDE/actions/workflows/e2e.yml/badge.svg" />
+  <img alt="Pruebas" src="https://img.shields.io/badge/pruebas-189-brightgreen" />
+  <img alt="Accesibilidad" src="https://img.shields.io/badge/WCAG_2.1_AA-sin%20infracciones-brightgreen" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-estricto-blue" />
+</p>
+
+|                          |                                                      |
+| ------------------------ | ---------------------------------------------------- |
+| **Qué incluye y qué no** | [`docs/QUE-INCLUYE.md`](docs/QUE-INCLUYE.md)         |
+| **Cómo está construido** | [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md)       |
+| **Cómo hacerla tuya**    | [`docs/PERSONALIZACION.md`](docs/PERSONALIZACION.md) |
+
+## Por qué esta y no otra
+
+- **La lógica que maneja dinero está probada, no supuesta.** No se puede
+  vender inventario inexistente aunque dos personas compren a la vez, los
+  precios se releen del servidor en cada compra, y los importes se
+  calculan en decimal exacto. Cada una de esas propiedades tiene su prueba
+  contra una base de datos real.
+- **189 pruebas automáticas** que corren en cada cambio: 150 de servicios
+  y 39 de navegador, incluidas 13 de accesibilidad.
+- **El repositorio comprueba su propio estado.** `npm run audit` verifica
+  las reglas del proyecto, la integridad de la documentación y el código
+  muerto. Sale con error si algo falla.
+- **Documentada para que la herede otro.** No solo qué hace cada cosa:
+  por qué se hizo así y qué se rompe si se cambia.
+- **Cero infracciones de WCAG 2.1 AA** en las páginas principales,
+  verificado automáticamente.
+
+> Los datos de tarjeta **nunca llegan al servidor**, y la pasarela de pago
+> viene simulada a propósito. Lo que la rodea —stock, precios, cupones,
+> transacciones— sí está resuelto. Ver [`docs/QUE-INCLUYE.md`](docs/QUE-INCLUYE.md).
 
 ## Stack
 

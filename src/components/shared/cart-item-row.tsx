@@ -63,6 +63,10 @@ export function CartItemRow({ item }: CartItemRowProps) {
         <p className="text-muted-foreground text-sm">{formatPrice(item.product.price)}</p>
       </div>
 
+      {/* Los tres botones de esta fila son solo iconos, así que llevan
+          `aria-label` con el nombre del producto: sin él, un lector de
+          pantalla anuncia «botón, botón, botón» en cada línea y no hay
+          forma de saber a qué producto corresponde cada uno. */}
       <div className="flex items-center rounded-lg border">
         <Button
           type="button"
@@ -70,16 +74,24 @@ export function CartItemRow({ item }: CartItemRowProps) {
           size="icon"
           disabled={isPending}
           onClick={() => runUpdate(item.quantity - 1)}
+          aria-label={`Quitar una unidad de ${item.product.name}`}
         >
           <Minus className="size-4" />
         </Button>
-        <span className="w-8 text-center text-sm">{item.quantity}</span>
+
+        {/* `aria-live`: al cambiar la cantidad, el nuevo valor se anuncia
+            sin que haya que volver a recorrer la fila. */}
+        <span className="w-8 text-center text-sm" aria-live="polite">
+          {item.quantity}
+        </span>
+
         <Button
           type="button"
           variant="ghost"
           size="icon"
           disabled={isPending || item.quantity >= item.product.stock}
           onClick={() => runUpdate(item.quantity + 1)}
+          aria-label={`Añadir una unidad de ${item.product.name}`}
         >
           <Plus className="size-4" />
         </Button>
@@ -89,7 +101,14 @@ export function CartItemRow({ item }: CartItemRowProps) {
         {formatPrice(Number(item.product.price) * item.quantity)}
       </p>
 
-      <Button type="button" variant="ghost" size="icon" disabled={isPending} onClick={runRemove}>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        disabled={isPending}
+        onClick={runRemove}
+        aria-label={`Eliminar ${item.product.name} del carrito`}
+      >
         <Trash2 className="text-destructive size-4" />
       </Button>
     </div>

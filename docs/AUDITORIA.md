@@ -330,3 +330,267 @@ del navegador estaba oculto y no componía fotogramas.
 El comentario incorrecto se eliminó y el error se dejó constar en el
 mensaje del commit correspondiente. Se menciona aquí porque un informe de
 auditoría que solo cuenta los aciertos no es un informe fiable.
+
+---
+
+---
+
+# Segunda parte — Re-auditoría a nivel comercial
+
+La primera auditoría dejó el proyecto **correcto**. Esta segunda partió de
+una observación distinta: correcto y vendible no son lo mismo. El plan
+está en [`reauditoria-prompt.md`](reauditoria-prompt.md); esto es lo que
+salió.
+
+## Resumen
+
+|                            | Antes               | Después                        |
+| -------------------------- | ------------------- | ------------------------------ |
+| Pruebas unitarias          | 83                  | **150**                        |
+| Pruebas de navegador       | 11                  | **39**                         |
+| Auditoría de accesibilidad | ninguna             | **13 páginas, 0 infracciones** |
+| Modelos de datos           | 9                   | **13**                         |
+| Archivos de gobernanza     | 1                   | **22**                         |
+| Auto-auditoría             | verificación manual | **`npm run audit`**            |
+| Documentación              | 5 documentos        | **7 documentos**               |
+| Licencia                   | MIT                 | **Comercial**                  |
+
+Se corrigieron **once defectos** —tres de ellos de accesibilidad, en
+controles que se usan en todas las páginas— y se añadieron reseñas,
+cupones, favoritos, direcciones guardadas, filtros de catálogo y galería
+de producto, cada uno con su pantalla de administración.
+
+---
+
+## Lo que faltaba, y por qué se notaba
+
+El diagnóstico de partida no fue una lista de deseos. Fue comparar el
+repositorio con **GritBase**, otro proyecto del mismo autor que sí
+transmite producto comercial, y anotar la diferencia:
+
+- **Cero archivos de gobernanza.** Sin `.editorconfig`, sin ganchos de
+  git, sin `CHANGELOG`, sin `SECURITY.md`, sin plantillas. Y sin
+  `.gitattributes`, lo que hacía que **cada commit escupiera una veintena
+  de avisos de CRLF**.
+- **Ninguna forma de demostrar el estado.** GritBase tiene scripts que
+  auditan el repositorio; aquí las reglas estaban escritas en la
+  documentación y se comprobaban a mano.
+- **El escaparate era funcional, no comercial.** Sin filtros —que es lo
+  primero que se echa en falta—, sin galería, sin reseñas, sin cupones.
+- **Nada que decir en producción.** Sin validación de entorno, sin
+  registro estructurado, sin límite de intentos, sin comprobación de
+  estado.
+
+---
+
+## Defectos corregidos
+
+### Accesibilidad — tres defectos, todos en controles omnipresentes
+
+**1. Diecisiete controles de navegación se anunciaban como botones.**
+`Button render={<Link/>}` produce `<a role="button" href>`, y ese rol
+sustituye al rol implícito de enlace. Un lector de pantalla decía «botón»
+para «Proceder al pago», el carrito, la paginación y todos los filtros.
+
+La distinción no es teórica: los enlaces aparecen en la lista de enlaces
+de la página, se abren en otra pestaña y anuncian que se va a otro sitio.
+_Corrección:_ componente `ButtonLink`, que aplica las mismas clases sobre
+un `<Link>` real.
+
+**2. Tres botones sin nombre accesible por cada línea del carrito.**
+Aumentar, disminuir y eliminar eran botones de icono sin etiqueta: «botón,
+botón, botón», sin decir de qué producto.
+_Corrección:_ `aria-label` con el nombre del producto, y `aria-live` en la
+cantidad para que el nuevo valor se anuncie al cambiarlo.
+
+**3. Contraste insuficiente en el avatar** (4,34 frente al 4,5 exigido por
+WCAG AA), presente en todas las páginas porque vive en la barra de
+navegación.
+_Corrección:_ el par `bg-primary` / `text-primary-foreground`, que
+contrasta por diseño en cualquier color de marca.
+
+_Verificado:_ `axe` sobre 9 páginas con las reglas WCAG 2.1 A y AA. Cero
+infracciones. Ninguno de los tres lo detectaban ESLint, TypeScript ni las
+pruebas funcionales, y los tres habrían vuelto a pasar inadvertidos.
+
+### Funcionales
+
+**4. El menú de cuenta reventaba la página entera.** Al abrirlo:
+«Base UI: MenuGroupContext is missing». `DropdownMenuLabel` es la etiqueta
+de un _grupo_ y exige un `Menu.Group` alrededor.
+
+Llevaba roto desde que se escribió el componente. **Nadie lo vio porque la
+prueba de extremo a extremo cerraba sesión con una petición directa al
+endpoint CSRF de Auth.js en vez de usar el menú** — la prueba fingía la
+interacción que decía comprobar. Es el hallazgo más instructivo de toda la
+auditoría: una prueba que evita la interfaz real no prueba la interfaz
+real.
+
+**5. Un `Decimal` volvía a cruzar al cliente.** El carrito hacía
+`{ ...producto, price: … }`; al añadir `ratingAverage` al modelo, ese
+campo empezó a colarse. Es justo el patrón que el ayudante `toProductCard`
+existe para evitar, y este punto de llamada era anterior.
+
+**6. «Limpiar filtros» borraba el término buscado.** Apuntaba al camino
+base a secas, así que en `/buscar` dejaba la página vacía.
+
+**7. El seed dependía del singleton de Prisma de la aplicación**, que tras
+añadir `server-only` lanzaba fuera del runtime de Next.js. Lo detectó CI.
+
+### De integridad
+
+**8. Cupones sin tope podían dar totales negativos.** Un cupón de importe
+fijo mayor que la compra habría hecho pagar al cliente por comprar.
+_Corrección:_ el descuento nunca supera el subtotal, y los porcentuales
+admiten un tope propio.
+
+**9. El contador de usos de un cupón se podía superar.** Comprobar y
+después incrementar deja que un cupón «de 100 usos» acabe con 105 pedidos.
+_Corrección:_ `UPDATE` condicional, la misma forma que el descuento de
+stock.
+
+**10. Las opiniones no verificaban la compra.** Sin esa regla, la sección
+de reseñas es un formulario público y la valoración media deja de informar
+sobre el producto.
+
+**11. La desnormalización de la valoración podía desincronizarse.** Si el
+recálculo solo ocurriera al aprobar, rechazar una reseña ya publicada
+dejaría la ficha mostrando una media que no corresponde a lo visible.
+_Corrección:_ el recálculo va dentro de la misma transacción que el cambio
+de estado, y hay una prueba para ese caso concreto.
+
+---
+
+## Lo que se añadió
+
+**Gobernanza.** `husky` + `lint-staged` + `commitlint` (verificado que
+rechaza un mensaje sin prefijo), `knip`, `.editorconfig`, `.nvmrc`,
+`.gitattributes`, ajustes de VS Code, `CHANGELOG`, `SECURITY`,
+`CONTRIBUTING`, `CODE_OF_CONDUCT`, `CODEOWNERS`, `dependabot` y plantillas
+de issue y pull request.
+
+**Capa de producción.** Validación de variables de entorno al arrancar
+—que detiene el arranque listando _todos_ los problemas, no el primero—,
+registro estructurado con filtrado de datos sensibles, límite de intentos
+en acceso, registro y compra, cabeceras de seguridad y `/api/health`.
+
+**Funciones comerciales.** Reseñas con moderación, cupones, favoritos,
+libreta de direcciones conectada al checkout, filtros y ordenamiento,
+galería con miniaturas, migas de pan, productos relacionados y datos
+estructurados de schema.org.
+
+**Auto-auditoría.** `npm run audit` ejecuta tres comprobaciones:
+
+```
+Auditoría de reglas del proyecto
+
+  ✓ Prisma solo se usa desde lib/services/
+  ✓ Toda Server Action de administración comprueba el rol
+  ✓ La marca solo vive en site.config.ts
+  ✓ Las variables de entorno se leen de lib/env.ts
+  ✓ No quedan console.log ni console.error sueltos
+  ✓ No hay `any` explícito
+  ✓ Los importes monetarios no se calculan con Number en los servicios
+
+Las 7 comprobaciones pasan.
+
+Auditoría de gobernanza del repositorio
+
+  ✓ Están los 22 archivos esperados
+  ✓ Ningún enlace roto en la documentación
+
+Gobernanza completa: 22 archivos, 0 enlaces rotos.
+```
+
+---
+
+## Decisiones deliberadas
+
+**Licencia comercial en lugar de MIT.** MIT permite a cualquier comprador
+redistribuir la plantilla, lo que anula el negocio. El razonamiento
+completo, con sus consecuencias asumidas —repositorio privado, sin
+contribuciones externas—, está en `DECISIONES.md`.
+
+**Anti-objetivos respetados.** Nada de multi-tenant, monorepo,
+microservicios, sistema de plugins, GraphQL ni capa de repositorios sobre
+Prisma. Cada uno resultó tentador en algún momento y cada uno habría
+convertido una plantilla vendible en un producto que nadie mantiene.
+
+**Variantes de producto (talla, color) quedan fuera.** No es una función:
+es un cambio de modelo de datos que atraviesa carrito, inventario, pedidos
+y panel. Hacerlo a medias sería peor que no hacerlo, y conviene decidirlo
+antes de cargar catálogo. Documentado en `QUE-INCLUYE.md` con su coste
+estimado.
+
+**El carrito sigue sin reservar inventario** y **las transiciones de
+estado de envío siguen sin restringir**: ambas se explicaron en la primera
+auditoría y siguen siendo correctas.
+
+---
+
+## Verificación
+
+**Re-marcado.** Nombre a «Verdemar», moneda a USD, tono del color. En el
+navegador: título cambiado, cero apariciones de la marca anterior, precios
+de `$ 69.000` a `$69,000.00`, y `priceCurrency` del JSON-LD ahora en USD
+—esto último era un valor fijo que la primera auditoría no detectó y que
+habría publicado precios en la moneda equivocada—. Revertido después.
+
+**Arranque en frío.** Base de datos nueva, migraciones y seed según el
+README: 3 usuarios, 20 categorías, 92 productos, 3 cupones, 6 reseñas.
+Segunda pasada del seed: mismos recuentos.
+
+**Suites.** 150 unitarias contra PostgreSQL real y 39 de navegador —13 de
+ellas de accesibilidad—, más lint, typecheck, auditoría y build. CI verde en los dos
+flujos.
+
+---
+
+## Errores propios
+
+Se listan porque un informe que solo cuenta aciertos no sirve para
+enseñárselo a nadie.
+
+**Diagnostiqué mal `shadcn`.** `knip` lo marcó como dependencia sin usar y
+me pareció evidente —una CLI en `dependencies`—. Lo quité, el build falló,
+y di por hecho que la causa era esa eliminación. Era falso por partida
+doble: el fallo venía de la caché de `.next`, y `shadcn` sí hace falta
+porque `globals.css` importa `shadcn/tailwind.css`. Es el mismo punto
+ciego de knip con el CSS que yo mismo había identificado un minuto antes
+para otro paquete, y no apliqué el razonamiento.
+
+**Rompí `error.tsx`** con un escape mal formado y pasé varios intentos
+diagnosticando como fallo del menú lo que era mi propia edición.
+
+**Mi primer registro de errores imprimía `[object Error]`**, que es
+exactamente lo contrario de para lo que existe.
+
+**Mi propio script de auditoría daba un falso positivo** porque comparaba
+rutas con barras mientras Windows las devuelve con contrabarras.
+
+Los cuatro se corrigieron y quedaron documentados en el código o en el
+mensaje del commit correspondiente.
+
+---
+
+## Lo que sigue faltando
+
+Sin adornos, y con su coste estimado en
+[`QUE-INCLUYE.md`](QUE-INCLUYE.md):
+
+1. **Pasarela de pago real.** Medio día a dos días.
+2. **Correos** —recuperación de contraseña y confirmación de pedido—. Un
+   día. Es lo primero que pedirá un cliente real.
+3. **Variantes de producto.** Una a dos semanas. Decidir antes de cargar
+   catálogo.
+4. **Paginación de las tablas del panel.** El escaparate sí está paginado.
+5. **Presupuesto de rendimiento en CI** (Lighthouse con umbrales). La
+   accesibilidad ya se verifica automáticamente; el rendimiento no.
+6. **Demo pública desplegada.** Hoy hay que instalar para verlo.
+7. **Búsqueda de texto completo** cuando el catálogo supere unos miles de
+   productos.
+8. **Segundo factor y verificación de correo**, si el negocio lo exige.
+
+Ninguna de las ocho es un defecto. Son decisiones que dependen del negocio
+concreto o trabajo que la plantilla deja preparado pero no puede hacer por
+adelantado.

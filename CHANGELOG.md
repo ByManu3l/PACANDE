@@ -11,6 +11,46 @@ datos.
 
 ### Añadido
 
+- **Opiniones de clientes** con moderación previa y verificación de
+  compra, con valoración media desnormalizada y desglose por estrellas.
+- **Cupones de descuento** (porcentaje o importe fijo) con vigencia,
+  compra mínima, tope de descuento y límite de usos.
+- **Favoritos** y **libreta de direcciones**, esta última conectada al
+  checkout.
+- **Filtros y ordenamiento** de catálogo y búsqueda, con el estado en la
+  URL para que los resultados sean compartibles.
+- **Galería de producto** con miniaturas, migas de pan, productos
+  relacionados y datos estructurados de schema.org.
+- **`npm run audit`**: comprueba las reglas del proyecto, la integridad
+  del repositorio y el código muerto. Corre en CI.
+- **Auditoría de accesibilidad** con `axe` sobre 9 páginas (WCAG 2.1 AA).
+- `docs/QUE-INCLUYE.md`: qué está hecho, qué no y qué cuesta completarlo.
+
+### Corregido
+
+- **Accesibilidad:** 17 controles de navegación se anunciaban como botones
+  en lugar de enlaces; tres botones por línea del carrito no tenían nombre
+  accesible; el avatar no alcanzaba el contraste mínimo de WCAG AA.
+- **El menú de cuenta reventaba la página** al abrirse
+  (`MenuGroupContext is missing`). Llevaba roto desde su creación: la
+  prueba de extremo a extremo evitaba el menú y no lo ejercitaba.
+- Un `Decimal` volvía a cruzar al cliente desde el carrito al añadir
+  `ratingAverage` al modelo.
+- «Limpiar filtros» perdía el término buscado en la página de búsqueda.
+- El seed dependía del singleton de Prisma de la aplicación.
+
+### Cambiado
+
+- **Licencia: de MIT a comercial.** MIT permitía a un comprador
+  redistribuir la plantilla. Ver `docs/DECISIONES.md`.
+- Las pruebas de navegador corren en **cada push**, no solo por la noche:
+  un flujo nocturno detecta las regresiones cuando ya están enterradas.
+- CI lee la versión de Node de `.nvmrc` (estaban desalineados: 22 y 24).
+- El vaciado de tablas entre pruebas se lee del catálogo de Postgres en
+  vez de una lista fija que había que recordar actualizar.
+
+### Añadido (infraestructura)
+
 - **Validación de las variables de entorno al arrancar** (`src/lib/env.ts`).
   Un `.env` incompleto detiene el arranque con la lista de lo que falta,
   en vez de fallar más tarde en una petición cualquiera.

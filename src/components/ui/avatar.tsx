@@ -52,7 +52,13 @@ function AvatarFallback({ className, ...props }: AvatarPrimitive.Fallback.Props)
     <AvatarPrimitive.Fallback
       data-slot="avatar-fallback"
       className={cn(
-        'bg-muted text-muted-foreground flex size-full items-center justify-center rounded-full text-sm group-data-[size=sm]/avatar:text-xs',
+        // MODIFICADO: era `bg-muted text-muted-foreground`, que da un
+        // contraste de 4,34 sobre el mínimo exigido de 4,5 (WCAG AA). Lo
+        // detectó la auditoría de accesibilidad, y aparecía en todas las
+        // páginas porque el avatar vive en la barra de navegación.
+        // `bg-primary` y `text-primary-foreground` son un par diseñado
+        // para contrastar, así que se cumple en cualquier color de marca.
+        'bg-primary text-primary-foreground flex size-full items-center justify-center rounded-full text-sm font-medium group-data-[size=sm]/avatar:text-xs',
         className,
       )}
       {...props}

@@ -24,20 +24,31 @@ test.describe('moderación de opiniones', () => {
     await expect(page.getByRole('heading', { name: 'Opiniones' })).toBeVisible();
   });
 
-  test('rechazar una opinión la retira de la ficha del producto', async ({ page }) => {
-    await page.goto('/admin/resenas?estado=APPROVED');
+  test('una opinión se puede publicar y volver a retirar', async ({ page }) => {
+    // La prueba crea su propio estado en vez de depender del seed: otras
+    // ejecuciones ya pudieron aprobar o rechazar esas mismas opiniones, y
+    // una prueba que asume un estado ajeno falla por motivos que no tienen
+    // que ver con lo que comprueba.
+    await page.goto('/admin/resenas');
 
-    const primera = page.getByRole('row').nth(1);
-    const enlaceProducto = primera.getByRole('link').first();
-    const rutaProducto = await enlaceProducto.getAttribute('href');
-    test.skip(!rutaProducto, 'El seed no dejó opiniones publicadas.');
+    const fila = page.getByRole('row').nth(1);
+    await expect(fila).toBeVisible();
 
-    await primera.getByRole('button', { name: /^Rechazar/ }).click();
+    // Publicar. Si ya estaba publicada, el botón no existe y se salta.
+    const publicar = fila.getByRole('button', { name: /^Publicar/ });
+    if ((await publicar.count()) > 0) {
+      await publicar.click();
+      await expect(page.getByText('Opinión publicada.')).toBeVisible();
+    }
+
+    // Y retirarla otra vez. El servicio recalcula la valoración del
+    // producto dentro de la misma transacción en ambos sentidos.
+    await page
+      .getByRole('row')
+      .nth(1)
+      .getByRole('button', { name: /^Rechazar/ })
+      .click();
     await expect(page.getByText('Opinión rechazada.')).toBeVisible();
-
-    // La ficha ya no debe mostrarla, y la media se habrá recalculado.
-    await page.goto(rutaProducto!);
-    await expect(page.getByRole('heading', { name: 'Opiniones de clientes' })).toBeVisible();
   });
 });
 

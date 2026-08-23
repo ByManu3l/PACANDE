@@ -40,23 +40,36 @@ export function AddToCartButton({ productId, stock }: AddToCartButtonProps) {
 
   return (
     <div className="flex items-center gap-3">
-      <div className="flex items-center rounded-lg border">
+      {/* Botones de solo icono: necesitan `aria-label` o se anuncian como
+          «botón» a secas. `aria-live` en la cantidad hace que el valor
+          nuevo se lea al cambiarlo, sin volver a recorrer el grupo. */}
+      <div
+        className="flex items-center rounded-lg border"
+        role="group"
+        aria-label="Cantidad a añadir"
+      >
         <Button
           type="button"
           variant="ghost"
           size="icon"
           disabled={quantity <= 1}
           onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+          aria-label="Disminuir la cantidad"
         >
           <Minus className="size-4" />
         </Button>
-        <span className="w-8 text-center text-sm">{quantity}</span>
+
+        <span className="w-8 text-center text-sm" aria-live="polite">
+          {quantity}
+        </span>
+
         <Button
           type="button"
           variant="ghost"
           size="icon"
           disabled={quantity >= stock}
           onClick={() => setQuantity((q) => Math.min(stock, q + 1))}
+          aria-label="Aumentar la cantidad"
         >
           <Plus className="size-4" />
         </Button>

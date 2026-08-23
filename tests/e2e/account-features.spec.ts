@@ -23,6 +23,12 @@ test.describe('libreta de direcciones', () => {
     await page.goto('/cuenta/direcciones');
     await expect(page.getByRole('heading', { name: 'Direcciones' })).toBeVisible();
 
+    // La libreta admite 10 direcciones. Esta prueba crea una en cada
+    // ejecución, así que primero retira las que dejó atrás: sin esto la
+    // décima ejecución falla por el límite, y el motivo no tiene nada que
+    // ver con lo que se está comprobando.
+    await limpiarDireccionesDePrueba(page);
+
     const etiqueta = `Casa ${Date.now().toString().slice(-5)}`;
 
     await page.getByRole('button', { name: 'Añadir dirección' }).click();
@@ -59,3 +65,32 @@ test.describe('libreta de direcciones', () => {
     await expect(page.getByLabel('Ciudad')).toHaveValue('Bogotá');
   });
 });
+
+/**
+ * Elimina las direcciones creadas por ejecuciones anteriores.
+ *
+ * Se reconocen por la etiqueta `Casa <5 dígitos>`, que solo produce esta
+ * prueba. Las que pudiera tener el usuario de ejemplo se conservan.
+ */
+async function limpiarDireccionesDePrueba(page: import('@playwright/test').Page) {
+  // Sin anclas: `hasText` compara contra el texto COMPLETO del elemento,
+  // y cada tarjeta contiene además la dirección y sus botones.
+  const patron = /Casa \d{5}/;
+
+  // Se hace de una en una porque la lista se vuelve a renderizar tras
+  // cada borrado y los localizadores previos quedan obsoletos.
+  for (let i = 0; i < 12; i++) {
+    const tarjetas = page.locator('li').filter({ hasText: patron });
+    if ((await tarjetas.count()) === 0) return;
+
+    const borrar = tarjetas.first().getByRole('button', { name: 'Eliminar' });
+    if ((await borrar.count()) === 0) {
+      // Es la predeterminada y no tiene botón de borrar mientras sea la
+      // única; se deja y se sigue.
+      return;
+    }
+
+    await borrar.click();
+    await page.waitForTimeout(300);
+  }
+}
