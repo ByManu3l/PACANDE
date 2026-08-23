@@ -46,7 +46,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           # Se lee de .nvmrc para que la versión de CI y la local no
           # puedan desalinearse. Estaban en 22 y 24 respectivamente.
