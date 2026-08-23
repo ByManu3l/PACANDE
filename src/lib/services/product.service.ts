@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { ConflictError, isUniqueViolation, NotFoundError } from '@/lib/utils/errors';
-import { buildPage, PAGE_SIZE, toSkipTake } from '@/lib/utils/pagination';
+import { ADMIN_PAGE_SIZE, buildPage, PAGE_SIZE, toSkipTake } from '@/lib/utils/pagination';
 import { type ProductFilters, toPrismaOrderBy, toPrismaWhere } from '@/lib/utils/product-filters';
 import type { ProductInput } from '@/lib/validations/product';
 
@@ -70,12 +70,18 @@ export async function searchProducts(query: string, page: number, filters?: Prod
 // el panel gestiona el inventario completo, no solo lo publicado.
 // ---------------------------------------------------------------------------
 
-/** Catálogo completo para la tabla del panel, con su categoría. */
-export async function listProductsForAdmin() {
-  return prisma.product.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: { category: true },
-  });
+/** Catálogo del panel, paginado. Ver la nota en `listAllOrders`. */
+export async function listProductsForAdmin(page = 1) {
+  const [items, total] = await Promise.all([
+    prisma.product.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { category: true },
+      ...toSkipTake(page, ADMIN_PAGE_SIZE),
+    }),
+    prisma.product.count(),
+  ]);
+
+  return buildPage(items, total, page, ADMIN_PAGE_SIZE);
 }
 
 /**

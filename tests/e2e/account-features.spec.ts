@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { vaciarCarrito } from './carrito-helpers';
+
 /** Páginas de cuenta. Corren en el proyecto «cliente», ya autenticado. */
 
 test.describe('favoritos', () => {
@@ -53,6 +55,7 @@ test.describe('libreta de direcciones', () => {
     await expect(page.getByText('Predeterminada', { exact: true })).toHaveCount(1);
 
     // Y el checkout debe ofrecerla, que es para lo que existe la libreta.
+    await vaciarCarrito(page);
     await page.goto('/producto/ropa-mujer-camiseta');
     await page.getByRole('button', { name: 'Añadir al carrito' }).click();
     await page.goto('/checkout');

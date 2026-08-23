@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { vaciarCarrito } from './carrito-helpers';
+
 /**
  * Flujos de las funciones añadidas en la re-auditoría: cupones,
  * favoritos, filtros y galería.
@@ -18,6 +20,13 @@ import { expect, test } from '@playwright/test';
  */
 
 test.describe('cupones de descuento', () => {
+  // Sin esto, las unidades acumuladas por ejecuciones anteriores agotan el
+  // stock y `addItem` rechaza el añadido, por motivos ajenos a lo que se
+  // comprueba aquí.
+  test.beforeEach(async ({ page }) => {
+    await vaciarCarrito(page);
+  });
+
   test('un cupón válido descuenta del total y viaja hasta el checkout', async ({ page }) => {
     await page.goto('/producto/ropa-hombre-camiseta-gris');
     await page.getByRole('button', { name: 'Añadir al carrito' }).click();
@@ -48,6 +57,9 @@ test.describe('cupones de descuento', () => {
   test('un cupón vencido explica el motivo, no dice solo «no válido»', async ({ page }) => {
     await page.goto('/producto/ropa-hombre-camiseta-gris');
     await page.getByRole('button', { name: 'Añadir al carrito' }).click();
+    // Esperar al aviso antes de navegar: sin esto, la navegación compite
+    // con la Server Action y el carrito puede llegar vacío.
+    await expect(page.getByText('Producto agregado al carrito.')).toBeVisible();
 
     await page.goto('/carrito');
     await page.getByLabel('¿Tienes un cupón?').fill('NAVIDAD2025');
@@ -59,6 +71,9 @@ test.describe('cupones de descuento', () => {
   test('un cupón inexistente se rechaza', async ({ page }) => {
     await page.goto('/producto/ropa-hombre-camiseta-gris');
     await page.getByRole('button', { name: 'Añadir al carrito' }).click();
+    // Esperar al aviso antes de navegar: sin esto, la navegación compite
+    // con la Server Action y el carrito puede llegar vacío.
+    await expect(page.getByText('Producto agregado al carrito.')).toBeVisible();
 
     await page.goto('/carrito');
     await page.getByLabel('¿Tienes un cupón?').fill('NOEXISTE99');

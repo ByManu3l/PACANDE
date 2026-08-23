@@ -5,6 +5,7 @@ import * as cartService from '@/lib/services/cart.service';
 import { calculateDiscount, normalizeCode, redeemCoupon } from '@/lib/services/coupon.service';
 import { paymentProvider } from '@/lib/services/payment.service';
 import { UnauthorizedError, ValidationError } from '@/lib/utils/errors';
+import { ADMIN_PAGE_SIZE, buildPage, toSkipTake } from '@/lib/utils/pagination';
 
 /**
  * Creación de pedidos: la parte más delicada del proyecto.
@@ -346,17 +347,24 @@ export async function listOrdersForUser(userId: string) {
 }
 
 /**
- * Todos los pedidos, para el panel.
+ * Pedidos del panel, paginados y del más reciente al más antiguo.
  *
  * De `user` solo se traen nombre y correo: es lo que la tabla muestra, y
  * evita arrastrar el hash de contraseña en cada consulta.
  *
- * Sin paginar. Con volúmenes altos conviene añadirla igual que en el
- * catálogo (`lib/utils/pagination.ts`); ver `docs/AUDITORIA.md`.
+ * La paginación no es cosmética: cada fila incluye sus líneas de pedido y
+ * su envío, así que una tienda con miles de pedidos traería decenas de
+ * miles de filas en cada visita al panel.
  */
-export async function listAllOrders() {
-  return prisma.order.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: { items: true, shipment: true, user: { select: { name: true, email: true } } },
-  });
+export async function listAllOrders(page = 1) {
+  const [items, total] = await Promise.all([
+    prisma.order.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { items: true, shipment: true, user: { select: { name: true, email: true } } },
+      ...toSkipTake(page, ADMIN_PAGE_SIZE),
+    }),
+    prisma.order.count(),
+  ]);
+
+  return buildPage(items, total, page, ADMIN_PAGE_SIZE);
 }

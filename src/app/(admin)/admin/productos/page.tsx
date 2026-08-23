@@ -1,9 +1,17 @@
 import { listCategoriesAction } from '@/actions/category.actions';
 import { listProductsAction } from '@/actions/product.actions';
 import { ProductsTable } from '@/components/admin/products-table';
+import { PaginationNav } from '@/components/shared/pagination-nav';
+import { parsePageParam } from '@/lib/utils/pagination';
 
-export default async function AdminProductsPage() {
-  const [products, categories] = await Promise.all([listProductsAction(), listCategoriesAction()]);
+export const metadata = { title: 'Productos' };
+
+export default async function AdminProductsPage({ searchParams }: PageProps<'/admin/productos'>) {
+  const { page } = await searchParams;
+  const [productos, categories] = await Promise.all([
+    listProductsAction(parsePageParam(page)),
+    listCategoriesAction(),
+  ]);
 
   // Los productos solo se asignan a categorías hoja: una categoría con
   // hijas muestra una grilla de subcategorías en la tienda, nunca de
@@ -14,8 +22,24 @@ export default async function AdminProductsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Productos</h1>
-      <ProductsTable initialProducts={products} categoryOptions={categoryOptions} />
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h1 className="text-2xl font-semibold tracking-tight">Productos</h1>
+        <p className="text-muted-foreground text-sm">
+          {productos.total} {productos.total === 1 ? 'producto' : 'productos'}
+        </p>
+      </div>
+
+      <ProductsTable
+        initialProducts={productos.items}
+        categoryOptions={categoryOptions}
+        page={productos.page}
+      />
+
+      <PaginationNav
+        page={productos.page}
+        pageCount={productos.pageCount}
+        basePath="/admin/productos"
+      />
     </div>
   );
 }

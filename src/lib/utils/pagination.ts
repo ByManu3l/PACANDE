@@ -1,6 +1,16 @@
 /** Productos por página en las grillas del storefront. */
 export const PAGE_SIZE = 24;
 
+/**
+ * Filas por página en las tablas del panel.
+ *
+ * Más que en el escaparate: administrar es escanear listas, y una tabla
+ * de 24 filas obliga a paginar constantemente. Menos que unos cientos,
+ * porque cada fila trae relaciones (líneas de pedido, envío, usuario) y
+ * el coste crece rápido.
+ */
+export const ADMIN_PAGE_SIZE = 50;
+
 export interface Page<T> {
   items: T[];
   total: number;

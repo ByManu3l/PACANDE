@@ -27,15 +27,22 @@ import {
  */
 
 /** Lectura para la tabla del panel. Ver la nota en `listCategoriesAction`. */
-export async function listProductsAction() {
+export async function listProductsAction(page = 1) {
   await requireRole(['ADMIN', 'SUPERADMIN']);
-  const products = await productService.listProductsForAdmin();
+  const pagina = await productService.listProductsForAdmin(page);
 
   // `price` es un `Decimal` de Prisma, que no es serializable al cruzar de
   // Server Action a Client Component (la tabla del panel es cliente y
   // vuelve a llamar a esta acción tras cada cambio). Se envía como texto y
   // se formatea con `formatPrice`, que ya acepta cadenas.
-  return products.map((p) => ({ ...p, price: p.price.toString() }));
+  return {
+    ...pagina,
+    items: pagina.items.map((p) => ({
+      ...p,
+      price: p.price.toString(),
+      ratingAverage: p.ratingAverage.toString(),
+    })),
+  };
 }
 
 /**

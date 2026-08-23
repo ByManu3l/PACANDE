@@ -19,18 +19,20 @@ import {
 } from '@/components/ui/table';
 import { formatPrice } from '@/lib/utils/currency';
 
-type ProductRow = Awaited<ReturnType<typeof listProductsAction>>[number];
+type ProductRow = Awaited<ReturnType<typeof listProductsAction>>['items'][number];
 
 interface ProductsTableProps {
   initialProducts: ProductRow[];
+  /** Página mostrada, para recargar la misma tras editar o borrar. */
+  page?: number;
   categoryOptions: { id: string; name: string }[];
 }
 
-export function ProductsTable({ initialProducts, categoryOptions }: ProductsTableProps) {
+export function ProductsTable({ initialProducts, categoryOptions, page = 1 }: ProductsTableProps) {
   const [products, setProducts] = useState(initialProducts);
 
   const refresh = async () => {
-    setProducts(await listProductsAction());
+    setProducts((await listProductsAction(page)).items);
   };
 
   return (

@@ -23,17 +23,28 @@ import {
 import { formatPrice } from '@/lib/utils/currency';
 import { ORDER_STATUS_LABELS, SHIPMENT_STATUS_LABELS } from '@/lib/utils/order-status';
 
-type OrderRow = Awaited<ReturnType<typeof listAllOrdersAction>>[number];
+type OrderRow = Awaited<ReturnType<typeof listAllOrdersAction>>['items'][number];
 
 const SHIPMENT_STATUSES = Object.keys(SHIPMENT_STATUS_LABELS) as Array<
   keyof typeof SHIPMENT_STATUS_LABELS
 >;
 
-export function OrdersTable({ initialOrders }: { initialOrders: OrderRow[] }) {
+/**
+ * @param page Página que se está mostrando. Hace falta para recargar la
+ *   misma tras cambiar un estado: sin ella, al modificar un pedido de la
+ *   página 3 la tabla saltaría a la 1.
+ */
+export function OrdersTable({
+  initialOrders,
+  page = 1,
+}: {
+  initialOrders: OrderRow[];
+  page?: number;
+}) {
   const [orders, setOrders] = useState(initialOrders);
 
   const refresh = async () => {
-    setOrders(await listAllOrdersAction());
+    setOrders((await listAllOrdersAction(page)).items);
   };
 
   const handleStatusChange = async (orderId: string, status: string) => {

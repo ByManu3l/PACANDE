@@ -43,24 +43,29 @@ export async function checkoutAction(formData: FormData) {
   });
 }
 
-export async function listAllOrdersAction() {
+export async function listAllOrdersAction(page = 1) {
   await requireRole(['ADMIN', 'SUPERADMIN']);
-  const orders = await orderService.listAllOrders();
+  const pagina = await orderService.listAllOrders(page);
+  const orders = pagina.items;
   // Los `Decimal` de Prisma no son serializables al cruzar de Server
   // Action a Client Component, y esta tabla se recarga desde el cliente.
   // Se convierten a texto, incluidos los de cada linea: `items` es un
   // arreglo anidado y el limite RSC tambien lo alcanza.
-  return orders.map((o) => ({
-    ...o,
-    subtotal: o.subtotal.toString(),
-    shippingCost: o.shippingCost.toString(),
-    total: o.total.toString(),
-    items: o.items.map((item) => ({
-      ...item,
-      unitPrice: item.unitPrice.toString(),
-      lineTotal: item.lineTotal.toString(),
+  return {
+    ...pagina,
+    items: orders.map((o) => ({
+      ...o,
+      subtotal: o.subtotal.toString(),
+      shippingCost: o.shippingCost.toString(),
+      total: o.total.toString(),
+      discountAmount: o.discountAmount.toString(),
+      items: o.items.map((item) => ({
+        ...item,
+        unitPrice: item.unitPrice.toString(),
+        lineTotal: item.lineTotal.toString(),
+      })),
     })),
-  }));
+  };
 }
 
 export async function updateShipmentStatusAction(orderId: string, status: ShipmentStatus) {
