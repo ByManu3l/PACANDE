@@ -16,7 +16,12 @@ import {
   checkoutFormSchema,
 } from '@/lib/validations/checkout';
 
-export function CheckoutForm() {
+/**
+ * @param couponCode Código que el cliente aplicó en el carrito. Llega por
+ *   la URL y se reenvía tal cual; el servidor lo revalida y recalcula el
+ *   descuento, así que manipularlo aquí no sirve de nada.
+ */
+export function CheckoutForm({ couponCode }: { couponCode?: string }) {
   const router = useRouter();
   const {
     register,
@@ -40,6 +45,8 @@ export function CheckoutForm() {
       const value = values[field];
       if (value) formData.set(field, value);
     }
+
+    if (couponCode) formData.set('couponCode', couponCode);
 
     const result = await checkoutAction(formData);
     if (!result.success) {

@@ -20,16 +20,26 @@ test('a visitor can register, land authenticated, log out, and log back in', asy
   // texto suelto, así que hay que comprobar su valor.
   await expect(page.getByLabel('Correo')).toHaveValue(email);
 
-  // Cerrar sesión desde el formulario del menú de cuenta.
-  await page.evaluate(async () => {
-    const csrfRes = await fetch('/api/auth/csrf');
-    const { csrfToken } = await csrfRes.json();
-    await fetch('/api/auth/signout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ csrfToken, callbackUrl: '/' }),
-    });
-  });
+  // Cerrar sesión desde el menú de cuenta, como lo haría una persona.
+  //
+  // Antes esto se hacía con una petición cruda al endpoint CSRF de
+  // Auth.js. Era frágil —dependía de un detalle interno de la biblioteca
+  // y falló de dos formas distintas en ejecuciones consecutivas— y además
+  // no comprobaba lo que decía comprobar: el control real de la interfaz
+  // podía estar roto y la prueba seguiría pasando.
+  await page.goto('/');
+  await page.getByRole('button', { name: /^Cuenta de / }).click();
+  await page.getByRole('menuitem', { name: 'Cerrar sesión' }).click();
+
+  // `signOut` responde con una redirección a la portada; esperar a que
+  // termine evita comprobar el estado a medio camino.
+  await page.waitForURL('/');
+  await expect(page.getByRole('button', { name: /^Cuenta de / })).toHaveCount(0);
+
+  // Cerrar sesión de verdad se comprueba viendo que /cuenta ya no es
+  // accesible, no confiando en que la petición devolvió 200.
+  await page.goto('/cuenta');
+  await expect(page).toHaveURL(/\/login/);
 
   await page.goto('/login');
   await page.getByLabel('Correo').fill(email);

@@ -1,9 +1,8 @@
 import Image from 'next/image';
-import Link from 'next/link';
 
 import { CategoryCard } from '@/components/shared/category-card';
 import { ProductGrid } from '@/components/shared/product-grid';
-import { Button } from '@/components/ui/button';
+import { ButtonLink } from '@/components/ui/button-link';
 import { siteConfig } from '@/lib/config/site.config';
 import { getTopLevelCategories } from '@/lib/services/category.service';
 import { getFeaturedProducts } from '@/lib/services/product.service';
@@ -35,9 +34,9 @@ export default async function HomePage() {
         <div className="absolute inset-0 flex flex-col items-start justify-center gap-4 p-6 sm:p-10">
           <h1 className="max-w-md text-3xl font-bold text-white sm:text-4xl">{siteConfig.name}</h1>
           <p className="max-w-md text-white/90">{siteConfig.description}</p>
-          <Button render={<Link href="#categorias" />} nativeButton={false} size="lg">
+          <ButtonLink href="#categorias" size="lg">
             Explorar catálogo
-          </Button>
+          </ButtonLink>
         </div>
       </section>
 

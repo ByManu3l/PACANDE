@@ -17,6 +17,12 @@ export const checkoutSchema = z.object({
   country: z.string().trim().min(2),
   phone: z.string().trim().min(7, 'Ingresa un teléfono válido.'),
   paymentMethod: z.enum(['tarjeta_simulada', 'contra_entrega']),
+
+  /**
+   * Código del cupón, opcional. **Solo el código**, nunca el importe: el
+   * descuento lo recalcula el servidor con el carrito real.
+   */
+  couponCode: z.string().trim().max(30).optional(),
 });
 
 export type CheckoutInput = z.infer<typeof checkoutSchema>;

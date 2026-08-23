@@ -1,9 +1,9 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { ButtonLink } from '@/components/ui/button-link';
 
 /**
  * Frontera de error de la aplicación. Next.js la renderiza cuando una
@@ -33,7 +33,17 @@ export default function GlobalError({
     // referencia que permite cruzarlo con esta pantalla. Para capturar
     // además los errores del navegador, este es el punto donde enganchar
     // el SDK de navegador de Sentry o equivalente.
-    console.error('Error en la frontera de error', { digest: error.digest, error });
+    //
+    // Se desglosan mensaje y pila en cadenas sueltas en vez de pasar el
+    // objeto entero: al atravesar la consola del navegador y el relé del
+    // servidor de desarrollo, un `Error` se serializa como
+    // "[object Error]" y el registro deja de servir para lo único que
+    // existe.
+    console.error(
+      `Error mostrado al usuario: ${error.message}`,
+      `\ndigest: ${error.digest ?? '(sin digest)'}`,
+      `\n${error.stack ?? ''}`,
+    );
   }, [error]);
 
   return (
@@ -47,9 +57,9 @@ export default function GlobalError({
       )}
       <div className="flex gap-3">
         <Button onClick={reset}>Reintentar</Button>
-        <Button variant="outline" render={<Link href="/" />} nativeButton={false}>
+        <ButtonLink variant="outline" href="/">
           Ir al inicio
-        </Button>
+        </ButtonLink>
       </div>
     </div>
   );

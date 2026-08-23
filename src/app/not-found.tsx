@@ -1,6 +1,4 @@
-import Link from 'next/link';
-
-import { Button } from '@/components/ui/button';
+import { ButtonLink } from '@/components/ui/button-link';
 
 /**
  * 404 de la aplicación. La alcanzan tanto las URLs inexistentes como las
@@ -19,12 +17,10 @@ export default function NotFound() {
         Es posible que el enlace haya cambiado o que el producto ya no esté disponible.
       </p>
       <div className="flex gap-3">
-        <Button render={<Link href="/" />} nativeButton={false}>
-          Ir al inicio
-        </Button>
-        <Button variant="outline" render={<Link href="/buscar" />} nativeButton={false}>
+        <ButtonLink href="/">Ir al inicio</ButtonLink>
+        <ButtonLink variant="outline" href="/buscar">
           Buscar productos
-        </Button>
+        </ButtonLink>
       </div>
     </div>
   );

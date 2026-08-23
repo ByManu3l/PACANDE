@@ -1,68 +1,96 @@
-import { expect, type Page, test } from '@playwright/test';
+import { type Browser, expect, type Page, test } from '@playwright/test';
 
-/** Row lookup by exact email cell (not by the row's whole accessible name,
- * which would substring-match "superadmin@pacande.test" against a naive
- * "admin@pacande.test" pattern since one contains the other). */
+import { ESTADOS } from './sesiones';
+
+/**
+ * Matriz de permisos: qué puede alcanzar cada rol y qué acciones ve.
+ *
+ * **No entra por el formulario de acceso.** Usa las sesiones que guarda
+ * `auth.setup.ts`, por dos razones: aquí se comprueba el control de
+ * acceso, no el inicio de sesión —eso lo cubre `auth.spec.ts`—, y entrar
+ * una vez por caso agotaría el límite de cinco intentos por cuarto de
+ * hora, haciendo fallar la suite por un motivo ajeno a lo que prueba.
+ *
+ * Cada caso abre su propio contexto con la sesión del rol que necesita,
+ * en lugar de fijar una en el proyecto: aquí hacen falta varios roles y
+ * también la ausencia de sesión.
+ */
+
+/**
+ * Busca la fila por la celda exacta del correo.
+ *
+ * No por el nombre accesible de la fila entera: un patrón ingenuo de
+ * "admin@pacande.test" también encajaría con "superadmin@pacande.test",
+ * porque uno contiene al otro.
+ */
 function rowForEmail(page: Page, email: string) {
   return page.getByRole('cell', { name: email, exact: true }).locator('xpath=ancestor::tr');
 }
 
-async function login(page: import('@playwright/test').Page, email: string, password: string) {
-  await page.goto('/login');
-  await page.getByLabel('Correo').fill(email);
-  await page.getByLabel('Contraseña').fill(password);
-  // Scoped to the submit button — the Navbar also has an "Iniciar sesión"
-  // enlace que se renderiza con role=button y colisionaría con un
-  // getByRole genérico.
-  await page.locator('button[type="submit"]', { hasText: 'Iniciar sesión' }).click();
-  await expect(page).toHaveURL('/');
+/** Abre una pestaña con la sesión guardada del rol indicado. */
+async function comoRol(browser: Browser, rol: keyof typeof ESTADOS) {
+  const contexto = await browser.newContext({ storageState: ESTADOS[rol] });
+  return { contexto, page: await contexto.newPage() };
 }
 
-test.describe('route protection', () => {
-  test('an anonymous visitor is redirected to /login from /admin, /cuenta and /checkout', async ({
-    page,
+test.describe('protección de rutas', () => {
+  test('un visitante sin sesión es redirigido al login desde /admin, /cuenta y /checkout', async ({
+    browser,
   }) => {
-    for (const path of ['/admin', '/cuenta', '/checkout']) {
-      await page.goto(path);
+    const contexto = await browser.newContext({ storageState: { cookies: [], origins: [] } });
+    const page = await contexto.newPage();
+
+    for (const ruta of ['/admin', '/cuenta', '/checkout']) {
+      await page.goto(ruta);
       // Auth.js añade ?callbackUrl=... para devolver al visitante a donde
       // iba tras iniciar sesión, así que solo se comprueba la parte /login.
       await expect(page).toHaveURL(/\/login/);
     }
+
+    await contexto.close();
   });
 
-  test('a plain USER cannot reach /admin', async ({ page }) => {
-    await login(page, 'usuario@pacande.test', 'Usuario123!');
+  test('un USER normal no puede entrar a /admin', async ({ browser }) => {
+    const { contexto, page } = await comoRol(browser, 'user');
+
     await page.goto('/admin');
     await expect(page).toHaveURL(/\/login/);
+
+    await contexto.close();
   });
 
-  test('an ADMIN or SUPERADMIN can reach /admin', async ({ page }) => {
-    await login(page, 'superadmin@pacande.test', 'Superadmin123!');
+  test('un SUPERADMIN sí puede entrar a /admin', async ({ browser }) => {
+    const { contexto, page } = await comoRol(browser, 'superadmin');
+
     await page.goto('/admin');
     await expect(page).toHaveURL('/admin');
     await expect(page.getByText('Panel de administración')).toBeVisible();
+
+    await contexto.close();
   });
 });
 
-test.describe('admin user-management restrictions (mirrors user.service.ts guards)', () => {
-  test('an ADMIN sees "Sin permisos" for every row except plain USER accounts', async ({
-    page,
-  }) => {
-    await login(page, 'admin@pacande.test', 'Admin123!');
+test.describe('gestión de usuarios (refleja los guardas de user.service.ts)', () => {
+  test('un ADMIN ve "Sin permisos" en toda fila que no sea de un USER', async ({ browser }) => {
+    const { contexto, page } = await comoRol(browser, 'admin');
     await page.goto('/admin/usuarios');
 
     await expect(
       rowForEmail(page, 'superadmin@pacande.test').getByText('Sin permisos'),
     ).toBeVisible();
     await expect(rowForEmail(page, 'admin@pacande.test').getByText('Sin permisos')).toBeVisible();
+
+    await contexto.close();
   });
 
-  test('a SUPERADMIN sees no manage actions on their own row', async ({ page }) => {
-    await login(page, 'superadmin@pacande.test', 'Superadmin123!');
+  test('un SUPERADMIN no ve acciones sobre su propia fila', async ({ browser }) => {
+    const { contexto, page } = await comoRol(browser, 'superadmin');
     await page.goto('/admin/usuarios');
 
     await expect(
       rowForEmail(page, 'superadmin@pacande.test').getByText('Sin permisos'),
     ).toBeVisible();
+
+    await contexto.close();
   });
 });

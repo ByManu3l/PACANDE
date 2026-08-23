@@ -5,6 +5,7 @@ import { MobileNav } from '@/components/shared/mobile-nav';
 import { UserMenu } from '@/components/shared/user-menu';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { ButtonLink } from '@/components/ui/button-link';
 import { Input } from '@/components/ui/input';
 import { auth } from '@/lib/auth';
 import { getCurrentCart } from '@/lib/cart-session';
@@ -65,9 +66,8 @@ export async function Navbar() {
         </form>
 
         <div className="flex items-center gap-1 sm:gap-2">
-          <Button
-            render={<Link href="/carrito" />}
-            nativeButton={false}
+          <ButtonLink
+            href="/carrito"
             variant="ghost"
             size="icon"
             className="relative"
@@ -79,7 +79,7 @@ export async function Navbar() {
                 {itemCount}
               </Badge>
             )}
-          </Button>
+          </ButtonLink>
 
           {session?.user ? (
             <UserMenu
@@ -90,9 +90,9 @@ export async function Navbar() {
               }}
             />
           ) : (
-            <Button render={<Link href="/login" />} nativeButton={false} size="sm">
+            <ButtonLink href="/login" size="sm">
               Entrar
-            </Button>
+            </ButtonLink>
           )}
         </div>
       </div>

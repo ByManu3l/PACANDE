@@ -1,7 +1,7 @@
 import { SlidersHorizontal, X } from 'lucide-react';
-import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
+import { ButtonLink } from '@/components/ui/button-link';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { siteConfig } from '@/lib/config/site.config';
@@ -9,6 +9,7 @@ import {
   buildFilterQuery,
   hasActiveFilters,
   type ProductFilters,
+  sinFiltros,
   SORT_OPTIONS,
 } from '@/lib/utils/product-filters';
 
@@ -34,8 +35,11 @@ interface ProductFiltersBarProps {
  * - El botón «atrás» deshace un filtro, que es lo que la gente espera.
  * - Funciona antes de que cargue el JavaScript, y también si nunca carga.
  *
- * El precio es un formulario porque son dos campos que se envían juntos;
- * el resto son enlaces, que no necesitan nada más.
+ * Los controles usan `ButtonLink` y no `Button`: navegan, así que deben
+ * ser enlaces también para un lector de pantalla. Ver el comentario de ese
+ * componente.
+ *
+ * El precio es un formulario porque son dos campos que se envían juntos.
  */
 export function ProductFiltersBar({
   basePath,
@@ -46,8 +50,6 @@ export function ProductFiltersBar({
   const enlace = (cambios: Record<string, string | number | undefined>) =>
     `${basePath}${buildFilterQuery(searchParams, cambios)}`;
 
-  const hayFiltros = hasActiveFilters(filters);
-
   return (
     <div className="space-y-4 rounded-lg border p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -56,11 +58,11 @@ export function ProductFiltersBar({
           {total} {total === 1 ? 'producto' : 'productos'}
         </p>
 
-        {hayFiltros && (
-          <Button render={<Link href={basePath} />} nativeButton={false} variant="ghost" size="sm">
+        {hasActiveFilters(filters) && (
+          <ButtonLink href={`${basePath}${sinFiltros(searchParams)}`} variant="ghost" size="sm">
             <X className="size-4" />
             Limpiar filtros
-          </Button>
+          </ButtonLink>
         )}
       </div>
 
@@ -70,15 +72,14 @@ export function ProductFiltersBar({
           <p className="text-muted-foreground text-xs font-medium">Ordenar por</p>
           <div className="flex flex-wrap gap-1.5">
             {SORT_OPTIONS.map((opcion) => (
-              <Button
+              <ButtonLink
                 key={opcion.value}
-                render={<Link href={enlace({ sort: opcion.value })} />}
-                nativeButton={false}
+                href={enlace({ sort: opcion.value })}
                 size="sm"
                 variant={filters.sort === opcion.value ? 'default' : 'outline'}
               >
                 {opcion.label}
-              </Button>
+              </ButtonLink>
             ))}
           </div>
         </div>
@@ -125,6 +126,7 @@ export function ProductFiltersBar({
               defaultValue={filters.maxPrice ?? ''}
               className="h-9"
             />
+            {/* Este sí es un botón: envía el formulario, no navega. */}
             <Button type="submit" size="sm" variant="outline">
               Ir
             </Button>
@@ -136,17 +138,14 @@ export function ProductFiltersBar({
           <p className="text-muted-foreground text-xs font-medium">Valoración mínima</p>
           <div className="flex flex-wrap gap-1.5">
             {[4, 3].map((nota) => (
-              <Button
+              <ButtonLink
                 key={nota}
-                render={
-                  <Link href={enlace({ rating: filters.minRating === nota ? undefined : nota })} />
-                }
-                nativeButton={false}
+                href={enlace({ rating: filters.minRating === nota ? undefined : nota })}
                 size="sm"
                 variant={filters.minRating === nota ? 'default' : 'outline'}
               >
                 {nota}★ o más
-              </Button>
+              </ButtonLink>
             ))}
           </div>
         </div>
@@ -154,14 +153,13 @@ export function ProductFiltersBar({
         {/* Disponibilidad */}
         <div className="space-y-1.5">
           <p className="text-muted-foreground text-xs font-medium">Disponibilidad</p>
-          <Button
-            render={<Link href={enlace({ stock: filters.inStock ? undefined : '1' })} />}
-            nativeButton={false}
+          <ButtonLink
+            href={enlace({ stock: filters.inStock ? undefined : '1' })}
             size="sm"
             variant={filters.inStock ? 'default' : 'outline'}
           >
             Solo disponibles
-          </Button>
+          </ButtonLink>
         </div>
       </div>
     </div>

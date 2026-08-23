@@ -193,3 +193,26 @@ export function filtrosEnUrl(searchParams: Record<string, Param>): Record<string
 
   return salida;
 }
+
+/**
+ * Cadena de consulta con los filtros quitados, conservando el resto.
+ *
+ * La usa «Limpiar filtros». Apuntar al `basePath` a secas parecía
+ * equivalente y no lo es: en `/buscar` habría borrado también el término
+ * buscado, dejando la página de búsqueda vacía. Lo detectó una prueba de
+ * extremo a extremo.
+ */
+export function sinFiltros(searchParams: Record<string, Param>): string {
+  const params = new URLSearchParams();
+
+  for (const [clave, valor] of Object.entries(searchParams)) {
+    if (CLAVES_DE_FILTRO.includes(clave as (typeof CLAVES_DE_FILTRO)[number])) continue;
+    if (clave === 'page') continue;
+
+    const v = primerValor(valor);
+    if (v) params.set(clave, v);
+  }
+
+  const cadena = params.toString();
+  return cadena ? `?${cadena}` : '';
+}
