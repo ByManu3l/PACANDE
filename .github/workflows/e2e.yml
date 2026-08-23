@@ -1,12 +1,22 @@
 name: E2E (Playwright)
 
-# Deliberately not on every push — a full browser-driven journey suite is
-# slower than the CI pipeline and would extend every commit's feedback
-# loop. Run it by hand before a release, or let it run nightly.
+# Corre en cada push a main, además del disparo manual y el nocturno.
+#
+# Estuvo solo en manual y nocturno, con el argumento de no alargar el
+# ciclo de cada commit. El argumento era razonable y salió caro: el límite
+# de intentos de acceso rompió la suite entera y nadie se enteró durante
+# varios commits, porque CI seguía en verde. Un flujo que solo corre por
+# la noche detecta las regresiones cuando ya están enterradas bajo otros
+# cambios.
+#
+# Va en un job aparte para que su lentitud no bloquee el resultado de
+# lint, typecheck y build, que son los que interesa ver rápido.
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
   schedule:
-    - cron: '0 7 * * *' # 07:00 UTC daily
+    - cron: '0 7 * * *' # 07:00 UTC diario
 
 jobs:
   e2e:
@@ -31,13 +41,16 @@ jobs:
       DATABASE_URL: postgresql://pacande:pacande@localhost:5432/pacande_e2e?schema=public
       AUTH_SECRET: ci-only-secret-not-for-production-0000000000
       AUTH_URL: http://localhost:3000
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
 
     steps:
       - uses: actions/checkout@v5
 
       - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          # Se lee de .nvmrc para que la versión de CI y la local no
+          # puedan desalinearse. Estaban en 22 y 24 respectivamente.
+          node-version-file: .nvmrc
           cache: npm
 
       - name: Install dependencies

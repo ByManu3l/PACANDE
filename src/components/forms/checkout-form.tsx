@@ -16,23 +16,65 @@ import {
   checkoutFormSchema,
 } from '@/lib/validations/checkout';
 
+/** Dirección guardada, ya lista para rellenar el formulario. */
+export interface DireccionGuardada {
+  id: string;
+  label: string;
+  recipientName: string;
+  line1: string;
+  line2?: string;
+  city: string;
+  region: string;
+  postalCode: string;
+  country: string;
+  phone: string;
+}
+
 /**
  * @param couponCode Código que el cliente aplicó en el carrito. Llega por
  *   la URL y se reenvía tal cual; el servidor lo revalida y recalcula el
  *   descuento, así que manipularlo aquí no sirve de nada.
+ * @param direcciones Libreta del cliente. La primera es la predeterminada
+ *   y se precarga; el resto se pueden elegir con un clic. Si está vacía,
+ *   el selector no se muestra.
  */
-export function CheckoutForm({ couponCode }: { couponCode?: string }) {
+export function CheckoutForm({
+  couponCode,
+  direcciones = [],
+}: {
+  couponCode?: string;
+  direcciones?: DireccionGuardada[];
+}) {
   const router = useRouter();
+  const predeterminada = direcciones[0];
+
   const {
     register,
     control,
     handleSubmit,
     watch,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<CheckoutFormInput>({
     resolver: zodResolver(checkoutFormSchema),
-    defaultValues: { country: 'CO', paymentMethod: 'tarjeta_simulada' },
+    defaultValues: {
+      country: predeterminada?.country ?? 'CO',
+      paymentMethod: 'tarjeta_simulada',
+      ...(predeterminada ? aValores(predeterminada) : {}),
+    },
   });
+
+  /**
+   * Vuelca una dirección guardada en el formulario.
+   *
+   * Se usa `reset` con los valores actuales por encima en vez de varios
+   * `setValue`: así los campos que no forman parte de la dirección —el
+   * método de pago, los datos de tarjeta ya escritos— no se pierden al
+   * cambiar de dirección.
+   */
+  function usarDireccion(direccion: DireccionGuardada) {
+    reset((actuales) => ({ ...actuales, ...aValores(direccion) }));
+  }
 
   const paymentMethod = watch('paymentMethod');
 
@@ -60,6 +102,26 @@ export function CheckoutForm({ couponCode }: { couponCode?: string }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {direcciones.length > 0 && (
+        <fieldset className="space-y-2 rounded-lg border p-4">
+          <legend className="px-1 text-sm font-medium">Usar una dirección guardada</legend>
+          <div className="flex flex-wrap gap-2">
+            {direcciones.map((direccion) => (
+              <Button
+                key={direccion.id}
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => usarDireccion(direccion)}
+              >
+                {direccion.label}
+                <span className="text-muted-foreground ml-1 text-xs">{direccion.city}</span>
+              </Button>
+            ))}
+          </div>
+        </fieldset>
+      )}
+
       <fieldset className="space-y-4">
         <legend className="mb-2 font-semibold">Dirección de envío</legend>
 
@@ -173,4 +235,18 @@ export function CheckoutForm({ couponCode }: { couponCode?: string }) {
       </Button>
     </form>
   );
+}
+
+/** Campos de una dirección guardada, con los nombres del formulario. */
+function aValores(direccion: DireccionGuardada) {
+  return {
+    recipientName: direccion.recipientName,
+    line1: direccion.line1,
+    line2: direccion.line2 ?? '',
+    city: direccion.city,
+    region: direccion.region,
+    postalCode: direccion.postalCode,
+    country: direccion.country,
+    phone: direccion.phone,
+  };
 }

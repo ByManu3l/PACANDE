@@ -1,7 +1,9 @@
 import { redirect } from 'next/navigation';
 
 import { Prisma } from '@/generated/prisma/client';
+import { requireSession } from '@/lib/auth/guards';
 import { getCurrentCart } from '@/lib/cart-session';
+import { listAddresses } from '@/lib/services/address.service';
 import { validateCoupon } from '@/lib/services/coupon.service';
 import { CheckoutForm } from '@/components/forms/checkout-form';
 import { cartTotals } from '@/lib/services/cart.service';
@@ -9,7 +11,8 @@ import { formatPrice } from '@/lib/utils/currency';
 import { siteConfig } from '@/lib/config/site.config';
 
 export default async function CheckoutPage({ searchParams }: PageProps<'/checkout'>) {
-  const [cart, sp] = await Promise.all([getCurrentCart(), searchParams]);
+  const [cart, sp, user] = await Promise.all([getCurrentCart(), searchParams, requireSession()]);
+  const direcciones = await listAddresses(user.id);
   if (!cart || cart.items.length === 0) {
     redirect('/carrito');
   }
@@ -30,7 +33,21 @@ export default async function CheckoutPage({ searchParams }: PageProps<'/checkou
     <div className="grid gap-8 lg:grid-cols-3">
       <div className="lg:col-span-2">
         <h1 className="mb-6 text-2xl font-semibold tracking-tight">Checkout</h1>
-        <CheckoutForm couponCode={cupon?.code} />
+        <CheckoutForm
+          couponCode={cupon?.code}
+          direcciones={direcciones.map((d) => ({
+            id: d.id,
+            label: d.label,
+            recipientName: d.recipientName,
+            line1: d.line1,
+            line2: d.line2 ?? undefined,
+            city: d.city,
+            region: d.region,
+            postalCode: d.postalCode,
+            country: d.country,
+            phone: d.phone,
+          }))}
+        />
       </div>
 
       <div className="bg-muted/40 h-fit space-y-3 rounded-lg border p-6">

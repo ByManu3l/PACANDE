@@ -7,6 +7,8 @@ const NAV = [
   { href: '/cuenta', label: 'Perfil' },
   { href: '/cuenta/password', label: 'Contraseña' },
   { href: '/cuenta/pedidos', label: 'Mis pedidos' },
+  { href: '/cuenta/favoritos', label: 'Favoritos' },
+  { href: '/cuenta/direcciones', label: 'Direcciones' },
 ];
 
 // `proxy.ts` ya redirige las visitas sin sesión fuera de /cuenta/**.

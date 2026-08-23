@@ -36,7 +36,9 @@ jobs:
 
       - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          # Se lee de .nvmrc para que la versión de CI y la local no
+          # puedan desalinearse. Estaban en 22 y 24 respectivamente.
+          node-version-file: .nvmrc
           cache: npm
 
       - name: Install dependencies
