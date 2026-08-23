@@ -333,6 +333,182 @@ encuentre el catálogo destrozado por el visitante anterior.
 
 ---
 
+## 6.b Lo que este prompt no vio en su primera redacción
+
+Esta sección se añadió tras releer el prompt buscando huecos, en vez de
+darlo por completo. Los encontró, y varios son más graves que los ejes
+originales. Se dejan aquí, separados, porque el hecho de que faltaran es
+en sí mismo un dato: **un plan de auditoría también necesita auditarse.**
+
+### Eje G — Cumplimiento legal y fiscal
+
+Esto no es «una función más». Es lo que separa un software que se puede
+usar para vender de uno que no.
+
+**G1. No se calcula ningún impuesto. Y los términos afirman lo
+contrario.**
+
+`/terminos` dice literalmente: «Los precios se muestran en la moneda
+indicada e **incluyen los impuestos aplicables**». Nada en el código
+calcula un impuesto. El texto legal del propio producto afirma algo que el
+software no hace.
+
+Dos consecuencias, y la segunda es peor que la primera:
+
+- En casi cualquier jurisdicción, una venta necesita desglosar el impuesto
+  para emitir un comprobante válido. Sin eso, el cliente no puede facturar
+  legalmente.
+- Un texto legal que describe un comportamiento inexistente es un riesgo
+  para quien lo despliega, no solo un error de documentación.
+
+Lo que hace falta: tasa configurable por producto o por categoría, cálculo
+y desglose en el pedido (base imponible, impuesto, total), y decisión
+explícita de si los precios se muestran con impuesto incluido o
+excluido —que varía por país y no es un detalle cosmético—. Y congelarlo
+en el pedido, como todo lo demás.
+
+**G2. No hay tratamiento de datos personales.**
+
+No existe consentimiento de cookies, ni exportación de datos, ni borrado
+de cuenta. El RGPD europeo y la ley de habeas data colombiana exigen los
+tres. Un usuario hoy no puede irse: no hay forma de borrar su cuenta desde
+la interfaz.
+
+Hace falta: aviso de consentimiento —que además condiciona cuándo se
+puede cargar la analítica del eje G4—, exportación de datos propios en
+formato legible, y borrado de cuenta que respete la restricción de que
+los pedidos deben conservarse (anonimizar, no borrar).
+
+**G3. Los textos legales son de relleno.**
+
+`/terminos` y `/privacidad` están escritos como ejemplo, y G1 demuestra
+que además contienen afirmaciones falsas. No se trata de redactarlos
+—eso es trabajo de abogado— sino de que el producto deje claro que son
+plantillas, indique qué hay que sustituir, y no afirme comportamientos que
+el software no tiene.
+
+### Eje H — Puesta en marcha de un cliente real
+
+**H1. No hay importación de catálogo.**
+
+Un cliente que migra desde otra tienda llega con miles de productos en un
+CSV. Hoy la única forma de cargarlos es a mano, uno a uno, o editando el
+archivo de datos de ejemplo y sembrando.
+
+Es el bloqueo práctico más grande de todos: convierte una entrega de dos
+días en una de dos semanas, y es la primera pregunta que hace quien ya
+vende en otro sitio. Hace falta importación con vista previa, validación
+por filas, informe de errores y actualización de existentes por slug.
+
+**H2. Toda la documentación es para programadores.**
+
+Cinco documentos técnicos y ninguno para **el dueño de la tienda**, que es
+quien va a usar el panel todos los días. Nadie le ha explicado cómo cargar
+un producto, moderar una opinión, crear un cupón o entender por qué un
+cupón «activo» no funciona.
+
+Sin ese manual, cada cliente entregado se convierte en soporte
+telefónico indefinido — que bajo el modelo de entrega a medida es
+exactamente el coste que hunde el margen.
+
+### Eje I — Lo que pide un dueño de tienda el primer día
+
+**I1. Analítica.** No hay punto de integración para Google Analytics,
+Plausible o equivalente, ni seguimiento de conversión. Es literalmente la
+primera pregunta después de «¿ya está en línea?». Debe ser un punto de
+extensión —como `PaymentProvider`— y respetar el consentimiento de G2.
+
+**I2. Feed de productos.** Sin `feed.xml` no se puede anunciar en Google
+Shopping ni en Meta. Para muchas tiendas pequeñas esos dos canales _son_
+el negocio.
+
+**I3. Envío solo de costo plano.** Sin zonas ni peso. Una tienda que envía
+a todo un país no puede cobrar lo mismo a la capital que a una zona
+apartada, y hoy no hay forma de expresarlo.
+
+### Eje J — Dos fallos silenciosos
+
+**J1. Las páginas de categoría filtradas son indexables.**
+
+`/buscar` lleva `noindex`, correctamente. Pero
+`/categoria/x?sort=precio-asc&min=100&stock=1` no. Cada combinación de
+filtros es una URL distinta con el mismo contenido, y son cientos por
+categoría. Google las rastrea, las trata como contenido duplicado y
+diluye la autoridad de la página real.
+
+Es un daño que no se nota hasta que alguien mira por qué la tienda no
+posiciona. Falta una etiqueta canónica que apunte a la categoría sin
+filtros, y `noindex` en las combinaciones.
+
+**J2. Las vulnerabilidades de dependencias no rompen el build.**
+
+`npm audit` no está en CI. Tampoco hay escaneo de secretos filtrados ni
+análisis estático de seguridad. La primera auditoría analizó a mano las
+vulnerabilidades existentes y concluyó —correctamente— que no eran
+alcanzables; pero eso fue una foto de un día, y nada impide que la
+siguiente sí lo sea.
+
+### Eje K — La operación del modelo que este mismo prompt propuso
+
+Este es el hueco que más incomoda, porque lo dejó el propio prompt: la
+sección 0 propone un modelo de entrega a medida a varios clientes, y
+después no diseña para el problema central de ese modelo.
+
+**K1. No hay ruta de actualización.**
+
+Si hay diez tiendas desplegadas y se corrige un fallo de seguridad en la
+plataforma, ¿cómo llega la corrección a las diez? Hoy cada despliegue es
+un clon divergente. Sin una respuesta a esto, la décima venta hace
+inmantenible a las nueve anteriores.
+
+Opciones que hay que evaluar y decidir: bifurcación por cliente con
+fusión desde el tronco, plantilla versionada con guía de migración, o
+extraer el núcleo a un paquete privado —esta última contradice el
+anti-objetivo del monorepo y por eso hay que decidirla explícitamente, no
+por omisión—.
+
+**K2. No hay gestión de secretos para varios despliegues.**
+
+Diez clientes son diez juegos de credenciales de base de datos, pasarela y
+correo. Sin un procedimiento, terminan en un archivo de notas.
+
+**K3. No hay plantillas comerciales.** Contrato de entrega, acuerdo de
+nivel de servicio, alcance de soporte y qué se cobra aparte. El informe
+final propone una lista de «qué se puede prometer»; esto es el documento
+donde esa lista se convierte en algo que se firma.
+
+---
+
+### Cómo encaja esto con las fases
+
+Cinco ejes nuevos no van al final: se intercalan por dependencia.
+
+- **G1 (impuestos)** entra en la **fase 2**, con los fundamentos. Afecta
+  al modelo de datos del pedido, y añadirlo después obliga a migrar
+  pedidos ya emitidos.
+- **G2, G3, J1, J2** entran en la **fase 3**, junto al comercio.
+- **H1 (importación)** entra en la **fase 3**: sin ella no se puede probar
+  nada con volumen real, que es lo que la fase 4 necesita.
+- **I1, I2, I3** entran en la **fase 4**.
+- **H2 (manual) y K** cierran en la **fase 6**.
+
+### Qué añade esto a la definición de terminado
+
+- [ ] Un pedido desglosa base imponible e impuesto, y el comprobante
+      sirve para facturar.
+- [ ] Ningún texto legal afirma un comportamiento que el software no
+      tiene.
+- [ ] Un usuario puede exportar sus datos y borrar su cuenta.
+- [ ] Se puede cargar un catálogo de 5 000 productos desde un CSV en
+      menos de diez minutos.
+- [ ] Existe un manual que el dueño de la tienda entiende sin ayuda.
+- [ ] Google no ve cientos de URLs duplicadas por categoría.
+- [ ] Una vulnerabilidad nueva en una dependencia rompe el build.
+- [ ] Hay una respuesta escrita a «¿cómo actualizo las diez tiendas ya
+      entregadas?».
+
+---
+
 ## 7. Fases
 
 **Fase 0 — Reconocimiento y decisión de alcance.** Recorre el producto
