@@ -14,11 +14,12 @@ pedidos, promociones y usuarios. Se re-marca editando dos archivos.
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-estricto-blue" />
 </p>
 
-|                          |                                                      |
-| ------------------------ | ---------------------------------------------------- |
-| **Qué incluye y qué no** | [`docs/QUE-INCLUYE.md`](docs/QUE-INCLUYE.md)         |
-| **Cómo está construido** | [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md)       |
-| **Cómo hacerla tuya**    | [`docs/PERSONALIZACION.md`](docs/PERSONALIZACION.md) |
+|                          |                                                          |
+| ------------------------ | -------------------------------------------------------- |
+| **Qué incluye y qué no** | [`docs/QUE-INCLUYE.md`](docs/QUE-INCLUYE.md)             |
+| **Cómo está construido** | [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md)           |
+| **Cómo hacerla tuya**    | [`docs/PERSONALIZACION.md`](docs/PERSONALIZACION.md)     |
+| **Cómo se construyó**    | [`docs/INFORME-PROTOTIPO.md`](docs/INFORME-PROTOTIPO.md) |
 
 ## Por qué esta y no otra
 
