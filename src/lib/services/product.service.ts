@@ -12,6 +12,20 @@ export async function getFeaturedProducts(limit = 8) {
   });
 }
 
+/**
+ * Productos con descuento vigente, para la página de ofertas.
+ *
+ * Ordenados por descuento descendente: quien entra a «Ofertas» busca la
+ * rebaja mayor, no la más reciente. Se excluyen los agotados —una oferta
+ * que no se puede comprar solo genera frustración— y los inactivos.
+ */
+export async function getDiscountedProducts() {
+  return prisma.product.findMany({
+    where: { isActive: true, discountPercent: { gt: 0 }, stock: { gt: 0 } },
+    orderBy: [{ discountPercent: 'desc' }, { createdAt: 'desc' }],
+  });
+}
+
 export async function getProductBySlug(slug: string) {
   const product = await prisma.product.findUnique({
     where: { slug, isActive: true },

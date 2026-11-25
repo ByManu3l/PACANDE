@@ -4,333 +4,293 @@
       "slug": "ropa",
       "name": "Ropa",
       "parentSlug": null,
-      "image": "/images/categories/chaqueta.jpg"
+      "image": "/images/categories/chaqueta.jpg",
+      "description": "Moda para hombre, mujer y niños."
     },
     {
       "slug": "ropa-hombre",
       "name": "Hombre",
       "parentSlug": "ropa",
-      "image": "/images/categories/hombre.jpg"
+      "image": "/images/categories/hombre.jpg",
+      "description": "Encuentra tu estilo con nuestra colección masculina. Diseños modernos y cómodos para cada ocasión."
     },
     {
       "slug": "ropa-mujer",
       "name": "Mujer",
       "parentSlug": "ropa",
-      "image": "/images/categories/mujer-1.jpg"
+      "image": "/images/categories/mujer-1.jpg",
+      "description": "Descubre las últimas tendencias en moda femenina. Encuentra tu estilo único con nuestra colección exclusiva."
     },
     {
       "slug": "ropa-ninos",
       "name": "Niños",
       "parentSlug": "ropa",
-      "image": null
+      "image": "/images/products/ropa-ninos/camiseta-amarilla-nino.jpg",
+      "description": "Ropa cómoda y divertida para los más pequeños. Diseños coloridos y resistentes para todas sus aventuras."
     },
     {
       "slug": "tecnologia",
       "name": "Tecnología",
       "parentSlug": null,
-      "image": "/images/categories/celulares.jpg"
+      "image": "/images/categories/celulares.jpg",
+      "description": "Celulares, computadores y accesorios."
     },
     {
       "slug": "tecnologia-celulares",
       "name": "Celulares",
       "parentSlug": "tecnologia",
-      "image": "/images/categories/celulares.jpg"
+      "image": "/images/categories/celulares.jpg",
+      "description": "Descubre los últimos smartphones y dispositivos móviles. Tecnología de punta al alcance de tu mano."
     },
     {
       "slug": "tecnologia-computadores",
       "name": "Computadores",
       "parentSlug": "tecnologia",
-      "image": "/images/categories/computadores.jpeg"
+      "image": "/images/categories/computadores.jpeg",
+      "description": "Encuentra el equipo perfecto para trabajo o gaming. Las últimas tecnologías en computadores y laptops."
     },
     {
       "slug": "tecnologia-accesorios",
       "name": "Accesorios",
       "parentSlug": "tecnologia",
-      "image": "/images/categories/accesorios.jpeg"
+      "image": "/images/categories/accesorios.jpeg",
+      "description": "Complementa tus dispositivos con los mejores accesorios. Todo lo que necesitas para mejorar tu experiencia tecnológica."
     },
     {
       "slug": "hogar",
       "name": "Hogar",
       "parentSlug": null,
-      "image": "/images/categories/decoracion.jpeg"
+      "image": "/images/categories/decoracion.jpeg",
+      "description": "Muebles, decoración y jardín para cada espacio."
     },
     {
       "slug": "hogar-decoracion",
       "name": "Decoración",
       "parentSlug": "hogar",
-      "image": "/images/categories/decoracion.jpeg"
+      "image": "/images/categories/decoracion.jpeg",
+      "description": "Dale vida a tus espacios con nuestra selección de decoración. Piezas únicas para crear ambientes acogedores."
     },
     {
       "slug": "hogar-jardin",
       "name": "Jardín",
       "parentSlug": "hogar",
-      "image": "/images/categories/jardin.jpeg"
+      "image": "/images/categories/jardin.jpeg",
+      "description": "Todo lo necesario para tu jardín. Herramientas, plantas y accesorios para crear tu espacio verde perfecto."
     },
     {
       "slug": "hogar-muebles",
       "name": "Muebles",
       "parentSlug": "hogar",
-      "image": "/images/categories/muebles.jpeg"
+      "image": "/images/categories/muebles.jpeg",
+      "description": "Encuentra los mejores muebles para tu hogar. Diseños modernos y funcionales para cada espacio."
     },
     {
       "slug": "deportes",
       "name": "Deportes",
       "parentSlug": null,
-      "image": "/images/categories/futbol.jpeg"
+      "image": "/images/categories/futbol.jpeg",
+      "description": "Equipamiento para cada disciplina."
     },
     {
       "slug": "deportes-futbol",
       "name": "Fútbol",
       "parentSlug": "deportes",
-      "image": "/images/categories/futbol.jpeg"
+      "image": "/images/categories/futbol.jpeg",
+      "description": "Encuentra todo lo que necesitas para tu pasión deportiva. Equipamiento de alta calidad para el deporte rey."
     },
     {
       "slug": "deportes-baloncesto",
       "name": "Baloncesto",
       "parentSlug": "deportes",
-      "image": "/images/categories/baloncesto.jpeg"
+      "image": "/images/categories/baloncesto.jpeg",
+      "description": "Equipamiento profesional para baloncesto. Desde zapatillas hasta accesorios de entrenamiento."
     },
     {
       "slug": "deportes-ciclismo",
       "name": "Ciclismo",
       "parentSlug": "deportes",
-      "image": null
+      "image": "/images/products/deportes-ciclismo/casco-ciclismo-2.jpg",
+      "description": "Cascos, luces y accesorios para rodar seguro, en ciudad o en montaña."
     },
     {
       "slug": "deportes-boxeo",
       "name": "Boxeo",
       "parentSlug": "deportes",
-      "image": null
+      "image": "/images/products/deportes-boxeo/guantes-boxeo-2.jpg",
+      "description": "Guantes, vendas y protección para entrenar con seguridad."
     },
     {
       "slug": "deportes-tenis",
       "name": "Tenis",
       "parentSlug": "deportes",
-      "image": null
+      "image": "/images/products/deportes-tenis/raqueta-tenis-2.jpg",
+      "description": "Raquetas, pelotas y accesorios para tu juego."
     },
     {
       "slug": "deportes-accesorios",
       "name": "Accesorios",
       "parentSlug": "deportes",
-      "image": null
+      "image": "/images/products/deportes-accesorios/guantes-2.jpg",
+      "description": "Complementos para entrenar mejor en cualquier disciplina."
     },
     {
       "slug": "variedad",
       "name": "Variedad",
       "parentSlug": null,
-      "image": "/images/categories/variedad.jpeg"
+      "image": "/images/categories/variedad.jpeg",
+      "description": "Una amplia selección de equipamiento deportivo para diferentes disciplinas."
     }
   ],
   "products": [
     {
       "name": "Adaptador HDMI",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/adaptador-hdmi.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/adaptador-hdmi.jpg"]
     },
     {
       "name": "Adaptador USB",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/adaptador-usb.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/adaptador-usb.jpg"]
     },
     {
       "name": "Adaptador VGA",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/adaptador-vga.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/adaptador-vga.jpg"]
     },
     {
       "name": "Auriculares Bluetooth",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/auriculares-bluetooth.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/auriculares-bluetooth.jpg"]
     },
     {
       "name": "Auriculares Deportivos",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/auriculares-deportivos.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/auriculares-deportivos.jpg"]
     },
     {
       "name": "Auriculares Noise Cancelling",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/auriculares-noise-cancelling.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/auriculares-noise-cancelling.jpg"]
     },
     {
       "name": "Cargador Inalámbrico",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/cargador-inalambrico.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/cargador-inalambrico.jpg"]
     },
     {
       "name": "Cargador Rápido USB-C",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/cargador-rapido-usb-c.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/cargador-rapido-usb-c.jpg"]
     },
     {
       "name": "Cargador para Auto",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/cargador-para-auto.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/cargador-para-auto.jpg"]
     },
     {
       "name": "Power Bank 10000mAh",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/power-bank-10000m-ah.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/power-bank-10000m-ah.jpg"]
     },
     {
       "name": "Power Bank Carga Rápida",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/power-bank-carga-rapida.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/power-bank-carga-rapida.jpg"]
     },
     {
       "name": "Power Bank Solar",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/power-bank-solar.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/power-bank-solar.jpg"]
     },
     {
       "name": "Ratón Gaming",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/raton-gaming.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/raton-gaming.jpg"]
     },
     {
       "name": "Ratón Inalámbrico",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/raton-inalambrico.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/raton-inalambrico.jpg"]
     },
     {
       "name": "Ratón Vertical",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/raton-vertical.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/raton-vertical.jpg"]
     },
     {
       "name": "Soporte de Escritorio",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/soporte-de-escritorio.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/soporte-de-escritorio.jpg"]
     },
     {
       "name": "Soporte para Celular",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/soporte-para-celular.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/soporte-para-celular.jpg"]
     },
     {
       "name": "Soporte para Tablet",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/soporte-para-tablet.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/soporte-para-tablet.jpg"]
     },
     {
       "name": "Teclado Compacto",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/teclado-compacto.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/teclado-compacto.jpg"]
     },
     {
       "name": "Teclado Mecánico",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/teclado-mecanico.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/teclado-mecanico.jpg"]
     },
     {
       "name": "Teclado RGB",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/teclado-rgb.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/teclado-rgb.jpg"]
     },
     {
       "name": "Funda para Google Pixel",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/funda-para-google-pixel.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/funda-para-google-pixel.jpg"]
     },
     {
       "name": "Funda para Samsung Galaxy",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/funda-para-samsung-galaxy.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/funda-para-samsung-galaxy.jpg"]
     },
     {
       "name": "Funda para iPhone 14",
       "categorySlug": "tecnologia-accesorios",
-      "images": [
-        "/images/products/tecnologia-accesorios/funda-para-i-phone-14.jpg"
-      ]
+      "images": ["/images/products/tecnologia-accesorios/funda-para-i-phone-14.jpg"]
     },
     {
       "name": "Google Pixel 6",
       "categorySlug": "tecnologia-celulares",
-      "images": [
-        "/images/products/tecnologia-celulares/google-pixel-6.jpg"
-      ]
+      "images": ["/images/products/tecnologia-celulares/google-pixel-6.jpg"]
     },
     {
       "name": "OnePlus 9",
       "categorySlug": "tecnologia-celulares",
-      "images": [
-        "/images/products/tecnologia-celulares/one-plus-9.jpg"
-      ]
+      "images": ["/images/products/tecnologia-celulares/one-plus-9.jpg"]
     },
     {
       "name": "Samsung Galaxy S21",
       "categorySlug": "tecnologia-celulares",
-      "images": [
-        "/images/products/tecnologia-celulares/samsung-galaxy-s-21.jpg"
-      ]
+      "images": ["/images/products/tecnologia-celulares/samsung-galaxy-s-21.jpg"]
     },
     {
       "name": "Xiaomi Mi 11",
       "categorySlug": "tecnologia-celulares",
-      "images": [
-        "/images/products/tecnologia-celulares/xiaomi-mi-11.jpg"
-      ]
+      "images": ["/images/products/tecnologia-celulares/xiaomi-mi-11.jpg"]
     },
     {
       "name": "iPhone 13",
       "categorySlug": "tecnologia-celulares",
-      "images": [
-        "/images/products/tecnologia-celulares/iphone-13.jpg"
-      ]
+      "images": ["/images/products/tecnologia-celulares/iphone-13.jpg"]
     },
     {
       "name": "Motorola Edge 20 Lite",
       "categorySlug": "tecnologia-celulares",
-      "images": [
-        "/images/products/tecnologia-celulares/motorola-edge-20-lite.jpg"
-      ]
+      "images": ["/images/products/tecnologia-celulares/motorola-edge-20-lite.jpg"]
     },
     {
       "name": "Computadora de Escritorio Dell Inspiron",
@@ -342,58 +302,42 @@
     {
       "name": "Laptop HP Pavilion",
       "categorySlug": "tecnologia-computadores",
-      "images": [
-        "/images/products/tecnologia-computadores/laptop-hp-pavilion.jpg"
-      ]
+      "images": ["/images/products/tecnologia-computadores/laptop-hp-pavilion.jpg"]
     },
     {
       "name": "MacBook Pro",
       "categorySlug": "tecnologia-computadores",
-      "images": [
-        "/images/products/tecnologia-computadores/mac-book-pro.jpg"
-      ]
+      "images": ["/images/products/tecnologia-computadores/mac-book-pro.jpg"]
     },
     {
       "name": "Monitor Gamer UltraGear",
       "categorySlug": "tecnologia-computadores",
-      "images": [
-        "/images/products/tecnologia-computadores/monitor-gamer-ultra-gear.jpg"
-      ]
+      "images": ["/images/products/tecnologia-computadores/monitor-gamer-ultra-gear.jpg"]
     },
     {
       "name": "Monitor LG UltraWide",
       "categorySlug": "tecnologia-computadores",
-      "images": [
-        "/images/products/tecnologia-computadores/monitor-lg-ultra-wide.jpg"
-      ]
+      "images": ["/images/products/tecnologia-computadores/monitor-lg-ultra-wide.jpg"]
     },
     {
       "name": "Monitor Samsung de 24\"",
       "categorySlug": "tecnologia-computadores",
-      "images": [
-        "/images/products/tecnologia-computadores/monitor-samsung-de-24.jpg"
-      ]
+      "images": ["/images/products/tecnologia-computadores/monitor-samsung-de-24.jpg"]
     },
     {
       "name": "PC para Juegos",
       "categorySlug": "tecnologia-computadores",
-      "images": [
-        "/images/products/tecnologia-computadores/pc-para-juegos.jpg"
-      ]
+      "images": ["/images/products/tecnologia-computadores/pc-para-juegos.jpg"]
     },
     {
       "name": "Portátil Acer Nitro 5",
       "categorySlug": "tecnologia-computadores",
-      "images": [
-        "/images/products/tecnologia-computadores/portatil-acer-nitro-5.jpg"
-      ]
+      "images": ["/images/products/tecnologia-computadores/portatil-acer-nitro-5.jpg"]
     },
     {
       "name": "iMac",
       "categorySlug": "tecnologia-computadores",
-      "images": [
-        "/images/products/tecnologia-computadores/i-mac.jpg"
-      ]
+      "images": ["/images/products/tecnologia-computadores/i-mac.jpg"]
     },
     {
       "name": "Chaqueta Casual",
@@ -446,30 +390,22 @@
     {
       "name": "Chaqueta Deportiva",
       "categorySlug": "ropa-ninos",
-      "images": [
-        "/images/products/ropa-ninos/chaqueta-deportiva-nino.jpg"
-      ]
+      "images": ["/images/products/ropa-ninos/chaqueta-deportiva-nino.jpg"]
     },
     {
       "name": "Chaqueta Gris",
       "categorySlug": "ropa-ninos",
-      "images": [
-        "/images/products/ropa-ninos/chaqueta-gris-nino.jpg"
-      ]
+      "images": ["/images/products/ropa-ninos/chaqueta-gris-nino.jpg"]
     },
     {
       "name": "Chaqueta Roja",
       "categorySlug": "ropa-ninos",
-      "images": [
-        "/images/products/ropa-ninos/chaqueta-roja-nino.jpg"
-      ]
+      "images": ["/images/products/ropa-ninos/chaqueta-roja-nino.jpg"]
     },
     {
       "name": "Chaqueta Casual",
       "categorySlug": "ropa-mujer",
-      "images": [
-        "/images/products/ropa-mujer/chaqueta-mujer.jpg"
-      ]
+      "images": ["/images/products/ropa-mujer/chaqueta-mujer.jpg"]
     },
     {
       "name": "Pantalón Cargo",
@@ -522,23 +458,17 @@
     {
       "name": "Pantalón Deportivo",
       "categorySlug": "ropa-ninos",
-      "images": [
-        "/images/products/ropa-ninos/pantalon-deportivo-nino.jpg"
-      ]
+      "images": ["/images/products/ropa-ninos/pantalon-deportivo-nino.jpg"]
     },
     {
       "name": "Pantalón Negro",
       "categorySlug": "ropa-ninos",
-      "images": [
-        "/images/products/ropa-ninos/pantalon-negro-nino.jpg"
-      ]
+      "images": ["/images/products/ropa-ninos/pantalon-negro-nino.jpg"]
     },
     {
       "name": "Pantalón Verde",
       "categorySlug": "ropa-ninos",
-      "images": [
-        "/images/products/ropa-ninos/pantalon-verde-nino.jpg"
-      ]
+      "images": ["/images/products/ropa-ninos/pantalon-verde-nino.jpg"]
     },
     {
       "name": "Pantalón",
@@ -559,9 +489,7 @@
     {
       "name": "Camiseta Azul",
       "categorySlug": "ropa-hombre",
-      "images": [
-        "/images/products/ropa-hombre/camiseta-azul.jpg"
-      ]
+      "images": ["/images/products/ropa-hombre/camiseta-azul.jpg"]
     },
     {
       "name": "Camiseta Blanca",
@@ -598,23 +526,17 @@
     {
       "name": "Camiseta Amarilla",
       "categorySlug": "ropa-ninos",
-      "images": [
-        "/images/products/ropa-ninos/camiseta-amarilla-nino.jpg"
-      ]
+      "images": ["/images/products/ropa-ninos/camiseta-amarilla-nino.jpg"]
     },
     {
       "name": "Camiseta Azul",
       "categorySlug": "ropa-ninos",
-      "images": [
-        "/images/products/ropa-ninos/camiseta-azul-nino.jpg"
-      ]
+      "images": ["/images/products/ropa-ninos/camiseta-azul-nino.jpg"]
     },
     {
       "name": "Camiseta Roja",
       "categorySlug": "ropa-ninos",
-      "images": [
-        "/images/products/ropa-ninos/camiseta-roja-nino.jpg"
-      ]
+      "images": ["/images/products/ropa-ninos/camiseta-roja-nino.jpg"]
     },
     {
       "name": "Camiseta",

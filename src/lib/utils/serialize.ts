@@ -27,6 +27,7 @@ export interface ProductCardData {
   stock: number;
   ratingAverage: string;
   ratingCount: number;
+  discountPercent: number;
 }
 
 type ProductoConDecimales = {
@@ -39,6 +40,7 @@ type ProductoConDecimales = {
   stock: number;
   ratingAverage: Prisma.Decimal;
   ratingCount: number;
+  discountPercent: number;
 };
 
 /**
@@ -59,5 +61,6 @@ export function toProductCard(producto: ProductoConDecimales): ProductCardData {
     stock: producto.stock,
     ratingAverage: producto.ratingAverage.toString(),
     ratingCount: producto.ratingCount,
+    discountPercent: producto.discountPercent,
   };
 }

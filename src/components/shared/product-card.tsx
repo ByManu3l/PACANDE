@@ -1,11 +1,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { Price } from '@/components/shared/price';
+import { QuickAddButton } from '@/components/shared/quick-add-button';
 import { RatingStars } from '@/components/shared/rating-stars';
 import { WishlistButton } from '@/components/shared/wishlist-button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { formatPrice } from '@/lib/utils/currency';
+import { precioConDescuento, tieneDescuento } from '@/lib/utils/discount';
 
 interface ProductCardProps {
   product: {
@@ -16,6 +19,7 @@ interface ProductCardProps {
     images: string[];
     isFeatured: boolean;
     stock: number;
+    discountPercent?: number;
     ratingAverage: number | string;
     ratingCount: number;
   };
@@ -30,7 +34,7 @@ interface ProductCardProps {
   isAuthenticated?: boolean;
 }
 
-export function ProductCard({
+export async function ProductCard({
   product,
   priority,
   isWishlisted = false,
@@ -38,6 +42,9 @@ export function ProductCard({
 }: ProductCardProps) {
   const image = product.images[0];
   const agotado = product.stock === 0;
+  const descuento = product.discountPercent ?? 0;
+  const enOferta = tieneDescuento(descuento);
+  const precioVigente = enOferta ? precioConDescuento(product.price, descuento) : product.price;
 
   return (
     // `group` permite que la imagen reaccione al hover de toda la tarjeta,
@@ -50,7 +57,7 @@ export function ProductCard({
       />
 
       <Link href={`/producto/${product.slug}`} className="block">
-        <Card className="hover:border-primary/40 h-full gap-3 overflow-hidden py-0 transition-all hover:shadow-lg">
+        <Card className="hover:border-primary/40 h-full gap-3 overflow-hidden py-0 transition-all duration-300 group-hover:scale-[1.03] hover:shadow-xl">
           <div className="bg-muted relative aspect-square overflow-hidden">
             {image ? (
               <Image
@@ -59,11 +66,19 @@ export function ProductCard({
                 fill
                 priority={priority}
                 sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                className="object-cover transition-transform duration-300 group-hover:scale-110"
               />
             ) : null}
 
-            {product.isFeatured && !agotado && (
+            {/* La rebaja manda sobre «Destacado»: es el dato que decide una
+                compra, y dos etiquetas en la misma esquina se estorban. */}
+            {!agotado && enOferta && (
+              <Badge className="absolute top-2 left-2 bg-red-600 font-bold text-white">
+                −{descuento}%
+              </Badge>
+            )}
+
+            {product.isFeatured && !agotado && !enOferta && (
               <Badge className="absolute top-2 left-2">Destacado</Badge>
             )}
 
@@ -85,7 +100,14 @@ export function ProductCard({
               <RatingStars value={product.ratingAverage} count={product.ratingCount} size="sm" />
             )}
 
-            <p className="text-primary font-semibold">{formatPrice(product.price)}</p>
+            <p className="flex flex-wrap items-baseline gap-2">
+              <Price amount={precioVigente.toString()} />
+              {enOferta && (
+                <span className="text-muted-foreground text-xs line-through">
+                  {formatPrice(product.price)}
+                </span>
+              )}
+            </p>
 
             {/* Aviso de escasez: solo por debajo de 5 unidades, para que
                 signifique algo cuando aparece. */}
@@ -97,6 +119,12 @@ export function ProductCard({
           </CardContent>
         </Card>
       </Link>
+
+      {/* Fuera del enlace a propósito: un botón dentro de un `<a>` es HTML
+          inválido y acaba navegando al pulsarlo. */}
+      <div className="mt-2">
+        <QuickAddButton productId={product.id} productName={product.name} stock={product.stock} />
+      </div>
     </div>
   );
 }

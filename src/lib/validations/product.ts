@@ -18,6 +18,16 @@ export const productSchema = z.object({
    */
   price: z.number().positive('El precio debe ser mayor a 0'),
   stock: z.number().int().min(0, 'El stock no puede ser negativo'),
+  /**
+   * Descuento en porcentaje entero. El tope es 99 y no 100 a propósito:
+   * un 100 % deja el producto a cero y eso casi siempre es un error de
+   * tecleo, no una intención. Para regalar algo está el cupón.
+   */
+  discountPercent: z
+    .number()
+    .int('El descuento debe ser un número entero')
+    .min(0, 'El descuento no puede ser negativo')
+    .max(99, 'El descuento no puede llegar al 100%'),
   /** Debe ser una categoría *hoja*: el formulario solo ofrece esas. */
   categoryId: z.string().min(1, 'Selecciona una categoría'),
   isActive: z.boolean(),

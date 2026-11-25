@@ -17,12 +17,22 @@ export async function vaciarCarrito(page: Page) {
 
   // De una en una: la lista se vuelve a renderizar tras cada borrado y
   // los localizadores previos quedan obsoletos.
+  //
+  // Cada borrado es una Server Action que deshabilita su botón mientras
+  // corre. Hay que esperar a que el botón vuelva a estar operativo antes
+  // de pulsar el siguiente —no una espera fija— o se hace clic sobre un
+  // botón deshabilitado y el helper falla por una carrera, no por un fallo
+  // real de la aplicación.
   for (let i = 0; i < 30; i++) {
     const eliminar = page.getByRole('button', { name: /^Eliminar .* del carrito$/ });
     if ((await eliminar.count()) === 0) break;
 
-    await eliminar.first().click();
-    await page.waitForTimeout(250);
+    const primero = eliminar.first();
+    await expect(primero).toBeEnabled();
+    await primero.click();
+
+    // La línea desaparece del DOM cuando el servidor confirma el borrado.
+    await expect(primero).toBeHidden();
   }
 
   await expect(page.getByRole('heading', { name: 'Tu carrito está vacío' })).toBeVisible();

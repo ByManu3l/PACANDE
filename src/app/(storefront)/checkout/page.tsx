@@ -9,6 +9,7 @@ import { CheckoutForm } from '@/components/forms/checkout-form';
 import { cartTotals } from '@/lib/services/cart.service';
 import { formatPrice } from '@/lib/utils/currency';
 import { siteConfig } from '@/lib/config/site.config';
+import { CurrencyNotice } from '@/components/shared/currency-notice';
 
 export default async function CheckoutPage({ searchParams }: PageProps<'/checkout'>) {
   const [cart, sp, user] = await Promise.all([getCurrentCart(), searchParams, requireSession()]);
@@ -33,6 +34,9 @@ export default async function CheckoutPage({ searchParams }: PageProps<'/checkou
     <div className="grid gap-8 lg:grid-cols-3">
       <div className="lg:col-span-2">
         <h1 className="mb-6 text-2xl font-semibold tracking-tight">Checkout</h1>
+        <div className="mb-6">
+          <CurrencyNotice />
+        </div>
         <CheckoutForm
           couponCode={cupon?.code}
           direcciones={direcciones.map((d) => ({

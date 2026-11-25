@@ -83,6 +83,18 @@ function isFeaturedFor(name: string): boolean {
   return hash(`${name}|featured`) < 0.15; // ~15% of the catalog
 }
 
+/**
+ * ~20% of the catalog on sale, in 5-point steps from 10% to 45%.
+ *
+ * Deterministic like every other seed value: the same catalog always
+ * produces the same offers, so screenshots and tests stay reproducible.
+ */
+function discountFor(name: string): number {
+  const r = hash(`${name}|discount`);
+  if (r >= 0.2) return 0;
+  return 10 + Math.floor((r / 0.2) * 8) * 5; // 10, 15, 20 … 45
+}
+
 // ---------------------------------------------------------------------------
 
 async function seedUsers() {
@@ -133,14 +145,34 @@ async function seedCategories() {
     (a, b) => Number(a.parentSlug !== null) - Number(b.parentSlug !== null),
   );
 
+  // `position` sale del orden en que catalog.json las lista, no del
+  // alfabeto: la portada y el menú siguen ese orden, y "Ropa, Tecnología,
+  // Hogar, Deportes" es una decisión comercial, no una casualidad de la
+  // A a la Z.
+  const posicionPorSlug = new Map(catalog.categories.map((c, i) => [c.slug, i]));
+
   const idBySlug = new Map<string, string>();
 
   for (const c of sorted) {
     const parentId = c.parentSlug ? idBySlug.get(c.parentSlug) : undefined;
+    const position = posicionPorSlug.get(c.slug) ?? 0;
     const category = await prisma.category.upsert({
       where: { slug: c.slug },
-      update: { name: c.name, image: c.image, parentId: parentId ?? null },
-      create: { slug: c.slug, name: c.name, image: c.image, parentId: parentId ?? null },
+      update: {
+        name: c.name,
+        image: c.image,
+        description: c.description ?? null,
+        parentId: parentId ?? null,
+        position,
+      },
+      create: {
+        slug: c.slug,
+        name: c.name,
+        image: c.image,
+        description: c.description ?? null,
+        parentId: parentId ?? null,
+        position,
+      },
     });
     idBySlug.set(c.slug, category.id);
   }
@@ -173,6 +205,7 @@ async function seedProducts(categoryIdBySlug: Map<string, string>) {
         description: `${p.name}, parte del catálogo de ejemplo de esta plantilla E-commerce.`,
         price: priceFor(p.categorySlug, p.name),
         stock: stockFor(p.name),
+        discountPercent: discountFor(p.name),
         images: p.images,
         isFeatured: isFeaturedFor(p.name),
         categoryId,
@@ -183,6 +216,7 @@ async function seedProducts(categoryIdBySlug: Map<string, string>) {
         description: `${p.name}, parte del catálogo de ejemplo de esta plantilla E-commerce.`,
         price: priceFor(p.categorySlug, p.name),
         stock: stockFor(p.name),
+        discountPercent: discountFor(p.name),
         images: p.images,
         isFeatured: isFeaturedFor(p.name),
         categoryId,
@@ -190,7 +224,8 @@ async function seedProducts(categoryIdBySlug: Map<string, string>) {
     });
   }
 
-  console.log(`Seeded ${catalog.products.length} products.`);
+  const enOferta = catalog.products.filter((p) => discountFor(p.name) > 0).length;
+  console.log(`Seeded ${catalog.products.length} products (${enOferta} on sale).`);
 }
 
 /**

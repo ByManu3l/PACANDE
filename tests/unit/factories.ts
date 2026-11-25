@@ -39,7 +39,13 @@ export async function createCategory(overrides: Partial<{ name: string; slug: st
 
 export async function createProduct(
   categoryId: string,
-  overrides: Partial<{ name: string; slug: string; price: number; stock: number }> = {},
+  overrides: Partial<{
+    name: string;
+    slug: string;
+    price: number;
+    stock: number;
+    discountPercent: number;
+  }> = {},
 ) {
   const slug = overrides.slug ?? unique('product');
   return prisma.product.create({
@@ -49,6 +55,7 @@ export async function createProduct(
       description: 'A product used in tests.',
       price: overrides.price ?? 10000,
       stock: overrides.stock ?? 10,
+      discountPercent: overrides.discountPercent ?? 0,
       images: ['/images/test.jpg'],
       categoryId,
     },

@@ -5,6 +5,7 @@ import { auth } from '@/lib/auth';
 import { getCurrentCart } from '@/lib/cart-session';
 import { siteConfig } from '@/lib/config/site.config';
 import { cartTotals } from '@/lib/services/cart.service';
+import { CurrencyNotice } from '@/components/shared/currency-notice';
 
 export default async function CartPage() {
   const [cart, session] = await Promise.all([getCurrentCart(), auth()]);
@@ -25,6 +26,9 @@ export default async function CartPage() {
     <div className="grid gap-8 lg:grid-cols-3">
       <div className="lg:col-span-2">
         <h1 className="mb-4 text-2xl font-semibold tracking-tight">Tu carrito</h1>
+        <div className="mb-4">
+          <CurrencyNotice />
+        </div>
         <div>
           {items.map((item) => (
             <CartItemRow

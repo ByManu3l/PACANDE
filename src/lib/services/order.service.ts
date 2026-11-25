@@ -4,6 +4,7 @@ import { siteConfig } from '@/lib/config/site.config';
 import * as cartService from '@/lib/services/cart.service';
 import { calculateDiscount, normalizeCode, redeemCoupon } from '@/lib/services/coupon.service';
 import { paymentProvider } from '@/lib/services/payment.service';
+import { precioConDescuento } from '@/lib/utils/discount';
 import { UnauthorizedError, ValidationError } from '@/lib/utils/errors';
 import { ADMIN_PAGE_SIZE, buildPage, toSkipTake } from '@/lib/utils/pagination';
 
@@ -129,14 +130,22 @@ async function reserveOrder(userId: string, input: CheckoutInput) {
     // Instantánea de cada línea: nombre, imagen y precio quedan
     // congelados. El pedido debe seguir siendo legible aunque el producto
     // cambie de precio o desaparezca del catálogo.
-    const itemsData = cart.items.map((item) => ({
-      productId: item.productId,
-      productName: item.product.name,
-      productImage: item.product.images[0] ?? null,
-      unitPrice: item.product.price,
-      quantity: item.quantity,
-      lineTotal: item.product.price.mul(item.quantity),
-    }));
+    //
+    // El precio que se cobra es el efectivo —con el descuento vigente
+    // aplicado—, releído aquí dentro de la transacción. Guardar el precio
+    // de lista cobraría de más a quien compró en oferta.
+    const itemsData = cart.items.map((item) => {
+      const unitPrice = precioConDescuento(item.product.price, item.product.discountPercent);
+
+      return {
+        productId: item.productId,
+        productName: item.product.name,
+        productImage: item.product.images[0] ?? null,
+        unitPrice,
+        quantity: item.quantity,
+        lineTotal: unitPrice.mul(item.quantity),
+      };
+    });
 
     // Aritmética en `Decimal` de principio a fin. Sumar con `Number` daría
     // el resultado correcto en la mayoría de casos, pero este es el

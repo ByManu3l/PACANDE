@@ -73,6 +73,7 @@ export function ProductFormDialog({
       description: '',
       price: 0,
       stock: 0,
+      discountPercent: 0,
       categoryId: '',
       isActive: true,
       isFeatured: false,
@@ -89,6 +90,7 @@ export function ProductFormDialog({
           description: '',
           price: 0,
           stock: 0,
+          discountPercent: 0,
           categoryId: '',
           isActive: true,
           isFeatured: false,
@@ -186,6 +188,23 @@ export function ProductFormDialog({
                 {...register('stock', { valueAsNumber: true })}
               />
               {errors.stock && <p className="text-destructive text-sm">{errors.stock.message}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="discountPercent">Descuento (%)</Label>
+              <Input
+                id="discountPercent"
+                type="number"
+                step="1"
+                min="0"
+                max="99"
+                {...register('discountPercent', { valueAsNumber: true })}
+              />
+              <p className="text-muted-foreground text-xs">
+                0 = sin oferta. Con más de 0 el producto aparece en /ofertas.
+              </p>
+              {errors.discountPercent && (
+                <p className="text-destructive text-sm">{errors.discountPercent.message}</p>
+              )}
             </div>
           </div>
           <div className="space-y-2">

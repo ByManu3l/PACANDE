@@ -15,10 +15,30 @@ import { siteConfig } from '@/lib/config/site.config';
  * límite servidor→cliente.
  */
 export function formatPrice(amount: number | string): string {
+  return formatPriceIn(amount, siteConfig.defaultCurrency);
+}
+
+/**
+ * Formatea un importe en una moneda concreta.
+ *
+ * Existe para la conversión orientativa del escaparate (ver
+ * `exchange-rate.service.ts`). **No la uses para importes que se cobran**:
+ * esos van siempre en `siteConfig.defaultCurrency`, y para eso está
+ * `formatPrice`.
+ *
+ * Si el código de moneda no es válido, `Intl.NumberFormat` lanza. Se
+ * captura y se cae a mostrar el número con el código detrás, porque un
+ * precio feo es mejor que una página caída.
+ */
+export function formatPriceIn(amount: number | string, currency: string): string {
   const value = typeof amount === 'string' ? Number(amount) : amount;
 
-  return new Intl.NumberFormat(siteConfig.locale, {
-    style: 'currency',
-    currency: siteConfig.defaultCurrency,
-  }).format(value);
+  try {
+    return new Intl.NumberFormat(siteConfig.locale, {
+      style: 'currency',
+      currency,
+    }).format(value);
+  } catch {
+    return `${value.toFixed(2)} ${currency}`;
+  }
 }

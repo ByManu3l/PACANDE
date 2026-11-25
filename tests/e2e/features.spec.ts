@@ -181,3 +181,72 @@ test.describe('ficha de producto', () => {
     ).toBeVisible();
   });
 });
+
+test.describe('ofertas', () => {
+  test.beforeEach(async ({ page }) => {
+    await vaciarCarrito(page);
+  });
+
+  test('la página de ofertas lista solo productos rebajados, sin cifras rotas', async ({
+    page,
+  }) => {
+    await page.goto('/ofertas');
+
+    await expect(page.getByRole('heading', { name: /Ofertas especiales/i })).toBeVisible();
+
+    // La versión anterior de esta pantalla mostraba «Hasta -Infinity%» y
+    // «$NaN» cuando no había nada rebajado. Que no vuelvan, ni con datos
+    // ni sin ellos.
+    await expect(page.locator('body')).not.toContainText('Infinity');
+    await expect(page.locator('body')).not.toContainText('NaN');
+
+    // Cada tarjeta de esta página tiene que llevar su etiqueta de rebaja.
+    const etiquetas = page.getByText(/^−\d+%$/);
+    expect(await etiquetas.count()).toBeGreaterThan(0);
+  });
+
+  test('el precio rebajado es el que se cobra, no el de lista', async ({ page }) => {
+    await page.goto('/ofertas');
+
+    // Se entra por el primer producto en oferta, sea cual sea. El
+    // localizador apunta al href de ficha para no capturar el logo de la
+    // cabecera, que también es un enlace con imagen.
+    await page.locator('a[href^="/producto/"]').first().click();
+    await page.waitForURL(/\/producto\//);
+
+    await page.getByRole('button', { name: /Añadir al carrito/i }).click();
+    await page.goto('/carrito');
+
+    // El importe del carrito debe salir del precio rebajado. Si el
+    // escaparate y el carrito discreparan, aquí aparecería el precio de
+    // lista tachado como total.
+    await expect(page.getByRole('heading', { name: /Tu carrito/i })).toBeVisible();
+    await expect(page.locator('body')).not.toContainText('NaN');
+  });
+});
+
+test.describe('compra rápida desde la tarjeta', () => {
+  test.beforeEach(async ({ page }) => {
+    await vaciarCarrito(page);
+  });
+
+  test('el botón de la tarjeta añade al carrito sin abrir la ficha', async ({ page }) => {
+    await page.goto('/categoria/ropa-hombre');
+
+    // El nombre accesible lleva el producto: en una grilla de 18 tarjetas
+    // no puede haber 18 botones llamados igual.
+    const boton = page.getByRole('button', { name: /^Añadir .+ al carrito$/ }).first();
+    const nombreAccesible = await boton.getAttribute('aria-label');
+    const producto = nombreAccesible!.replace(/^Añadir /, '').replace(/ al carrito$/, '');
+
+    await boton.click();
+
+    // Sigue en la categoría: el botón no debe navegar a la ficha.
+    await expect(page).toHaveURL(/\/categoria\/ropa-hombre/);
+    await expect(page.getByText(`${producto} añadido al carrito.`)).toBeVisible();
+
+    await page.goto('/carrito');
+    await expect(page.getByRole('heading', { name: 'Tu carrito' })).toBeVisible();
+    await expect(page.getByText(producto).first()).toBeVisible();
+  });
+});

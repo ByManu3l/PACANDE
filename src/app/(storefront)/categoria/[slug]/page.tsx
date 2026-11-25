@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
 import { Breadcrumbs } from '@/components/shared/breadcrumbs';
@@ -71,12 +72,43 @@ export default async function CategoryPage({
         ]}
       />
 
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">{category.name}</h1>
-        {category.description && (
-          <p className="text-muted-foreground mt-1">{category.description}</p>
-        )}
-      </div>
+      {/* Cabecera con la imagen de la categoría de fondo. Cuando no hay
+          imagen se cae a un titular normal en vez de a un rectángulo gris:
+          una categoría sin foto no debe ocupar media pantalla en balde. */}
+      {category.image ? (
+        <header className="relative overflow-hidden rounded-lg">
+          <div className="relative aspect-4/1 min-h-40">
+            <Image
+              src={category.image}
+              alt=""
+              fill
+              priority
+              sizes="(min-width: 1152px) 1152px, 100vw"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-black/50" />
+          </div>
+          <div className="absolute inset-0 grid place-items-center px-6 text-center">
+            <div>
+              <h1 className="text-3xl font-bold tracking-wide text-white uppercase drop-shadow-lg sm:text-5xl">
+                {category.name}
+              </h1>
+              {category.description && (
+                <p className="mx-auto mt-2 max-w-2xl text-white/90 drop-shadow sm:text-lg">
+                  {category.description}
+                </p>
+              )}
+            </div>
+          </div>
+        </header>
+      ) : (
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">{category.name}</h1>
+          {category.description && (
+            <p className="text-muted-foreground mt-1">{category.description}</p>
+          )}
+        </div>
+      )}
 
       {hasChildren ? (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">

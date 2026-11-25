@@ -3,29 +3,53 @@ import Link from 'next/link';
 
 interface CategoryCardProps {
   category: { slug: string; name: string; image: string | null };
+  /**
+   * `sm` (por defecto) para listados dentro de una categoría. `lg` para
+   * la portada, donde cada tarjeta es un destino principal: más alta y
+   * con el rótulo centrado encima de la imagen.
+   */
+  size?: 'sm' | 'lg';
 }
 
-export function CategoryCard({ category }: CategoryCardProps) {
+export function CategoryCard({ category, size = 'sm' }: CategoryCardProps) {
+  const grande = size === 'lg';
+
   return (
     <Link
       href={`/categoria/${category.slug}`}
-      className="group border-border relative block aspect-4/3 overflow-hidden rounded-lg border"
+      className={`group border-border relative block overflow-hidden rounded-lg border transition-all duration-300 hover:-translate-y-1 hover:border-red-600/50 hover:shadow-xl ${
+        grande ? 'aspect-3/2' : 'aspect-4/3'
+      }`}
     >
       {category.image ? (
         <Image
           src={category.image}
           alt={category.name}
           fill
-          sizes="(min-width: 1024px) 25vw, 50vw"
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          sizes={grande ? '(min-width: 1024px) 33vw, 50vw' : '(min-width: 1024px) 25vw, 50vw'}
+          className="object-cover transition-transform duration-300 group-hover:scale-110"
         />
       ) : (
         <div className="bg-muted h-full w-full" />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-      <span className="absolute right-0 bottom-0 left-0 p-3 font-semibold text-white">
-        {category.name}
-      </span>
+
+      {grande ? (
+        <>
+          {/* Velo completo, no un degradado: el rótulo va centrado sobre la
+              imagen y necesita contraste en todo el alto, no solo abajo. */}
+          <div className="absolute inset-0 bg-black/35 transition-colors duration-300 group-hover:bg-black/25" />
+          <span className="absolute inset-0 grid place-items-center px-4 text-center text-2xl font-bold tracking-wide text-white uppercase drop-shadow-lg sm:text-3xl">
+            {category.name}
+          </span>
+        </>
+      ) : (
+        <>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          <span className="absolute right-0 bottom-0 left-0 p-3 font-semibold text-white">
+            {category.name}
+          </span>
+        </>
+      )}
     </Link>
   );
 }

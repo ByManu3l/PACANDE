@@ -108,6 +108,7 @@ export function ProductsTable({ initialProducts, categoryOptions, page = 1 }: Pr
                     description: product.description,
                     price: Number(product.price),
                     stock: product.stock,
+                    discountPercent: product.discountPercent,
                     categoryId: product.categoryId,
                     isActive: product.isActive,
                     isFeatured: product.isFeatured,

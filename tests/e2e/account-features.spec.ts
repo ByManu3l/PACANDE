@@ -93,7 +93,12 @@ async function limpiarDireccionesDePrueba(page: import('@playwright/test').Page)
       return;
     }
 
+    // Igual que al vaciar el carrito: el borrado es una Server Action que
+    // deshabilita su botón mientras corre. Se espera a que esté operativo
+    // y a que la tarjeta desaparezca, en vez de a un plazo fijo que unas
+    // veces llega y otras no.
+    await expect(borrar).toBeEnabled();
     await borrar.click();
-    await page.waitForTimeout(300);
+    await expect(borrar).toBeHidden();
   }
 }

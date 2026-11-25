@@ -39,6 +39,7 @@ function describir(violaciones: Awaited<ReturnType<typeof analizar>>['violations
 const PAGINAS = [
   { ruta: '/', nombre: 'portada' },
   { ruta: '/categoria/ropa-hombre', nombre: 'categoría' },
+  { ruta: '/ofertas', nombre: 'página de ofertas' },
   { ruta: '/producto/ropa-hombre-camiseta-gris', nombre: 'ficha de producto' },
   { ruta: '/buscar?q=camiseta', nombre: 'búsqueda con filtros' },
   { ruta: '/carrito', nombre: 'carrito' },

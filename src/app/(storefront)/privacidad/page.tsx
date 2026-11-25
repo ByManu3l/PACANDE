@@ -13,7 +13,13 @@ export default function PrivacyPage() {
       </p>
       <h2>2. Uso de los datos</h2>
       <p>Usamos tus datos únicamente para procesar pedidos, gestionar tu cuenta y contactarte.</p>
-      <h2>3. Tus derechos</h2>
+      <h2>3. Protección de la información</h2>
+      <p>
+        Tomamos medidas de seguridad adecuadas para proteger tu información personal contra accesos
+        no autorizados, alteraciones o destrucción. Las contraseñas se guardan cifradas con bcrypt y
+        nunca en texto plano.
+      </p>
+      <h2>4. Tus derechos</h2>
       <p>
         Puedes solicitar la actualización o eliminación de tus datos escribiendo a{' '}
         <a href="/contacto">contacto</a>.

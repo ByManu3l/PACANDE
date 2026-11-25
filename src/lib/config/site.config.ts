@@ -20,6 +20,15 @@ export interface SiteConfig {
    * `es-MX`, `en-US`. Debe cambiarse junto con `defaultCurrency`: es lo
    * que decide si se escribe `1.234,56` o `1,234.56`. */
   locale: string;
+  /**
+   * Monedas en las que el visitante puede **ver** los precios, además de
+   * `defaultCurrency`.
+   *
+   * Son solo una referencia visual: todo pedido se calcula, se cobra y se
+   * guarda en `defaultCurrency`. Ver `exchange-rate.service.ts` para el
+   * porqué de esa separación. Déjalo vacío para ocultar el selector.
+   */
+  displayCurrencies: string[];
   /** Se muestra en el pie y en la página de contacto. */
   contactEmail: string;
   contactPhone: string;
@@ -47,6 +56,7 @@ export const siteConfig: SiteConfig = {
   htmlLang: 'es',
   defaultCurrency: 'COP',
   locale: 'es-CO',
+  displayCurrencies: ['USD', 'EUR', 'MXN'],
   contactEmail: 'contacto@pacande.test',
   contactPhone: '+57 300 000 0000',
   flatShippingCost: 10_000,

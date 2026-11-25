@@ -22,6 +22,7 @@ export const siteConfig: SiteConfig = {
   locale: 'es-CO', //               ← formato de números y fechas
   contactEmail: 'contacto@pacande.test',
   contactPhone: '+57 300 000 0000',
+  displayCurrencies: ['USD', 'EUR', 'MXN'], // ← solo para mostrar
   flatShippingCost: 10_000, //      ← costo fijo de envío
   social: { facebook: '…', instagram: '…', x: '…' },
 };
@@ -37,6 +38,30 @@ Cambiar uno sin el otro produce precios con aspecto incorrecto.
 | México   | `MXN`             | `es-MX`  |
 | España   | `EUR`             | `es-ES`  |
 | EE. UU.  | `USD`             | `en-US`  |
+
+### `displayCurrencies`: mirar en otra moneda, cobrar en la tuya
+
+Las monedas de esta lista aparecen en un selector de la cabecera y
+permiten al visitante **ver** los precios convertidos. Déjala vacía
+(`[]`) para ocultar el selector.
+
+**La conversión no cobra, y esto es deliberado.** Todo pedido se calcula,
+se cobra y se guarda en `defaultCurrency`; el importe convertido se marca
+con «≈» y va siempre detrás del importe real, y el carrito y el checkout
+avisan de en qué moneda se cobra. Las razones están en el encabezado de
+[`exchange-rate.service.ts`](../src/lib/services/exchange-rate.service.ts),
+y se resumen en tres:
+
+- Cobrar según una tasa que se mueve entre que alguien ve el precio y
+  pulsa pagar es publicidad engañosa.
+- La fuente de tasas es pública y gratuita: sin acuerdo de servicio ni
+  responsabilidad si devuelve un número erróneo.
+- La conversión real la hace la pasarela con sus tasas contractuales.
+  Duplicarla aquí garantiza descuadres contables.
+
+Si tu negocio necesita cobrar en varias monedas, el camino correcto es
+precios por moneda gestionados por ti, o delegar en la pasarela — no
+multiplicar por una tasa traída de internet.
 
 No hace falta tocar nada más: `formatPrice()` lee de aquí y la usan todas
 las pantallas.

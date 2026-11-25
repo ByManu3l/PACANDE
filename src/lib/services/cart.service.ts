@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
 import { prisma } from '@/lib/prisma';
+import { precioConDescuento } from '@/lib/utils/discount';
 import { ValidationError } from '@/lib/utils/errors';
 
 /**
@@ -241,10 +242,18 @@ export async function mergeGuestCartIntoUser(guestToken: string, userId: string)
  * `Decimal`, releyendo los precios. Nunca uses este subtotal para cobrar
  * ni para guardarlo en un pedido.
  */
-export function cartTotals(cart: { items: { quantity: number; product: { price: unknown } }[] }) {
+export function cartTotals(cart: {
+  items: { quantity: number; product: { price: unknown; discountPercent?: number } }[];
+}) {
   const itemCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+  // Se usa el precio con descuento, no el de lista: este subtotal es lo que
+  // ve quien está a punto de pagar, y tiene que coincidir con lo que
+  // `reserveOrder` acabará cobrando.
   const subtotal = cart.items.reduce(
-    (sum, item) => sum + Number(item.product.price) * item.quantity,
+    (sum, item) =>
+      sum +
+      Number(precioConDescuento(item.product.price as string, item.product.discountPercent ?? 0)) *
+        item.quantity,
     0,
   );
   return { itemCount, subtotal };

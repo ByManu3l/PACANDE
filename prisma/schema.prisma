@@ -170,6 +170,18 @@ model Product {
   /// Lo muestra en la sección "Destacados" de la portada.
   isFeatured  Boolean  @default(false)
 
+  /// Descuento vigente, en porcentaje entero de 0 a 100.
+  ///
+  /// Se guarda el porcentaje y no el precio rebajado a propósito: el
+  /// precio de lista sigue siendo `price`, así que subirlo o bajarlo no
+  /// obliga a recalcular la oferta, y la ficha puede mostrar el importe
+  /// tachado junto al vigente. El precio efectivo se deriva siempre con
+  /// `precioConDescuento()` — nunca se copia a mano — para que carrito,
+  /// checkout y escaparate no puedan discrepar.
+  ///
+  /// 0 significa «sin oferta», y es lo que decide qué entra en /ofertas.
+  discountPercent Int @default(0)
+
   categoryId String
   /// Restrict: no se puede borrar una categoría que aún tenga productos.
   /// Obliga a moverlos o eliminarlos primero, en vez de que desaparezcan

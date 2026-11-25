@@ -21,6 +21,21 @@ export default function TermsPage() {
         Consulta los tiempos de envío y la política de devoluciones en la sección de{' '}
         <a href="/ayuda">Ayuda</a>.
       </p>
+      <h2>4. Propiedad intelectual</h2>
+      <p>
+        Todo el contenido de este sitio —textos, gráficos, logotipos y software— es propiedad de la
+        empresa o de sus proveedores, y está protegido por las leyes de propiedad intelectual.
+      </p>
+      <h2>5. Modificaciones de los términos</h2>
+      <p>
+        Nos reservamos el derecho de modificar estos términos en cualquier momento. Te recomendamos
+        revisar esta página periódicamente para estar al tanto de los cambios.
+      </p>
+      <h2>6. Contacto</h2>
+      <p>
+        Si tienes preguntas sobre estos términos, escríbenos desde la página de{' '}
+        <a href="/contacto">contacto</a>.
+      </p>
     </div>
   );
 }
