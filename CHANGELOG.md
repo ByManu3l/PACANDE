@@ -9,8 +9,21 @@ datos.
 
 ## [No publicado]
 
+### Cambiado
+
+- **Identidad visual de la versión JavaScript original**, recuperada sobre
+  Next.js, Tailwind y shadcn: fuente del sistema, rojo #ff0000 con negro,
+  portada en franjas blancas y negras, tarjeta de producto centrada con
+  «Comprar Ahora» y «Agregar al Carrito», cabecera, pie, ofertas, carrito,
+  pago, cuenta, ventanas de entrar y registrarse, 404 y pantalla de carga.
+  Algunos textos cambian para coincidir con el original («Agregar al
+  Carrito», «Registrarse», «Carrito de Compras», «Finalizar Compra»).
+
 ### Añadido
 
+- **Vaciar el carrito** desde la página del carrito (`clearCartAction`).
+- **Descuento por producto**, **moneda de vista** con tasas de cambio,
+  **carrusel de portada** y **página de ofertas**.
 - **Opiniones de clientes** con moderación previa y verificación de
   compra, con valoración media desnormalizada y desglose por estrellas.
 - **Cupones de descuento** (porcentaje o importe fijo) con vigencia,

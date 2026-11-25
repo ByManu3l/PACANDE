@@ -73,23 +73,40 @@ automáticamente.
 
 ## 2. Colores
 
-En [`src/app/globals.css`](../src/app/globals.css), el token `--primary`
-define el color de marca. Todo lo demás se deriva de él.
+En [`src/app/globals.css`](../src/app/globals.css) hay dos rojos de marca,
+y al re-marcar se cambian los dos:
 
 ```css
+@theme inline {
+  --color-brand: #ff0000; /* acentos sobre negro: subrayados, iconos, títulos del pie */
+  --color-brand-dark: #cc0000; /* hover de los botones */
+}
 :root {
-  --primary: oklch(0.55 0.22 25); /* claro */
+  --primary: #e00000; /* botones con texto blanco */
 }
 .dark {
-  --primary: oklch(0.63 0.22 25); /* oscuro */
+  --primary: oklch(0.63 0.22 25);
 }
 ```
 
-**Cambia los dos.** El modo oscuro necesita algo más de luminosidad para
-mantener el contraste sobre fondo oscuro; por eso `0.63` frente a `0.55`.
+**Por qué dos.** El rojo puro de la identidad Pacandé contrasta 5,3:1 sobre
+el negro de la cabecera y el pie, pero solo 4:1 con texto blanco encima,
+por debajo del 4,5:1 que exige WCAG AA. `--primary` es el mismo rojo un
+punto más oscuro (5:1), indistinguible a simple vista. Si tu color de
+marca es más oscuro que el rojo puro, puedes usar el mismo valor en los
+tres tokens; compruébalo con un medidor de contraste.
 
-Los valores están en `oklch(luminosidad croma tono)`, que a diferencia de
-los hexadecimales mantiene la luminosidad percibida al mover el tono. En
+La fuente es la del sistema (`--font-sans`, la misma pila que usaba UIkit
+en la versión original): no descarga nada. Para una tipografía propia,
+cárgala con `next/font` en `src/app/layout.tsx` y apunta `--font-sans` a
+su variable.
+
+Las piezas con aspecto de Material UI (carrito, pago) toman sus clases de
+[`estilo-original.ts`](../src/components/shared/estilo-original.ts); se
+ajustan ahí, en un solo sitio.
+
+El valor del modo oscuro está en `oklch(luminosidad croma tono)`, que a
+diferencia de los hexadecimales mantiene la luminosidad percibida al mover el tono. En
 la práctica: **cambia solo el tercer número** (0–360) y obtendrás otro
 color de la misma intensidad.
 
@@ -104,7 +121,8 @@ color de la misma intensidad.
 Si tienes un hexadecimal de marca, conviértelo en
 [oklch.com](https://oklch.com) y pega el resultado.
 
-El redondeo de las esquinas es `--radius` (por defecto `0.625rem`). Súbelo
+El redondeo de las esquinas es `--radius` (por defecto `0.3125rem`, los 5 px
+de la versión original). Súbelo
 para un aspecto más suave, o ponlo a `0` para uno más severo.
 
 ---
