@@ -220,7 +220,7 @@ test.describe('ofertas', () => {
     // El importe del carrito debe salir del precio rebajado. Si el
     // escaparate y el carrito discreparan, aquí aparecería el precio de
     // lista tachado como total.
-    await expect(page.getByRole('heading', { name: /Tu carrito/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Carrito de Compras' })).toBeVisible();
     await expect(page.locator('body')).not.toContainText('NaN');
   });
 });
@@ -246,7 +246,7 @@ test.describe('compra rápida desde la tarjeta', () => {
     await expect(page.getByText(`${producto} agregado al carrito.`)).toBeVisible();
 
     await page.goto('/carrito');
-    await expect(page.getByRole('heading', { name: 'Tu carrito' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Carrito de Compras' })).toBeVisible();
     await expect(page.getByText(producto).first()).toBeVisible();
   });
 });

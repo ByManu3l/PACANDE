@@ -1,14 +1,13 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Lock, Mail } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { loginAction } from '@/actions/auth.actions';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { BOTON_AUTH, CampoAuth } from '@/components/forms/campo-auth';
 import { type LoginInput, loginSchema } from '@/lib/validations/auth';
 
 export function LoginForm() {
@@ -36,24 +35,27 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="email">Correo</Label>
-        <Input id="email" type="email" autoComplete="email" {...register('email')} />
-        {errors.email && <p className="text-destructive text-sm">{errors.email.message}</p>}
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="password">Contraseña</Label>
-        <Input
-          id="password"
-          type="password"
-          autoComplete="current-password"
-          {...register('password')}
-        />
-        {errors.password && <p className="text-destructive text-sm">{errors.password.message}</p>}
-      </div>
-      <Button type="submit" disabled={isSubmitting} className="w-full">
-        {isSubmitting ? 'Ingresando…' : 'Iniciar sesión'}
-      </Button>
+      <CampoAuth
+        id="email"
+        label="Correo Electrónico"
+        icon={<Mail />}
+        type="email"
+        autoComplete="email"
+        error={errors.email?.message}
+        {...register('email')}
+      />
+      <CampoAuth
+        id="password"
+        label="Contraseña"
+        icon={<Lock />}
+        type="password"
+        autoComplete="current-password"
+        error={errors.password?.message}
+        {...register('password')}
+      />
+      <button type="submit" disabled={isSubmitting} className={BOTON_AUTH}>
+        {isSubmitting ? 'Ingresando…' : 'Iniciar Sesión'}
+      </button>
     </form>
   );
 }

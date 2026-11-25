@@ -12,7 +12,7 @@ test('a visitor can register, land authenticated, log out, and log back in', asy
   await page.getByLabel('Nombre').fill('E2E Registrado');
   await page.getByLabel('Correo').fill(email);
   await page.getByLabel('Contraseña').fill(password);
-  await page.getByRole('button', { name: 'Crear cuenta' }).click();
+  await page.getByRole('button', { name: 'Registrarse' }).click();
 
   await expect(page).toHaveURL('/');
   await page.goto('/cuenta');

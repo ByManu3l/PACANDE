@@ -46,3 +46,15 @@ export async function removeFromCartAction(productId: string) {
     return cartService.cartTotals(cart);
   });
 }
+
+/** «Vaciar Carrito» de la página del carrito, como en la versión original. */
+export async function clearCartAction() {
+  return runAction(async () => {
+    const identity = await resolveCartIdentity(false);
+    // Sin sesión ni carrito de invitado no hay nada que vaciar, y
+    // `getOrCreateCart` crearía uno vacío solo para borrarle las líneas.
+    if (identity.userId || identity.guestToken) await cartService.clearCart(identity);
+    revalidatePath('/carrito');
+    return { itemCount: 0, subtotal: 0 };
+  });
+}

@@ -39,7 +39,7 @@ test('guest checkout requires login, and completes end-to-end once authenticated
   await page.getByLabel('Nombre').fill('E2E Comprador');
   await page.getByLabel('Correo').fill(email);
   await page.getByLabel('Contraseña').fill(password);
-  await page.getByRole('button', { name: 'Crear cuenta' }).click();
+  await page.getByRole('button', { name: 'Registrarse' }).click();
   await expect(page).toHaveURL('/');
 
   // Registrarse con la cookie de carrito anónimo puesta debe haberlo
