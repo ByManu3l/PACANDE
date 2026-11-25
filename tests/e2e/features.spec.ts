@@ -201,7 +201,7 @@ test.describe('ofertas', () => {
     await expect(page.locator('body')).not.toContainText('NaN');
 
     // Cada tarjeta de esta página tiene que llevar su etiqueta de rebaja.
-    const etiquetas = page.getByText(/^−\d+%$/);
+    const etiquetas = page.getByText(/^\d+% OFF$/);
     expect(await etiquetas.count()).toBeGreaterThan(0);
   });
 

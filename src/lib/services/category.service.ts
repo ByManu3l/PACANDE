@@ -9,13 +9,6 @@ import { buildPage, PAGE_SIZE, toSkipTake } from '@/lib/utils/pagination';
 import { type ProductFilters, toPrismaOrderBy, toPrismaWhere } from '@/lib/utils/product-filters';
 import type { CategoryInput } from '@/lib/validations/category';
 
-export async function getTopLevelCategories() {
-  return prisma.category.findMany({
-    where: { parentId: null, isActive: true },
-    orderBy: [{ position: 'asc' }, { name: 'asc' }],
-  });
-}
-
 /**
  * Devuelve la categoría con sus subcategorías, **sin** los productos.
  *

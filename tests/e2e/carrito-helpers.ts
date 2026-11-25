@@ -14,6 +14,10 @@ import { expect, type Page } from '@playwright/test';
  */
 export async function vaciarCarrito(page: Page) {
   await page.goto('/carrito');
+  // La página se transmite por partes (primero la pantalla de carga): sin
+  // esperar al título, el bucle contaría cero filas antes de que lleguen
+  // y daría el carrito por vacío sin haberlo vaciado.
+  await expect(page.getByRole('heading', { name: 'Carrito de Compras' })).toBeVisible();
 
   // De una en una: la lista se vuelve a renderizar tras cada borrado y
   // los localizadores previos quedan obsoletos.

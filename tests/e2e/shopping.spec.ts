@@ -10,7 +10,8 @@ test('browse a category, view a product, add it to the cart, and see it in /carr
   await page.goto('/categoria/ropa-hombre');
   await expect(page.getByRole('heading', { name: 'Hombre' })).toBeVisible();
 
-  await page.getByRole('link').filter({ hasText: '$' }).first().click();
+  // El enlace de la tarjeta es la foto y el nombre; el precio va fuera.
+  await page.locator('main a[href^="/producto/"]').first().click();
   await expect(page).toHaveURL(/\/producto\//);
 
   const productName = await page.getByRole('heading', { level: 1 }).textContent();
