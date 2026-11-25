@@ -21,7 +21,9 @@ export default async function OrderDetailPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Pedido {order.orderNumber}</h1>
+          <h1 className="before:bg-brand flex items-center gap-2.5 text-[1.3rem] font-semibold text-black before:block before:h-6 before:w-1 before:rounded">
+            Pedido {order.orderNumber}
+          </h1>
           <p className="text-muted-foreground text-sm">
             {new Date(order.createdAt).toLocaleString('es-CO')}
           </p>

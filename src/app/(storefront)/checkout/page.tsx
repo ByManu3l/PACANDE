@@ -10,6 +10,7 @@ import { cartTotals } from '@/lib/services/cart.service';
 import { formatPrice } from '@/lib/utils/currency';
 import { siteConfig } from '@/lib/config/site.config';
 import { CurrencyNotice } from '@/components/shared/currency-notice';
+import { TARJETA_MUI } from '@/components/shared/estilo-original';
 
 export default async function CheckoutPage({ searchParams }: PageProps<'/checkout'>) {
   const [cart, sp, user] = await Promise.all([getCurrentCart(), searchParams, requireSession()]);
@@ -31,9 +32,13 @@ export default async function CheckoutPage({ searchParams }: PageProps<'/checkou
   const total = subtotal - descuento + siteConfig.flatShippingCost;
 
   return (
-    <div className="grid gap-8 lg:grid-cols-3">
-      <div className="lg:col-span-2">
-        <h1 className="mb-6 text-2xl font-semibold tracking-tight">Checkout</h1>
+    // Composición del «Finalizar Compra» original: datos de envío y pago a
+    // la izquierda y el resumen fijo a la derecha.
+    <div className="mx-auto grid max-w-[1200px] gap-6 pt-4 pb-16 md:grid-cols-12">
+      <div className="md:col-span-8">
+        <h1 className="mb-[0.35em] text-[2.125rem] leading-[1.235] font-normal tracking-[0.00735em] text-[rgba(0,0,0,0.87)]">
+          Finalizar Compra
+        </h1>
         <div className="mb-6">
           <CurrencyNotice />
         </div>
@@ -54,12 +59,14 @@ export default async function CheckoutPage({ searchParams }: PageProps<'/checkou
         />
       </div>
 
-      <div className="bg-muted/40 h-fit space-y-3 rounded-lg border p-6">
-        <h2 className="font-semibold">Resumen del pedido</h2>
+      <div
+        className={`${TARJETA_MUI} sticky top-36 h-fit space-y-3 p-4 md:col-span-4 md:mt-[3.2rem]`}
+      >
+        <h2 className="text-xl font-medium tracking-[0.0075em]">Resumen del Pedido</h2>
         {cart.items.map((item) => (
           <div key={item.productId} className="flex justify-between text-sm">
-            <span className="text-muted-foreground">
-              {item.product.name} × {item.quantity}
+            <span className="text-sm">
+              {item.product.name} x {item.quantity}
             </span>
             <span>{formatPrice(Number(item.product.price) * item.quantity)}</span>
           </div>
@@ -78,7 +85,7 @@ export default async function CheckoutPage({ searchParams }: PageProps<'/checkou
           <span className="text-muted-foreground">Envío</span>
           <span>{formatPrice(siteConfig.flatShippingCost)}</span>
         </div>
-        <div className="flex justify-between border-t pt-3 font-semibold">
+        <div className="flex justify-between border-t pt-3 text-xl font-medium">
           <span>Total</span>
           <span>{formatPrice(total)}</span>
         </div>

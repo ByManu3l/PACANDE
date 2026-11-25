@@ -14,7 +14,9 @@ export default async function FavoritosPage() {
   if (favoritos.length === 0) {
     return (
       <div className="space-y-4">
-        <h1 className="text-2xl font-semibold tracking-tight">Favoritos</h1>
+        <h1 className="before:bg-brand flex items-center gap-2.5 text-[1.3rem] font-semibold text-black before:block before:h-6 before:w-1 before:rounded">
+          Favoritos
+        </h1>
 
         <div className="text-muted-foreground space-y-3 rounded-lg border border-dashed p-10 text-center">
           <HeartOff className="mx-auto size-8" aria-hidden="true" />
@@ -33,7 +35,9 @@ export default async function FavoritosPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Favoritos</h1>
+        <h1 className="before:bg-brand flex items-center gap-2.5 text-[1.3rem] font-semibold text-black before:block before:h-6 before:w-1 before:rounded">
+          Favoritos
+        </h1>
         <p className="text-muted-foreground mt-1 text-sm">
           {favoritos.length} {favoritos.length === 1 ? 'producto guardado' : 'productos guardados'}
         </p>

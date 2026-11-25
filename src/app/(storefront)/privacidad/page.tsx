@@ -1,29 +1,41 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+
+import { PaginaLegal } from '@/components/shared/pagina-legal';
+
+export const metadata: Metadata = { title: 'Política de privacidad' };
+
 export default function PrivacyPage() {
   return (
-    <div className="prose prose-neutral dark:prose-invert max-w-2xl">
-      <h1>Política de privacidad</h1>
-      <p className="text-muted-foreground text-sm">
-        Contenido de ejemplo — reemplázalo con la política real de tu negocio antes de operar en
-        producción.
-      </p>
-      <h2>1. Datos que recopilamos</h2>
-      <p>
-        Nombre, correo y dirección de envío al registrarte o realizar un pedido. Nunca almacenamos
-        tu contraseña en texto plano ni compartimos tus datos con terceros sin tu consentimiento.
-      </p>
-      <h2>2. Uso de los datos</h2>
-      <p>Usamos tus datos únicamente para procesar pedidos, gestionar tu cuenta y contactarte.</p>
-      <h2>3. Protección de la información</h2>
-      <p>
-        Tomamos medidas de seguridad adecuadas para proteger tu información personal contra accesos
-        no autorizados, alteraciones o destrucción. Las contraseñas se guardan cifradas con bcrypt y
-        nunca en texto plano.
-      </p>
-      <h2>4. Tus derechos</h2>
-      <p>
-        Puedes solicitar la actualización o eliminación de tus datos escribiendo a{' '}
-        <a href="/contacto">contacto</a>.
-      </p>
-    </div>
+    <PaginaLegal
+      titulo="Política de Privacidad"
+      aviso="Contenido de ejemplo — reemplázalo con la política real de tu negocio antes de operar en producción."
+      secciones={[
+        {
+          titulo: '1. Datos que recopilamos',
+          contenido:
+            'Nombre, correo y dirección de envío al registrarte o realizar un pedido. Nunca almacenamos tu contraseña en texto plano ni compartimos tus datos con terceros sin tu consentimiento.',
+        },
+        {
+          titulo: '2. Uso de los datos',
+          contenido:
+            'Usamos tus datos únicamente para procesar pedidos, gestionar tu cuenta y contactarte.',
+        },
+        {
+          titulo: '3. Protección de la información',
+          contenido:
+            'Tomamos medidas de seguridad adecuadas para proteger tu información personal contra accesos no autorizados, alteraciones o destrucción. Las contraseñas se guardan cifradas con bcrypt y nunca en texto plano.',
+        },
+        {
+          titulo: '4. Tus derechos',
+          contenido: (
+            <>
+              Puedes solicitar la actualización o eliminación de tus datos escribiendo a{' '}
+              <Link href="/contacto">contacto</Link>.
+            </>
+          ),
+        },
+      ]}
+    />
   );
 }

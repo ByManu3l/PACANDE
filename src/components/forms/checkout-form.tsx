@@ -6,6 +6,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { checkoutAction } from '@/actions/order.actions';
+import { BOTON_MUI_ROJO, TARJETA_MUI } from '@/components/shared/estilo-original';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -122,8 +123,10 @@ export function CheckoutForm({
         </fieldset>
       )}
 
-      <fieldset className="space-y-4">
-        <legend className="mb-2 font-semibold">Dirección de envío</legend>
+      <fieldset className={`${TARJETA_MUI} space-y-4 p-4 [&>legend+*]:clear-both`}>
+        <legend className="float-left mb-2 w-full text-xl font-medium tracking-[0.0075em]">
+          Datos de Envío
+        </legend>
 
         <div className="space-y-2">
           <Label htmlFor="recipientName">Nombre de quien recibe</Label>
@@ -173,8 +176,10 @@ export function CheckoutForm({
         </div>
       </fieldset>
 
-      <fieldset className="space-y-4">
-        <legend className="mb-2 font-semibold">Método de pago</legend>
+      <fieldset className={`${TARJETA_MUI} space-y-4 p-4 [&>legend+*]:clear-both`}>
+        <legend className="float-left mb-2 w-full text-xl font-medium tracking-[0.0075em]">
+          Método de Pago
+        </legend>
         <Controller
           control={control}
           name="paymentMethod"
@@ -230,9 +235,9 @@ export function CheckoutForm({
         )}
       </fieldset>
 
-      <Button type="submit" disabled={isSubmitting} className="w-full">
+      <button type="submit" disabled={isSubmitting} className={`${BOTON_MUI_ROJO} w-full`}>
         {isSubmitting ? 'Procesando pago…' : 'Confirmar pedido'}
-      </Button>
+      </button>
     </form>
   );
 }
