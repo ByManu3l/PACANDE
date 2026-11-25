@@ -5,8 +5,6 @@ import { Price } from '@/components/shared/price';
 import { QuickAddButton } from '@/components/shared/quick-add-button';
 import { RatingStars } from '@/components/shared/rating-stars';
 import { WishlistButton } from '@/components/shared/wishlist-button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
 import { formatPrice } from '@/lib/utils/currency';
 import { precioConDescuento, tieneDescuento } from '@/lib/utils/discount';
 
@@ -15,6 +13,7 @@ interface ProductCardProps {
     id: string;
     slug: string;
     name: string;
+    description?: string;
     price: number | string;
     images: string[];
     isFeatured: boolean;
@@ -34,6 +33,15 @@ interface ProductCardProps {
   isAuthenticated?: boolean;
 }
 
+/**
+ * Tarjeta de producto de la versión original: blanca, de esquinas rectas,
+ * todo centrado; estrella de favorito arriba a la izquierda, etiqueta roja
+ * de descuento arriba a la derecha, la foto entera sobre gris claro, y los
+ * dos botones rojos apilados —«Comprar Ahora» y «Agregar al Carrito»—.
+ *
+ * La foto y el nombre enlazan a la ficha; los botones quedan fuera del
+ * enlace porque un `<button>` dentro de un `<a>` es HTML inválido.
+ */
 export async function ProductCard({
   product,
   priority,
@@ -47,84 +55,90 @@ export async function ProductCard({
   const precioVigente = enOferta ? precioConDescuento(product.price, descuento) : product.price;
 
   return (
-    // `group` permite que la imagen reaccione al hover de toda la tarjeta,
-    // no solo al suyo propio.
-    <div className="group relative">
+    <article className="group relative flex h-full flex-col overflow-hidden border border-[#e0e0e0] bg-white p-5 text-center shadow-[0_4px_8px_rgba(0,0,0,0.1)] transition-transform duration-300 hover:scale-[1.03]">
       <WishlistButton
         productId={product.id}
         initialWishlisted={isWishlisted}
         isAuthenticated={isAuthenticated}
       />
 
-      <Link href={`/producto/${product.slug}`} className="block">
-        <Card className="hover:border-primary/40 h-full gap-3 overflow-hidden py-0 transition-all duration-300 group-hover:scale-[1.03] hover:shadow-xl">
-          <div className="bg-muted relative aspect-square overflow-hidden">
-            {image ? (
-              <Image
-                src={image}
-                alt={product.name}
-                fill
-                priority={priority}
-                sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-                className="object-cover transition-transform duration-300 group-hover:scale-110"
-              />
-            ) : null}
+      {!agotado && enOferta && (
+        <span className="bg-primary absolute top-2.5 right-2.5 z-[2] rounded-[5px] px-2.5 py-[5px] text-[0.9rem] font-bold text-white">
+          {descuento}% OFF
+        </span>
+      )}
 
-            {/* La rebaja manda sobre «Destacado»: es el dato que decide una
-                compra, y dos etiquetas en la misma esquina se estorban. */}
-            {!agotado && enOferta && (
-              <Badge className="absolute top-2 left-2 bg-red-600 font-bold text-white">
-                −{descuento}%
-              </Badge>
-            )}
+      {product.isFeatured && !agotado && !enOferta && (
+        <span className="absolute top-2.5 right-2.5 z-[2] rounded-[5px] bg-black px-2.5 py-[5px] text-[0.8rem] font-bold text-white">
+          Destacado
+        </span>
+      )}
 
-            {product.isFeatured && !agotado && !enOferta && (
-              <Badge className="absolute top-2 left-2">Destacado</Badge>
-            )}
+      <Link href={`/producto/${product.slug}`} className="block focus-visible:outline-none">
+        <div className="relative mb-2.5 aspect-square overflow-hidden rounded-lg bg-[#f5f5f5]">
+          {image ? (
+            <Image
+              src={image}
+              alt={product.name}
+              fill
+              priority={priority}
+              sizes="(min-width: 960px) 30vw, (min-width: 640px) 45vw, 90vw"
+              className="object-contain p-2.5 transition-transform duration-300 hover:scale-110"
+            />
+          ) : null}
 
-            {agotado && (
-              // Un velo sobre la imagen, y no solo una etiqueta: de un
-              // vistazo hay que poder saltarse los agotados en una grilla.
-              <div className="bg-background/60 absolute inset-0 grid place-items-center backdrop-blur-[1px]">
-                <Badge variant="secondary">Agotado</Badge>
-              </div>
-            )}
-          </div>
+          {agotado && (
+            // Un velo sobre la imagen, y no solo una etiqueta: de un
+            // vistazo hay que poder saltarse los agotados en una grilla.
+            <div className="absolute inset-0 grid place-items-center bg-white/60">
+              <span className="bg-black px-3 py-1 text-sm font-bold text-white">Agotado</span>
+            </div>
+          )}
+        </div>
 
-          <CardContent className="space-y-1.5 pb-4">
-            <p className="line-clamp-2 text-sm leading-snug font-medium">{product.name}</p>
-
-            {/* Sin opiniones no se dibuja nada: cinco estrellas vacías en
-                cada tarjeta de una tienda nueva parecen mala valoración. */}
-            {product.ratingCount > 0 && (
-              <RatingStars value={product.ratingAverage} count={product.ratingCount} size="sm" />
-            )}
-
-            <p className="flex flex-wrap items-baseline gap-2">
-              <Price amount={precioVigente.toString()} />
-              {enOferta && (
-                <span className="text-muted-foreground text-xs line-through">
-                  {formatPrice(product.price)}
-                </span>
-              )}
-            </p>
-
-            {/* Aviso de escasez: solo por debajo de 5 unidades, para que
-                signifique algo cuando aparece. */}
-            {!agotado && product.stock < 5 && (
-              <p className="text-xs font-medium text-amber-600 dark:text-amber-500">
-                ¡Solo quedan {product.stock}!
-              </p>
-            )}
-          </CardContent>
-        </Card>
+        <h3 className="group-focus-within:text-primary mb-2.5 text-[1.2rem] leading-snug font-bold text-[#333]">
+          {product.name}
+        </h3>
       </Link>
 
-      {/* Fuera del enlace a propósito: un botón dentro de un `<a>` es HTML
-          inválido y acaba navegando al pulsarlo. */}
-      <div className="mt-2">
+      {product.description && (
+        <p className="mb-2.5 line-clamp-2 text-[#666]">{product.description}</p>
+      )}
+
+      {/* Sin opiniones no se dibuja nada: cinco estrellas vacías en cada
+          tarjeta de una tienda nueva parecen mala valoración. */}
+      {product.ratingCount > 0 && (
+        <div className="mb-2.5 flex justify-center">
+          <RatingStars value={product.ratingAverage} count={product.ratingCount} size="sm" />
+        </div>
+      )}
+
+      <p className="mb-2.5 flex flex-wrap items-baseline justify-center gap-2 text-[1.2rem] font-bold text-black">
+        <Price amount={precioVigente.toString()} />
+        {enOferta && (
+          <span className="text-sm font-normal text-[#666] line-through">
+            {formatPrice(product.price)}
+          </span>
+        )}
+      </p>
+
+      {/* Aviso de escasez: solo por debajo de 5 unidades, para que
+          signifique algo cuando aparece. */}
+      {!agotado && product.stock < 5 && (
+        <p className="mb-2.5 text-sm font-medium text-amber-700">¡Solo quedan {product.stock}!</p>
+      )}
+
+      {/* `mt-auto` alinea los botones al pie en toda la fila aunque los
+          nombres ocupen distinto número de líneas. */}
+      <div className="mx-2 mt-auto flex flex-col gap-2.5 sm:mx-[10%] lg:mx-[15%]">
+        <QuickAddButton
+          productId={product.id}
+          productName={product.name}
+          stock={product.stock}
+          modo="comprar"
+        />
         <QuickAddButton productId={product.id} productName={product.name} stock={product.stock} />
       </div>
-    </div>
+    </article>
   );
 }

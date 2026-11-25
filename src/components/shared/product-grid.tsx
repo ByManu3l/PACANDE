@@ -36,8 +36,10 @@ export async function ProductGrid({ products, prioritizeFirst = true }: ProductG
       )
     : new Set<string>();
 
+  // Tres columnas en escritorio y dos en tableta: la galería de la
+  // versión original (UIkit `1-3@m`, `1-2@s`).
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-[30px] sm:grid-cols-2 lg:grid-cols-3 xl:gap-10">
       {products.map((product, index) => (
         <ProductCard
           key={product.slug}

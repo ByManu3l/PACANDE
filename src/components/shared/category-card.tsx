@@ -1,55 +1,97 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { cn } from '@/lib/utils';
+
 interface CategoryCardProps {
-  category: { slug: string; name: string; image: string | null };
+  category: { slug: string; name: string; image: string | null; description?: string | null };
   /**
-   * `sm` (por defecto) para listados dentro de una categoría. `lg` para
-   * la portada, donde cada tarjeta es un destino principal: más alta y
-   * con el rótulo centrado encima de la imagen.
+   * Las tres tarjetas de la versión original:
+   *
+   * - `wide`: franjas blancas de la portada. Imagen a sangre con velo
+   *   negro al 50 % y el nombre enorme en el centro.
+   * - `tall`: franjas negras de la portada. La misma idea en vertical,
+   *   300 × 550 px.
+   * - `main` (por defecto): página de una categoría con subcategorías.
+   *   Esquinas redondeadas, degradado oscuro y el nombre con una frase
+   *   de la descripción al pie.
    */
-  size?: 'sm' | 'lg';
+  variant?: 'wide' | 'tall' | 'main';
+  className?: string;
 }
 
-export function CategoryCard({ category, size = 'sm' }: CategoryCardProps) {
-  const grande = size === 'lg';
+/** La primera frase de la descripción: el resto queda para la cabecera
+ * de la propia categoría. */
+function primeraFrase(texto: string) {
+  const fin = texto.indexOf('. ');
+  return fin === -1 ? texto.replace(/\.$/, '') : texto.slice(0, fin);
+}
+
+export function CategoryCard({ category, variant = 'main', className }: CategoryCardProps) {
+  if (variant === 'main') {
+    return (
+      <Link
+        href={`/categoria/${category.slug}`}
+        className={cn(
+          'group relative block h-[300px] overflow-hidden rounded-xl text-white shadow-[0_4px_6px_rgba(0,0,0,0.1)] transition-all duration-300 hover:-translate-y-[5px] hover:shadow-[0_6px_12px_rgba(0,0,0,0.2)]',
+          className,
+        )}
+      >
+        {category.image && (
+          <Image
+            src={category.image}
+            alt=""
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover"
+          />
+        )}
+        <div className="absolute inset-0 flex flex-col justify-end bg-linear-to-t from-black/90 to-black/70 p-[25px] text-center transition-colors duration-300 group-hover:from-black/95 group-hover:to-black/80">
+          <h3 className="text-[2em] leading-tight font-bold tracking-[1px] text-white uppercase [text-shadow:2px_2px_4px_rgba(0,0,0,0.5)]">
+            {category.name}
+          </h3>
+          {category.description && (
+            <p className="mx-auto mt-[15px] max-w-[80%] text-[1.1em] leading-snug [text-shadow:1px_1px_3px_rgba(0,0,0,0.5)]">
+              {primeraFrase(category.description)}
+            </p>
+          )}
+        </div>
+      </Link>
+    );
+  }
+
+  const alta = variant === 'tall';
 
   return (
     <Link
       href={`/categoria/${category.slug}`}
-      className={`group border-border relative block overflow-hidden rounded-lg border transition-all duration-300 hover:-translate-y-1 hover:border-red-600/50 hover:shadow-xl ${
-        grande ? 'aspect-3/2' : 'aspect-4/3'
-      }`}
+      className={cn(
+        'relative flex items-center justify-center overflow-hidden bg-neutral-800 bg-cover bg-center transition-transform duration-300 hover:scale-105 focus-visible:scale-105 focus-visible:outline-none',
+        alta
+          ? 'h-[420px] w-full sm:h-[650px] sm:w-[400px]'
+          : 'h-[220px] w-full sm:h-[300px] sm:flex-1',
+        className,
+      )}
     >
-      {category.image ? (
+      {category.image && (
         <Image
           src={category.image}
-          alt={category.name}
+          alt=""
           fill
-          sizes={grande ? '(min-width: 1024px) 33vw, 50vw' : '(min-width: 1024px) 25vw, 50vw'}
-          className="object-cover transition-transform duration-300 group-hover:scale-110"
+          sizes={alta ? '400px' : '(min-width: 640px) 50vw, 100vw'}
+          className="object-cover"
         />
-      ) : (
-        <div className="bg-muted h-full w-full" />
       )}
-
-      {grande ? (
-        <>
-          {/* Velo completo, no un degradado: el rótulo va centrado sobre la
-              imagen y necesita contraste en todo el alto, no solo abajo. */}
-          <div className="absolute inset-0 bg-black/35 transition-colors duration-300 group-hover:bg-black/25" />
-          <span className="absolute inset-0 grid place-items-center px-4 text-center text-2xl font-bold tracking-wide text-white uppercase drop-shadow-lg sm:text-3xl">
-            {category.name}
-          </span>
-        </>
-      ) : (
-        <>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-          <span className="absolute right-0 bottom-0 left-0 p-3 font-semibold text-white">
-            {category.name}
-          </span>
-        </>
-      )}
+      {/* Velo negro al 50 % sobre toda la imagen, como el original. */}
+      <div className="absolute inset-0 bg-black/50" />
+      <span
+        className={cn(
+          'relative px-4 text-center font-bold text-white uppercase',
+          alta ? 'text-[32px] sm:text-[40px]' : 'text-[36px] sm:text-[50px]',
+        )}
+      >
+        {category.name}
+      </span>
     </Link>
   );
 }

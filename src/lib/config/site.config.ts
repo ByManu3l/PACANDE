@@ -47,6 +47,8 @@ export interface SiteConfig {
     facebook?: string;
     instagram?: string;
     x?: string;
+    linkedin?: string;
+    youtube?: string;
   };
 }
 
@@ -64,5 +66,7 @@ export const siteConfig: SiteConfig = {
     facebook: 'https://facebook.com',
     instagram: 'https://instagram.com',
     x: 'https://x.com',
+    linkedin: 'https://linkedin.com',
+    youtube: 'https://youtube.com',
   },
 };

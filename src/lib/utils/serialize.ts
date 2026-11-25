@@ -21,6 +21,8 @@ export interface ProductCardData {
   id: string;
   slug: string;
   name: string;
+  /** Texto de la ficha; la tarjeta muestra solo sus primeras líneas. */
+  description: string;
   price: string;
   images: string[];
   isFeatured: boolean;
@@ -34,6 +36,7 @@ type ProductoConDecimales = {
   id: string;
   slug: string;
   name: string;
+  description: string;
   price: Prisma.Decimal;
   images: string[];
   isFeatured: boolean;
@@ -55,6 +58,7 @@ export function toProductCard(producto: ProductoConDecimales): ProductCardData {
     id: producto.id,
     slug: producto.slug,
     name: producto.name,
+    description: producto.description,
     price: producto.price.toString(),
     images: producto.images,
     isFeatured: producto.isFeatured,

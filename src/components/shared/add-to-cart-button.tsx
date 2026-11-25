@@ -74,8 +74,12 @@ export function AddToCartButton({ productId, stock }: AddToCartButtonProps) {
           <Plus className="size-4" />
         </Button>
       </div>
-      <Button onClick={handleAdd} disabled={isPending} className="flex-1">
-        <ShoppingCart /> {isPending ? 'Agregando…' : 'Añadir al carrito'}
+      <Button
+        onClick={handleAdd}
+        disabled={isPending}
+        className="hover:bg-brand-dark flex-1 rounded-none"
+      >
+        <ShoppingCart /> {isPending ? 'Agregando…' : 'Agregar al Carrito'}
       </Button>
     </div>
   );

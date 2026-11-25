@@ -1,6 +1,6 @@
 'use client';
 
-import { Heart } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useOptimistic, useTransition } from 'react';
 import { toast } from 'sonner';
@@ -73,7 +73,7 @@ export function WishlistButton({
         disabled={pendiente}
         className={className}
       >
-        <Heart className={cn('size-4', enFavoritos && 'fill-current text-red-500')} />
+        <Star className={cn('size-4', enFavoritos && 'fill-brand text-brand')} />
         {etiqueta}
       </Button>
     );
@@ -94,14 +94,16 @@ export function WishlistButton({
       aria-pressed={enFavoritos}
       title={etiqueta}
       className={cn(
-        'bg-background/80 hover:bg-background focus-visible:ring-ring absolute top-2 right-2 z-10 grid size-8 place-items-center rounded-full backdrop-blur transition focus-visible:ring-2 focus-visible:outline-none',
+        'focus-visible:ring-brand absolute top-2.5 left-2.5 z-10 grid size-8 cursor-pointer place-items-center rounded-full bg-transparent transition-colors duration-300 focus-visible:ring-2 focus-visible:outline-none',
         className,
       )}
     >
-      <Heart
+      {/* La estrella de favoritos de la tarjeta original: gris
+          apagada, roja al marcarla. */}
+      <Star
         className={cn(
-          'size-4 transition',
-          enFavoritos ? 'fill-red-500 text-red-500' : 'text-muted-foreground',
+          'size-6 fill-current transition-colors duration-300',
+          enFavoritos ? 'text-brand hover:text-brand-dark' : 'hover:text-brand text-[#808080]',
         )}
       />
     </button>

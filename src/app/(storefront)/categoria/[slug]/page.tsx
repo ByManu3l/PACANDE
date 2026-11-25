@@ -60,64 +60,72 @@ export default async function CategoryPage({
     ? null
     : await getCategoryProducts(category.id, parsePageParam(sp.page), filters);
 
+  const migas = (
+    <Breadcrumbs
+      items={[
+        { label: 'Inicio', href: '/' },
+        ...(category.parent
+          ? [{ label: category.parent.name, href: `/categoria/${category.parent.slug}` }]
+          : []),
+        { label: category.name },
+      ]}
+    />
+  );
+
+  // Categoría con subcategorías: el título centrado con la raya roja y
+  // las tarjetas grandes de la página «Ropa» original.
+  if (hasChildren) {
+    return (
+      <div className="mx-auto max-w-[1200px] space-y-6">
+        {migas}
+        <h1 className="mb-10 text-center text-[2.5em] leading-tight font-semibold text-[#2c3e50] after:mx-auto after:mt-2.5 after:block after:h-1 after:w-[60px] after:rounded-sm after:bg-linear-to-r after:from-[#ff0000] after:to-[#ff4444] after:content-['']">
+          {category.name}
+        </h1>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-[30px]">
+          {category.children.map((child) => (
+            <CategoryCard key={child.slug} category={child} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <Breadcrumbs
-        items={[
-          { label: 'Inicio', href: '/' },
-          ...(category.parent
-            ? [{ label: category.parent.name, href: `/categoria/${category.parent.slug}` }]
-            : []),
-          { label: category.name },
-        ]}
-      />
+      {migas}
 
-      {/* Cabecera con la imagen de la categoría de fondo. Cuando no hay
-          imagen se cae a un titular normal en vez de a un rectángulo gris:
-          una categoría sin foto no debe ocupar media pantalla en balde. */}
-      {category.image ? (
-        <header className="relative overflow-hidden rounded-lg">
-          <div className="relative aspect-4/1 min-h-40">
+      {/* Cabecera de la subcategoría: la foto de fondo con velo, el nombre
+          enorme en mayúsculas y la descripción debajo, como «Ropa Mujer»
+          en la versión original. Sin imagen queda el mismo bloque sobre
+          negro en vez de un rectángulo gris. */}
+      <header className="relative overflow-hidden rounded-[15px] bg-black px-5 py-[60px] text-center text-white shadow-[0_4px_25px_rgba(0,0,0,0.15)]">
+        {category.image && (
+          <>
             <Image
               src={category.image}
               alt=""
               fill
               priority
-              sizes="(min-width: 1152px) 1152px, 100vw"
+              sizes="(min-width: 1400px) 1400px, 100vw"
               className="object-cover"
             />
             <div className="absolute inset-0 bg-black/50" />
-          </div>
-          <div className="absolute inset-0 grid place-items-center px-6 text-center">
-            <div>
-              <h1 className="text-3xl font-bold tracking-wide text-white uppercase drop-shadow-lg sm:text-5xl">
-                {category.name}
-              </h1>
-              {category.description && (
-                <p className="mx-auto mt-2 max-w-2xl text-white/90 drop-shadow sm:text-lg">
-                  {category.description}
-                </p>
-              )}
-            </div>
-          </div>
-        </header>
-      ) : (
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{category.name}</h1>
+          </>
+        )}
+        <div className="relative">
+          <h1 className="mb-5 text-[2.5rem] leading-tight font-extrabold tracking-[3px] text-white uppercase [text-shadow:3px_3px_6px_rgba(0,0,0,0.7)] sm:text-[3.5rem] lg:text-[5rem]">
+            {category.parent ? `${category.parent.name} ${category.name}` : category.name}
+          </h1>
           {category.description && (
-            <p className="text-muted-foreground mt-1">{category.description}</p>
+            <p className="mx-auto max-w-[800px] text-[1.2rem] leading-relaxed font-medium [text-shadow:2px_2px_4px_rgba(0,0,0,0.7)] sm:text-[1.5rem] lg:text-[1.8rem]">
+              {category.description}
+            </p>
           )}
         </div>
-      )}
+      </header>
 
-      {hasChildren ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {category.children.map((child) => (
-            <CategoryCard key={child.slug} category={child} />
-          ))}
-        </div>
-      ) : products ? (
-        <>
+      {products && (
+        <div className="mb-10 space-y-6 rounded-[15px] bg-white p-4 shadow-[0_4px_15px_rgba(0,0,0,0.05)] sm:p-[30px]">
           <ProductFiltersBar
             basePath={`/categoria/${category.slug}`}
             searchParams={sp}
@@ -126,7 +134,7 @@ export default async function CategoryPage({
           />
 
           {products.total === 0 ? (
-            <p className="text-muted-foreground py-8 text-center">
+            <p className="py-8 text-center text-[#666]">
               Ningún producto coincide con estos filtros. Prueba a ampliarlos.
             </p>
           ) : (
@@ -138,8 +146,8 @@ export default async function CategoryPage({
             basePath={`/categoria/${category.slug}`}
             params={filtrosEnUrl(sp)}
           />
-        </>
-      ) : null}
+        </div>
+      )}
     </div>
   );
 }

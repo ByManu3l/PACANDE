@@ -8,9 +8,23 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-geist-sans);
+  /* Pila de fuentes del sistema, la misma que usaba la versión original
+     (la heredaba de UIkit): en Windows se ve en Segoe UI, en macOS en San
+     Francisco. Es parte de la identidad visual de la tienda y además no
+     descarga ninguna fuente. */
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-heading:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  /* Rojo de marca puro (#ff0000) para acentos sobre fondo negro: subrayados,
+     bordes, iconos y titulares del pie. Sobre negro contrasta 5,3:1. Sobre
+     blanco no llega a 4,5:1, por eso los botones con texto blanco usan
+     --primary, un rojo un punto más oscuro que a simple vista es igual. */
+  --color-brand: #ff0000;
+  --color-brand-dark: #cc0000;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -51,9 +65,9 @@
 
 :root {
   --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --foreground: #333333;
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: #333333;
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
   /* Color de marca: lo único de este archivo específico de la tienda.
@@ -61,7 +75,7 @@
      la plantilla. Los valores son oklch(luminosidad croma tono); mover
      solo el tono (0-360) da otro color de la misma intensidad.
      Ver docs/PERSONALIZACION.md. */
-  --primary: oklch(0.55 0.22 25);
+  --primary: #e00000;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -72,13 +86,13 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --ring: #ff0000;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --radius: 0.3125rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -132,5 +146,17 @@
   }
   html {
     @apply font-sans;
+  }
+}
+
+/* Rebote del botón «Agregar al carrito» de la tarjeta, el de la versión
+   original. */
+@keyframes rebote {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
   }
 }

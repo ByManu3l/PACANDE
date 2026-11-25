@@ -5,8 +5,6 @@ import Link from 'next/link';
 
 import { logoutAction } from '@/actions/auth.actions';
 import type { UserRole } from '@/generated/prisma/client';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,35 +20,24 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ user }: UserMenuProps) {
-  const initials = user.name
-    .split(' ')
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase();
+  const nombreCorto = user.name.split(' ')[0];
 
   return (
     <DropdownMenu>
-      {/* El disparador es solo un avatar con iniciales, así que necesita
-          un nombre accesible explícito: sin él, un lector de pantalla
-          anuncia «botón» y nada más, y no hay forma de saber que ahí está
-          la cuenta. Las iniciales tampoco sirven como etiqueta —«MP» no
-          significa nada leído en voz alta. */}
-      <DropdownMenuTrigger
-        render={
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full"
-            aria-label={`Cuenta de ${user.name}`}
-          />
-        }
-      >
-        <Avatar className="size-8">
-          <AvatarFallback aria-hidden="true">{initials}</AvatarFallback>
-        </Avatar>
+      {/* Saludo en píldora con degradado rojo: el disparador de la
+          cabecera original. Su texto visible es también su nombre
+          accesible, así que quien usa control por voz puede decir
+          «pulsa Hola, Ana» y funciona. */}
+      <DropdownMenuTrigger className="focus-visible:ring-brand cursor-pointer rounded-[20px] bg-[linear-gradient(45deg,rgba(255,0,0,0.1),rgba(255,0,0,0.2))] px-4 py-1.5 text-[0.9rem] font-medium whitespace-nowrap text-white transition-all duration-300 outline-none hover:bg-[linear-gradient(45deg,rgba(255,0,0,0.2),rgba(255,0,0,0.3))] focus-visible:ring-2">
+        Hola, {nombreCorto}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
+      {/* Menú negro con borde rojo, como el original. Se redefinen las
+          variables de color en el propio menú para que los elementos de
+          shadcn hereden la paleta sin tocar cada uno. */}
+      <DropdownMenuContent
+        align="end"
+        className="border-brand w-56 rounded-lg border bg-black/95 py-2 text-white ring-0 [--accent-foreground:#ff0000] [--accent:rgba(255,0,0,0.1)] [--border:rgba(255,0,0,0.3)] [--muted-foreground:rgba(255,255,255,0.7)] [--popover-foreground:#fff] [--popover:transparent]"
+      >
         {/* `DropdownMenuLabel` es, en Base UI, la etiqueta de un GRUPO
             (`Menu.GroupLabel`) y exige un `Menu.Group` alrededor. Sin él
             lanza «MenuGroupContext is missing» al abrir el menú y toda la
@@ -90,10 +77,7 @@ export function UserMenu({ user }: UserMenuProps) {
             acción: `signOut` responde con una redirección, y una llamada
             lanzada y olvidada no la procesa — la sesión se quedaba
             abierta. */}
-        <DropdownMenuItem
-          variant="destructive"
-          render={<button type="submit" form="form-cerrar-sesion" />}
-        >
+        <DropdownMenuItem render={<button type="submit" form="form-cerrar-sesion" />}>
           <LogOut /> Cerrar sesión
         </DropdownMenuItem>
       </DropdownMenuContent>

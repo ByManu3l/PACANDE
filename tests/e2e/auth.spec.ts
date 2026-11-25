@@ -28,13 +28,13 @@ test('a visitor can register, land authenticated, log out, and log back in', asy
   // no comprobaba lo que decía comprobar: el control real de la interfaz
   // podía estar roto y la prueba seguiría pasando.
   await page.goto('/');
-  await page.getByRole('button', { name: /^Cuenta de / }).click();
+  await page.getByRole('button', { name: /^Hola, / }).click();
   await page.getByRole('menuitem', { name: 'Cerrar sesión' }).click();
 
   // `signOut` responde con una redirección a la portada; esperar a que
   // termine evita comprobar el estado a medio camino.
   await page.waitForURL('/');
-  await expect(page.getByRole('button', { name: /^Cuenta de / })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /^Hola, / })).toHaveCount(0);
 
   // Cerrar sesión de verdad se comprueba viendo que /cuenta ya no es
   // accesible, no confiando en que la petición devolvió 200.

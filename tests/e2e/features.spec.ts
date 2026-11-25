@@ -29,7 +29,7 @@ test.describe('cupones de descuento', () => {
 
   test('un cupón válido descuenta del total y viaja hasta el checkout', async ({ page }) => {
     await page.goto('/producto/ropa-hombre-camiseta-gris');
-    await page.getByRole('button', { name: 'Añadir al carrito' }).click();
+    await page.getByRole('button', { name: 'Agregar al Carrito', exact: true }).click();
     await expect(page.getByText('Producto agregado al carrito.')).toBeVisible();
 
     await page.goto('/carrito');
@@ -56,7 +56,7 @@ test.describe('cupones de descuento', () => {
 
   test('un cupón vencido explica el motivo, no dice solo «no válido»', async ({ page }) => {
     await page.goto('/producto/ropa-hombre-camiseta-gris');
-    await page.getByRole('button', { name: 'Añadir al carrito' }).click();
+    await page.getByRole('button', { name: 'Agregar al Carrito', exact: true }).click();
     // Esperar al aviso antes de navegar: sin esto, la navegación compite
     // con la Server Action y el carrito puede llegar vacío.
     await expect(page.getByText('Producto agregado al carrito.')).toBeVisible();
@@ -70,7 +70,7 @@ test.describe('cupones de descuento', () => {
 
   test('un cupón inexistente se rechaza', async ({ page }) => {
     await page.goto('/producto/ropa-hombre-camiseta-gris');
-    await page.getByRole('button', { name: 'Añadir al carrito' }).click();
+    await page.getByRole('button', { name: 'Agregar al Carrito', exact: true }).click();
     // Esperar al aviso antes de navegar: sin esto, la navegación compite
     // con la Server Action y el carrito puede llegar vacío.
     await expect(page.getByText('Producto agregado al carrito.')).toBeVisible();
@@ -214,7 +214,7 @@ test.describe('ofertas', () => {
     await page.locator('a[href^="/producto/"]').first().click();
     await page.waitForURL(/\/producto\//);
 
-    await page.getByRole('button', { name: /Añadir al carrito/i }).click();
+    await page.getByRole('button', { name: 'Agregar al Carrito', exact: true }).click();
     await page.goto('/carrito');
 
     // El importe del carrito debe salir del precio rebajado. Si el
@@ -235,15 +235,15 @@ test.describe('compra rápida desde la tarjeta', () => {
 
     // El nombre accesible lleva el producto: en una grilla de 18 tarjetas
     // no puede haber 18 botones llamados igual.
-    const boton = page.getByRole('button', { name: /^Añadir .+ al carrito$/ }).first();
+    const boton = page.getByRole('button', { name: /^Agregar al Carrito: .+$/ }).first();
     const nombreAccesible = await boton.getAttribute('aria-label');
-    const producto = nombreAccesible!.replace(/^Añadir /, '').replace(/ al carrito$/, '');
+    const producto = nombreAccesible!.replace(/^Agregar al Carrito: /, '');
 
     await boton.click();
 
     // Sigue en la categoría: el botón no debe navegar a la ficha.
     await expect(page).toHaveURL(/\/categoria\/ropa-hombre/);
-    await expect(page.getByText(`${producto} añadido al carrito.`)).toBeVisible();
+    await expect(page.getByText(`${producto} agregado al carrito.`)).toBeVisible();
 
     await page.goto('/carrito');
     await expect(page.getByRole('heading', { name: 'Tu carrito' })).toBeVisible();

@@ -57,7 +57,7 @@ export function HeroCarousel({ images, intervalMs = 3000, children }: HeroCarous
 
   return (
     <div
-      className="relative h-full w-full"
+      className="group/carrusel relative h-full w-full"
       role="group"
       aria-roledescription="carrusel"
       aria-label="Destacados de la tienda"
@@ -80,8 +80,6 @@ export function HeroCarousel({ images, intervalMs = 3000, children }: HeroCarous
         />
       ))}
 
-      <div className="absolute inset-0 bg-black/45" />
-
       {children}
 
       {total > 1 && (
@@ -90,36 +88,18 @@ export function HeroCarousel({ images, intervalMs = 3000, children }: HeroCarous
             type="button"
             onClick={() => ir(-1)}
             aria-label="Imagen anterior"
-            className="absolute top-1/2 left-2 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-black/40 text-white transition-all duration-300 hover:bg-black/70 hover:text-red-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none sm:left-4"
+            className="absolute top-1/2 left-2 z-10 grid -translate-y-1/2 place-items-center p-3 text-white/80 opacity-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)] transition-all duration-300 group-hover/carrusel:opacity-100 hover:text-white focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none sm:left-4"
           >
-            <ChevronLeft className="size-6" />
+            <ChevronLeft className="size-8" strokeWidth={1.5} />
           </button>
           <button
             type="button"
             onClick={() => ir(1)}
             aria-label="Imagen siguiente"
-            className="absolute top-1/2 right-2 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-black/40 text-white transition-all duration-300 hover:bg-black/70 hover:text-red-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none sm:right-4"
+            className="absolute top-1/2 right-2 z-10 grid -translate-y-1/2 place-items-center p-3 text-white/80 opacity-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)] transition-all duration-300 group-hover/carrusel:opacity-100 hover:text-white focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none sm:right-4"
           >
-            <ChevronRight className="size-6" />
+            <ChevronRight className="size-8" strokeWidth={1.5} />
           </button>
-
-          <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-2">
-            {images.map((src, i) => (
-              <button
-                key={src}
-                type="button"
-                onClick={() => {
-                  setActual(i);
-                  setReinicio((n) => n + 1);
-                }}
-                aria-label={`Ir a la imagen ${i + 1} de ${total}`}
-                aria-current={i === actual}
-                className={`h-2 rounded-full transition-all duration-300 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none ${
-                  i === actual ? 'w-6 bg-red-600' : 'w-2 bg-white/60 hover:bg-white'
-                }`}
-              />
-            ))}
-          </div>
         </>
       )}
     </div>

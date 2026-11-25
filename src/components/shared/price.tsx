@@ -28,7 +28,7 @@ export async function Price({ amount, className }: PriceProps) {
 
   return (
     <span className={className}>
-      <span className="text-primary font-semibold">{formatPrice(amount)}</span>
+      <span className="font-bold">{formatPrice(amount)}</span>
       {convertido !== null && (
         <span className="text-muted-foreground ml-2 text-xs whitespace-nowrap">
           ≈ {formatPriceIn(convertido, moneda)}

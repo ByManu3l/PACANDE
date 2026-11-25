@@ -64,7 +64,7 @@ export function RatingStars({
           style={{ width: `${porcentaje}%` }}
         >
           {[0, 1, 2, 3, 4].map((i) => (
-            <Star key={i} className={cn(claseEstrella, 'shrink-0 fill-amber-400 text-amber-400')} />
+            <Star key={i} className={cn(claseEstrella, 'shrink-0 fill-[#ffc107] text-[#ffc107]')} />
           ))}
         </span>
       </span>

@@ -35,16 +35,21 @@ export function MobileNav({ categories }: { categories: NavCategory[] }) {
           <Button
             variant="ghost"
             size="icon"
-            className="text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/10 hover:text-red-500 md:hidden"
+            className="hover:text-brand text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/10 md:hidden"
             aria-label="Abrir menú"
           >
             <Menu className="size-5" />
           </Button>
         }
       />
-      <SheetContent side="left" className="w-72 overflow-y-auto">
+      {/* Panel negro con separadores rojos: la barra lateral de categorías
+          de la versión original. */}
+      <SheetContent
+        side="left"
+        className="w-72 overflow-y-auto border-r-0 bg-black text-white [--foreground:#fff] [--muted-foreground:rgba(255,255,255,0.8)]"
+      >
         <SheetHeader>
-          <SheetTitle>Categorías</SheetTitle>
+          <SheetTitle className="text-white">Categorías</SheetTitle>
         </SheetHeader>
 
         <nav className="flex flex-col gap-1 px-4 pb-6">
@@ -53,19 +58,19 @@ export function MobileNav({ categories }: { categories: NavCategory[] }) {
               <Link
                 href={`/categoria/${category.slug}`}
                 onClick={() => setOpen(false)}
-                className="hover:bg-muted block rounded-md px-2 py-2 font-medium"
+                className="hover:text-brand block px-2 py-2 text-xl transition-colors duration-300"
               >
                 {category.name}
               </Link>
 
               {category.children.length > 0 && (
-                <div className="mt-1 ml-3 flex flex-col border-l pl-3">
+                <div className="flex flex-col">
                   {category.children.map((child) => (
                     <Link
                       key={child.slug}
                       href={`/categoria/${child.slug}`}
                       onClick={() => setOpen(false)}
-                      className="text-muted-foreground hover:text-foreground rounded-md px-2 py-1.5 text-sm"
+                      className="hover:text-brand border-b border-[rgba(255,0,0,0.9)] px-2 py-2.5 text-center text-white transition-colors duration-300 last:border-b-0"
                     >
                       {child.name}
                     </Link>

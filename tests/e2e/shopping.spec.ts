@@ -14,7 +14,7 @@ test('browse a category, view a product, add it to the cart, and see it in /carr
   await expect(page).toHaveURL(/\/producto\//);
 
   const productName = await page.getByRole('heading', { level: 1 }).textContent();
-  await page.getByRole('button', { name: 'Añadir al carrito' }).click();
+  await page.getByRole('button', { name: 'Agregar al Carrito', exact: true }).click();
   await expect(page.getByText('Producto agregado al carrito.')).toBeVisible();
 
   await page.goto('/carrito');
@@ -27,7 +27,7 @@ test('guest checkout requires login, and completes end-to-end once authenticated
   // Se añade al carrito como invitado para ejercitar también la fusión
   // del carrito anónimo al registrarse.
   await page.goto('/producto/tecnologia-accesorios-adaptador-hdmi');
-  await page.getByRole('button', { name: 'Añadir al carrito' }).click();
+  await page.getByRole('button', { name: 'Agregar al Carrito', exact: true }).click();
   await expect(page.getByText('Producto agregado al carrito.')).toBeVisible();
 
   await page.goto('/checkout');

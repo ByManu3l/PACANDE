@@ -57,7 +57,7 @@ test.describe('libreta de direcciones', () => {
     // Y el checkout debe ofrecerla, que es para lo que existe la libreta.
     await vaciarCarrito(page);
     await page.goto('/producto/ropa-mujer-camiseta');
-    await page.getByRole('button', { name: 'Añadir al carrito' }).click();
+    await page.getByRole('button', { name: 'Agregar al Carrito', exact: true }).click();
     await page.goto('/checkout');
 
     await expect(page.getByText('Usar una dirección guardada')).toBeVisible();
