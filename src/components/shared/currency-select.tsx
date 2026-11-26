@@ -43,7 +43,10 @@ export function CurrencySelect({ monedaActual, monedas }: CurrencySelectProps) {
   };
 
   return (
-    <DropdownMenu>
+    // `modal={false}`: un menú modal bloquea el desplazamiento y oculta la
+    // barra de scroll; la ventana gana su ancho y los banners a todo el
+    // ancho (100vw) cambian de tamaño mientras el menú está abierto.
+    <DropdownMenu modal={false}>
       {/* Misma píldora que el buscador: borde rojo tenue, fondo translúcido
           y borde rojo pleno al pasar o enfocar. */}
       <DropdownMenuTrigger
