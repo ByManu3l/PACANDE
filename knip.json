@@ -13,7 +13,9 @@
     "tailwindcss",
     "@tailwindcss/postcss",
     "@tailwindcss/typography",
-    "tw-animate-css"
+    "tw-animate-css",
+    "@tensorflow/tfjs",
+    "@tensorflow-models/mobilenet"
   ],
   "ignoreExportsUsedInFile": true
 }

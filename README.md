@@ -21,30 +21,44 @@ en franjas y tarjetas de producto centradas.
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-estricto-blue" />
 </p>
 
-## Lo que la hace diferente: comprar hablando, o con una foto
+## Lo que la hace diferente: buscar hablando, o con una foto
 
-Pacandé tiene un **asistente de compras con inteligencia artificial**
-pensado primero para quienes las tiendas en línea suelen dejar fuera:
-personas con discapacidad visual o motriz y adultos mayores.
+Pacandé está pensada primero para quienes las tiendas en línea suelen
+dejar fuera: personas con discapacidad visual o motriz y adultos mayores.
+Un botón en todas las páginas abre un panel para buscar **sin escribir**.
 
-- **Se le habla.** «Busco un regalo para mi papá, que le gusta el
-  fútbol, de menos de 100 mil.» Responde con productos reales, con su
-  precio y disponibilidad, y **lee la respuesta en voz alta**.
-- **Se le muestra una foto.** Una foto de algo que viste en la calle, y
-  te enseña lo más parecido que hay en la tienda.
-- **Compra por ti.** «Agrégame dos de esas» llena el carrito sin tocar un
-  botón.
-- **No puede inventar.** Cada producto que nombra se comprueba contra la
-  base de datos antes de mostrarse o añadirse al carrito: si el modelo se
-  equivoca, el error no llega al cliente.
-- **Se maneja entero con teclado** y anuncia sus respuestas a los
-  lectores de pantalla, sobre una tienda que ya cumple WCAG 2.1 AA.
+**Funciona hoy, gratis:**
 
-Funciona con [Claude](https://www.anthropic.com/claude) (Anthropic). El
-reconocimiento y la lectura de voz son del propio navegador: el audio no
-sale del dispositivo. Sin clave de la API, el asistente simplemente no
-aparece y la tienda funciona igual. Detalle técnico en
-[`docs/DECISIONES.md`](docs/DECISIONES.md), punto 16.
+- **Búsqueda por voz.** Pulsas el micrófono y dices «quiero una camiseta
+  negra». La tienda entiende las palabras útiles (quita el relleno, las
+  tildes y los plurales), muestra los productos y **lee la respuesta en voz
+  alta**.
+- **Búsqueda por foto.** Una foto de algo que viste en la calle y te
+  enseña lo más parecido del catálogo. Lo hace un modelo de reconocimiento
+  de imágenes (MobileNet) que corre **dentro del navegador**: la foto no
+  sale del dispositivo y no hay servidor ni API de pago.
+- **Se maneja entero con teclado** y anuncia los resultados a los lectores
+  de pantalla, sobre una tienda que ya cumple WCAG 2.1 AA.
+
+**Listo para activar cuando haya presupuesto:** un asistente con IA
+([Claude](https://www.anthropic.com/claude)) que conversa —«un regalo para
+mi papá, que le gusta el fútbol, de menos de 100 mil»—, entiende fotos
+con criterio y añade productos al carrito cuando se le pide. Está
+programado y probado; solo falta saldo en la API. Cada producto que nombra
+se comprueba contra la base de datos antes de mostrarse, así que no puede
+inventar. Se activa con una variable de entorno (paso 4 de
+[`docs/DESPLIEGUE.md`](docs/DESPLIEGUE.md)).
+
+Detalle técnico en [`docs/DECISIONES.md`](docs/DECISIONES.md), puntos 16 y 17.
+
+## Lo que falta, y por qué
+
+Lo pendiente que más se notaría —**cobros reales, correos, el asistente
+con IA y un dominio propio**— depende de servicios de pago. Es un proyecto
+académico sin presupuesto, así que cada una se construyó hasta donde se
+podía gratis y quedó lista para conectarse. El detalle, separado de lo
+que quedó fuera del alcance por tiempo, está en
+[`docs/QUE-INCLUYE.md`](docs/QUE-INCLUYE.md).
 
 ## Qué hace
 

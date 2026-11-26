@@ -8,8 +8,12 @@ import { useEffect, useId, useRef, useState, useSyncExternalStore, useTransition
 import { toast } from 'sonner';
 
 import { siteConfig } from '@/lib/config/site.config';
+import { buscarEnCatalogo, palabrasClave } from '@/lib/utils/busqueda-local';
+
+import { buscarPorFoto } from './busqueda-por-foto';
 
 import {
+  catalogoBusquedaAction,
   consultarAsistenteAction,
   type ConsultaAsistente,
   type ProductoSugerido,
@@ -27,6 +31,13 @@ import {
  * Speech API): no se envía audio a ningún servidor, solo el texto ya
  * transcrito. Donde el navegador no reconoce voz (Firefox), el botón del
  * micrófono no aparece y queda el texto.
+ *
+ * **Dos modos.** Con clave de la API de Claude (`conIA`), cada mensaje lo
+ * entiende el asistente con IA. Sin ella, el mismo panel funciona gratis:
+ * lo dictado o escrito se busca por palabras en el catálogo
+ * (`busqueda-local.ts`) y las fotos se comparan con un modelo de
+ * reconocimiento de imágenes que corre en el navegador
+ * (`busqueda-por-foto.ts`). La voz, en ambos casos, es del navegador.
  */
 
 interface Mensaje {
@@ -35,18 +46,23 @@ interface Mensaje {
   texto: string;
   foto?: string;
   productos?: ProductoSugerido[];
+  enlace?: { href: string; texto: string };
 }
 
-const SUGERENCIAS = [
+const SUGERENCIAS_IA = [
   'Busco un regalo para alguien que hace deporte',
   '¿Qué ofertas hay en tecnología?',
   'Quiero una camiseta negra',
 ];
 
+const SUGERENCIAS_GRATIS = ['Camiseta negra', 'Audífonos', 'Balón de fútbol'];
+
 /** Lado mayor de la foto que se envía. Suficiente para reconocer el objeto. */
 const LADO_MAXIMO_FOTO = 1024;
 
-export function Asistente() {
+type FotoReducida = Awaited<ReturnType<typeof reducirFoto>>;
+
+export function Asistente({ conIA }: { conIA: boolean }) {
   const [abierto, setAbierto] = useState(false);
   const [mensajes, setMensajes] = useState<Mensaje[]>([]);
   const [texto, setTexto] = useState('');
@@ -54,6 +70,8 @@ export function Asistente() {
   const [escuchando, setEscuchando] = useState(false);
   const [anuncio, setAnuncio] = useState('');
   const [pendiente, iniciar] = useTransition();
+  const [progreso, setProgreso] = useState('Buscando en la tienda…');
+  const catalogoRef = useRef<ProductoSugerido[] | null>(null);
   // En el servidor no hay `window`: se renderiza sin micrófono y se
   // decide en el navegador, sin desajuste de hidratación.
   const reconocimientoDisponible = useSyncExternalStore(
@@ -102,9 +120,76 @@ export function Asistente() {
     setMensajes((previos) => [...previos, nuevo]);
   }
 
-  function enviar(mensaje: string, foto?: { datos: string; tipo: 'image/jpeg'; vista: string }) {
+  function responder(m: Omit<Mensaje, 'id' | 'rol'>) {
+    agregarMensaje({ rol: 'asistente', ...m });
+    setAnuncio(m.texto);
+    hablar(m.texto);
+  }
+
+  async function catalogo(): Promise<ProductoSugerido[]> {
+    if (catalogoRef.current) return catalogoRef.current;
+    const resultado = await catalogoBusquedaAction();
+    if (!resultado.success) throw new Error(resultado.error);
+    catalogoRef.current = resultado.data;
+    return resultado.data;
+  }
+
+  /** Modo sin IA: búsqueda por palabras o por parecido visual, gratis. */
+  function buscarGratis(limpio: string, foto?: FotoReducida) {
+    agregarMensaje({ rol: 'cliente', texto: limpio, foto: foto?.vista });
+    setTexto('');
+    setProgreso('Buscando en la tienda…');
+
+    iniciar(async () => {
+      try {
+        const productos = await catalogo();
+        if (foto) {
+          const parecidos = await buscarPorFoto(foto.lienzo, productos, setProgreso);
+          responder(
+            parecidos.length > 0
+              ? {
+                  texto: 'Estos son los productos que más se parecen a tu foto.',
+                  productos: parecidos,
+                }
+              : { texto: 'No pude comparar la foto con el catálogo. Prueba con otra.' },
+          );
+          return;
+        }
+
+        const encontrados = buscarEnCatalogo(productos, limpio);
+        const claves = palabrasClave(limpio).join(' ');
+        responder(
+          encontrados.length > 0
+            ? {
+                texto: `Encontré esto para «${limpio}».`,
+                productos: encontrados,
+                enlace: {
+                  href: `/buscar?q=${encodeURIComponent(claves)}`,
+                  texto: 'Ver la búsqueda completa',
+                },
+              }
+            : {
+                texto: `No encontré productos para «${limpio}». Prueba con otras palabras, como el tipo de producto o el color.`,
+              },
+        );
+      } catch {
+        responder({
+          texto: foto
+            ? 'No se pudo cargar el reconocimiento de imágenes. Revisa la conexión e inténtalo de nuevo.'
+            : 'No se pudo buscar ahora. Inténtalo de nuevo.',
+        });
+      }
+    });
+  }
+
+  function enviar(mensaje: string, foto?: FotoReducida) {
     const limpio = mensaje.trim();
     if ((!limpio && !foto) || pendiente) return;
+    if (!conIA) {
+      buscarGratis(limpio, foto);
+      return;
+    }
+    setProgreso('Buscando en la tienda…');
 
     // Solo texto en el historial: la foto viaja una vez, en su turno.
     const historial: ConsultaAsistente['historial'] = mensajes.slice(-10).map((m) => ({
@@ -123,16 +208,12 @@ export function Asistente() {
       });
 
       if (!resultado.success) {
-        agregarMensaje({ rol: 'asistente', texto: resultado.error });
-        setAnuncio(resultado.error);
-        hablar(resultado.error);
+        responder({ texto: resultado.error });
         return;
       }
 
       const { respuesta, productos, agregados, noAgregados } = resultado.data;
-      agregarMensaje({ rol: 'asistente', texto: respuesta, productos });
-      setAnuncio(respuesta);
-      hablar(respuesta);
+      responder({ texto: respuesta, productos });
 
       if (agregados.length > 0) {
         toast.success(`Agregado al carrito: ${agregados.join(', ')}.`);
@@ -221,7 +302,9 @@ export function Asistente() {
         >
           <header className="flex items-center gap-2 bg-black px-4 py-3 text-white">
             <Sparkles aria-hidden="true" className="text-brand size-5" />
-            <h2 className="flex-1 text-base font-bold">Asistente {siteConfig.name}</h2>
+            <h2 className="flex-1 text-base font-bold">
+              {conIA ? `Asistente ${siteConfig.name}` : 'Buscar por voz o foto'}
+            </h2>
             <button
               type="button"
               onClick={() => cambiarVoz(!vozActiva)}
@@ -250,11 +333,12 @@ export function Asistente() {
             {mensajes.length === 0 && (
               <div className="space-y-3 text-sm text-[#555]">
                 <p>
-                  Hola. Dime qué buscas con tus palabras, pulsa el micrófono para hablar, o envía
-                  una foto de algo que te guste y te muestro lo más parecido de la tienda.
+                  {conIA
+                    ? 'Hola. Dime qué buscas con tus palabras, pulsa el micrófono para hablar, o envía una foto de algo que te guste y te muestro lo más parecido de la tienda.'
+                    : 'Pulsa el micrófono y di qué buscas, escríbelo, o envía una foto de algo que te guste: te muestro lo más parecido de la tienda.'}
                 </p>
                 <ul className="flex flex-col gap-2">
-                  {SUGERENCIAS.map((s) => (
+                  {(conIA ? SUGERENCIAS_IA : SUGERENCIAS_GRATIS).map((s) => (
                     <li key={s}>
                       <button
                         type="button"
@@ -306,13 +390,21 @@ export function Asistente() {
                     ))}
                   </ul>
                 )}
+                {m.enlace && (
+                  <Link
+                    href={m.enlace.href}
+                    className="text-primary mt-2 text-sm font-bold underline-offset-2 hover:underline"
+                  >
+                    {m.enlace.texto}
+                  </Link>
+                )}
               </div>
             ))}
 
             {pendiente && (
               <p className="flex items-center gap-2 text-sm text-[#666]">
                 <Loader2 aria-hidden="true" className="size-4 animate-spin" />
-                Buscando en la tienda…
+                {progreso}
               </p>
             )}
           </div>
@@ -392,7 +484,7 @@ export function Asistente() {
         ) : (
           <Sparkles aria-hidden="true" className="size-5" />
         )}
-        {abierto ? 'Cerrar asistente' : 'Asistente'}
+        {abierto ? 'Cerrar' : conIA ? 'Asistente' : 'Buscar por voz o foto'}
       </button>
     </>
   );
@@ -475,7 +567,12 @@ async function reducirFoto(archivo: File) {
   contexto.drawImage(mapa, 0, 0, lienzo.width, lienzo.height);
   mapa.close();
   const vista = lienzo.toDataURL('image/jpeg', 0.85);
-  return { datos: vista.slice(vista.indexOf(',') + 1), tipo: 'image/jpeg' as const, vista };
+  return {
+    datos: vista.slice(vista.indexOf(',') + 1),
+    tipo: 'image/jpeg' as const,
+    vista,
+    lienzo,
+  };
 }
 
 // --- Web Speech API -------------------------------------------------------

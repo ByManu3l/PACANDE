@@ -65,6 +65,11 @@ datos.
 
 ### Añadido
 
+- **Búsqueda por voz y por foto, gratis.** Un botón en todas las páginas
+  abre un panel para buscar dictando (Web Speech API y búsqueda por
+  palabras sin relleno, tildes ni plurales) o con una foto (MobileNet en
+  el navegador, sin servidor ni API de pago). Lee los resultados en voz
+  alta. Ver `docs/DECISIONES.md`, punto 17.
 - **Asistente de compras con IA, por voz, texto o foto.** Entiende pedidos
   en lenguaje natural, recomienda productos reales del catálogo, los añade
   al carrito si se le pide y lee sus respuestas en voz alta. Busca

@@ -11,9 +11,9 @@ export default function StorefrontLayout({ children }: { children: React.ReactNo
           versión original. */}
       <main className="mx-auto w-full max-w-[1440px] flex-1 px-5 pt-5 pb-10">{children}</main>
       <Footer />
-      {/* Sin clave de la API de Claude, el asistente no aparece y la
-          tienda funciona igual. */}
-      {asistenteDisponible() && <Asistente />}
+      {/* Con clave de la API de Claude, asistente con IA; sin ella, la
+          búsqueda gratuita por voz y por foto en el mismo panel. */}
+      <Asistente conIA={asistenteDisponible()} />
     </div>
   );
 }

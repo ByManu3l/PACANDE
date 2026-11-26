@@ -41,6 +41,7 @@ export type ConsultaAsistente = z.input<typeof consultaSchema>;
 export interface ProductoSugerido {
   slug: string;
   nombre: string;
+  categoria: string;
   precio: string;
   descuento: number;
   agotado: boolean;
@@ -54,6 +55,25 @@ export interface RespuestaAsistente {
   agregados: string[];
   /** Motivos por los que algo pedido no se pudo añadir (p. ej. sin stock). */
   noAgregados: string[];
+}
+
+/**
+ * Catálogo para la búsqueda gratuita por voz y por foto, que corre en el
+ * navegador. No usa IA ni tiene coste: es una consulta a la base de datos.
+ */
+export async function catalogoBusquedaAction() {
+  return runAction<ProductoSugerido[]>(async () => {
+    const catalogo = await asistente.cargarCatalogo();
+    return catalogo.map((p) => ({
+      slug: p.slug,
+      nombre: p.nombre,
+      categoria: p.categoria,
+      precio: p.precioFinal,
+      descuento: p.descuento,
+      agotado: p.stock <= 0,
+      imagen: p.imagen,
+    }));
+  });
 }
 
 export async function consultarAsistenteAction(entrada: ConsultaAsistente) {
@@ -110,6 +130,7 @@ export async function consultarAsistenteAction(entrada: ConsultaAsistente) {
       productos: normalizada.productos.map((p) => ({
         slug: p.slug,
         nombre: p.nombre,
+        categoria: p.categoria,
         precio: p.precioFinal,
         descuento: p.descuento,
         agotado: p.stock <= 0,

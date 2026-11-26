@@ -13,17 +13,17 @@ administración, lista para adaptarse a tu negocio.
 
 ### Para tus clientes
 
-|                       |                                                                                                               |
-| --------------------- | ------------------------------------------------------------------------------------------------------------- |
-| **Catálogo**          | Categorías en dos niveles, con filtros de precio, disponibilidad y valoración, y cuatro criterios de orden    |
-| **Búsqueda**          | Por nombre y descripción, con los mismos filtros                                                              |
-| **Ficha de producto** | Galería con miniaturas, valoración, opiniones, productos relacionados y datos estructurados para Google       |
-| **Carrito**           | Persistente. Funciona sin cuenta y se conserva al iniciar sesión                                              |
-| **Cupones**           | Porcentaje o importe fijo, con vigencia, compra mínima y tope de usos                                         |
-| **Compra**            | Checkout con direcciones guardadas y comprobante                                                              |
-| **Cuenta**            | Perfil, contraseña, historial de pedidos, favoritos y libreta de direcciones                                  |
-| **Opiniones**         | Solo de quien compró, y con moderación previa                                                                 |
-| **Asistente**         | Por voz, texto o foto: recomienda productos reales y los añade al carrito. Requiere clave de la API de Claude |
+|                       |                                                                                                                                           |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Catálogo**          | Categorías en dos niveles, con filtros de precio, disponibilidad y valoración, y cuatro criterios de orden                                |
+| **Búsqueda**          | Por nombre y descripción, con los mismos filtros                                                                                          |
+| **Ficha de producto** | Galería con miniaturas, valoración, opiniones, productos relacionados y datos estructurados para Google                                   |
+| **Carrito**           | Persistente. Funciona sin cuenta y se conserva al iniciar sesión                                                                          |
+| **Cupones**           | Porcentaje o importe fijo, con vigencia, compra mínima y tope de usos                                                                     |
+| **Compra**            | Checkout con direcciones guardadas y comprobante                                                                                          |
+| **Cuenta**            | Perfil, contraseña, historial de pedidos, favoritos y libreta de direcciones                                                              |
+| **Opiniones**         | Solo de quien compró, y con moderación previa                                                                                             |
+| **Voz y foto**        | Búsqueda dictando o con una foto, gratis y en el navegador. Con clave de Claude, además, asistente con IA que conversa y añade al carrito |
 
 ### Para ti
 
@@ -39,8 +39,9 @@ administración, lista para adaptarse a tu negocio.
 
 - **Next.js 16, TypeScript estricto, PostgreSQL.** Tecnología actual y de
   las más solicitadas del mercado.
-- **189 pruebas automáticas** (150 unitarias contra una base de datos
-  real, 39 de navegador) que se ejecutan solas en cada cambio.
+- **Más de 230 pruebas automáticas** (188 unitarias, muchas contra una
+  base de datos real, y 43 de navegador) que se ejecutan solas en cada
+  cambio.
 - **Auditoría automática:** `npm run audit` comprueba las reglas del
   proyecto y la integridad del repositorio.
 - **Documentación completa**, en español, explicando el porqué de cada
@@ -50,50 +51,56 @@ administración, lista para adaptarse a tu negocio.
 
 ## Lo que **no** incluye
 
-Dicho sin rodeos, porque es donde suelen aparecer las sorpresas.
+Dicho sin rodeos, porque es donde suelen aparecer las sorpresas. Se separa
+en dos grupos: lo que **está preparado y solo espera a que alguien pague el
+servicio**, y lo que de verdad quedó fuera del alcance del proyecto.
 
-### 1. Cobros reales
+### Pendiente por costo: el código está listo
 
-La pasarela de pago está **simulada**. Aprueba el 90 % de los intentos y
-no mueve dinero.
+Pacandé es un proyecto académico sin presupuesto. Todo lo de este grupo
+depende de un servicio de pago, así que se construyó hasta donde se podía
+sin pagar y quedó listo para activarse.
 
-Lo que sí está resuelto y no hay que rehacer: descuento de stock sin
-sobreventa, congelado de precios, numeración de pedidos, cupones,
-transacciones y reversión cuando el pago se rechaza. Conectar una pasarela
-real es implementar una interfaz de dos métodos y añadir un webhook.
+**1. Asistente de compras con IA.** El asistente que entiende pedidos
+como «un regalo para alguien que hace deporte», responde en voz alta y
+añade productos al carrito está programado y probado, pero usa la API de
+Claude, que cobra por consulta. Se activa añadiendo `ANTHROPIC_API_KEY`
+(paso 4 de [`DESPLIEGUE.md`](DESPLIEGUE.md)). Mientras tanto, el mismo
+panel funciona **gratis**: búsqueda por voz por palabras y búsqueda por
+foto con un modelo que corre en el navegador.
+**Cuesta:** centavos de dólar por exposición; saldo prepago en
+platform.claude.com.
 
-**Trabajo estimado:** de medio día a dos días, según el proveedor.
-**Necesitas:** cuenta de comercio en Stripe, Wompi, Mercado Pago o similar.
+**2. Cobros reales.** La pasarela de pago está **simulada**: aprueba el
+90 % de los intentos y no mueve dinero. Lo que la rodea sí está resuelto y
+no hay que rehacerlo: descuento de stock sin sobreventa, congelado de
+precios, numeración de pedidos, cupones, transacciones y reversión cuando
+el pago se rechaza. Conectar una pasarela real es implementar una interfaz
+de dos métodos y añadir un webhook.
+**Cuesta:** cuenta de comercio en Wompi, Mercado Pago o Stripe, que exige
+datos de empresa y cobra comisión por transacción.
 
-### 2. Correos
+**3. Correos.** No se envía ningún correo, así que **no hay recuperación
+de contraseña** ni confirmación de pedido por correo.
+**Cuesta:** un proveedor de envío (Resend, SendGrid) y, sobre todo, un
+dominio propio verificado: sin dominio, los correos llegan a spam o no
+salen.
 
-No se envía ningún correo. Eso significa que **no hay recuperación de
-contraseña** ni confirmación de pedido por correo.
+**4. Dominio propio.** La tienda vive en `pacande.vercel.app`, el
+subdominio gratuito de Vercel.
+**Cuesta:** el registro anual de un dominio.
 
-Ambas cosas dependen de un proveedor de envío que cada negocio elige, y
-que exige verificar un dominio.
+### Fuera del alcance del proyecto
 
-**Trabajo estimado:** un día para las dos.
-**Necesitas:** cuenta en Resend, SendGrid o similar, y acceso al DNS de tu
-dominio.
+Estas no dependen de dinero sino de tiempo y de decisiones de diseño:
 
-### 3. Variantes de producto
-
-No hay tallas ni colores. Un producto es una unidad con un precio y un
-stock.
-
-Esto no es una función que falte: es una decisión de modelo de datos que
-atraviesa carrito, inventario, pedidos y panel. Añadirla después es
-posible, pero no es un añadido pequeño.
-
-**Trabajo estimado:** de una a dos semanas.
-**Conviene decidirlo antes de cargar el catálogo.**
-
-### 4. Otras ausencias conocidas
-
-- Segundo factor de autenticación y verificación de correo al registrarse.
+- **Variantes de producto** (tallas, colores). Es una decisión de modelo
+  de datos que atraviesa carrito, inventario, pedidos y panel; conviene
+  tomarla antes de cargar el catálogo. Una o dos semanas de trabajo.
+- Segundo factor de autenticación y verificación de correo al registrarse
+  (esta última, además, necesita el envío de correos de arriba).
 - Las imágenes subidas no se redimensionan ni se optimizan.
-- Un solo idioma y una sola moneda.
+- Un solo idioma; las otras monedas son solo de vista.
 - Sin integración contable ni con transportadoras.
 - La búsqueda usa coincidencia de texto simple: suficiente para unos
   miles de productos, no para cientos de miles.

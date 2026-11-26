@@ -22,6 +22,8 @@ const eslintConfig = defineConfig([
     'out/**',
     'build/**',
     'next-env.d.ts',
+    // Copias de node_modules para la búsqueda por foto (ver scripts/copiar-modelos.mjs).
+    'public/vendor/**',
   ]),
 ]);
 
