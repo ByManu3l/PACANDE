@@ -58,6 +58,12 @@ datos.
 
 ### Añadido
 
+- **Stock inteligente en el panel.** Avisa de los productos agotados o con
+  pocas unidades para su ritmo de venta de los últimos 30 días (con las
+  unidades que conviene pedir) y de las secciones con menos de tres
+  productos disponibles. El menú marca cuántos productos hay por reponer.
+- **«Volver a la tienda»** en el panel de administración, que no tiene la
+  cabecera de la tienda.
 - **Despliegue en Vercel listo:** `vercel.json` y el script
   `vercel-build` (migraciones, catálogo de ejemplo y compilación), guía
   paso a paso en `docs/DESPLIEGUE.md`, adaptador de Vercel Blob para las
