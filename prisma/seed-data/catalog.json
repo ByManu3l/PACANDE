@@ -4,7 +4,7 @@
       "slug": "ropa",
       "name": "Ropa",
       "parentSlug": null,
-      "image": "/images/categories/banner-ropa.jpg",
+      "image": "/images/categories/seccion-ropa.jpg",
       "description": "Moda para hombre, mujer y niños."
     },
     {
@@ -32,7 +32,7 @@
       "slug": "tecnologia",
       "name": "Tecnología",
       "parentSlug": null,
-      "image": "/images/categories/banner-tecnologia.jpg",
+      "image": "/images/categories/seccion-tecnologia.jpg",
       "description": "Celulares, computadores y accesorios."
     },
     {
@@ -60,7 +60,7 @@
       "slug": "hogar",
       "name": "Hogar",
       "parentSlug": null,
-      "image": "/images/categories/banner-hogar.jpg",
+      "image": "/images/categories/seccion-hogar.jpg",
       "description": "Muebles, decoración y jardín para cada espacio."
     },
     {
