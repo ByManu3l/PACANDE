@@ -31,7 +31,7 @@ body:
       label: Alcance
       description: >
         Esta es una plantilla, no un SaaS. Hay cosas deliberadamente fuera
-        de alcance; están listadas en `docs/reauditoria-prompt.md`.
+        de alcance; están listadas en `docs/QUE-INCLUYE.md`.
       options:
-        - label: He comprobado que no está en la lista de anti-objetivos
+        - label: He comprobado que no está en la lista de lo que no incluye
           required: true

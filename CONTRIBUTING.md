@@ -13,8 +13,8 @@ que no se reproduce no se puede arreglar.
 **Para una función nueva:** abre primero un issue describiendo el
 _problema_, no la solución. Esta es una plantilla de comercio
 electrónico con un alcance deliberadamente acotado, y hay cosas que están
-fuera a propósito — la lista de anti-objetivos está en
-[`docs/reauditoria-prompt.md`](docs/reauditoria-prompt.md). Es mejor
+fuera a propósito — la lista está en
+[`docs/QUE-INCLUYE.md`](docs/QUE-INCLUYE.md#lo-que-no-incluye). Es mejor
 descubrir que algo no encaja antes de escribirlo que después.
 
 **Para seguridad:** no abras un issue. Ver [`SECURITY.md`](SECURITY.md).

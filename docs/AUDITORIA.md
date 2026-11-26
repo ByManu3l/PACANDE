@@ -1,8 +1,7 @@
 # Informe de auditoría
 
-Auditoría integral de la plantilla, ejecutada según el plan de
-[`auditoria-prompt.md`](auditoria-prompt.md). Cubre desde `fe4872b` hasta
-la punta de `main`.
+Auditoría integral de la plantilla. Cubre desde `fe4872b` hasta la punta
+de `main`.
 
 Este documento es el **estado verificado** del proyecto: qué se encontró,
 qué se corrigió, qué se decidió deliberadamente no tocar y qué queda
@@ -338,9 +337,8 @@ auditoría que solo cuenta los aciertos no es un informe fiable.
 # Segunda parte — Re-auditoría a nivel comercial
 
 La primera auditoría dejó el proyecto **correcto**. Esta segunda partió de
-una observación distinta: correcto y vendible no son lo mismo. El plan
-está en [`reauditoria-prompt.md`](reauditoria-prompt.md); esto es lo que
-salió.
+una observación distinta: correcto y vendible no son lo mismo. Esto es lo
+que salió.
 
 ## Resumen
 
