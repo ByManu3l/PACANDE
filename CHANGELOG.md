@@ -65,6 +65,12 @@ datos.
 
 ### Añadido
 
+- **Asistente de compras con IA, por voz, texto o foto.** Entiende pedidos
+  en lenguaje natural, recomienda productos reales del catálogo, los añade
+  al carrito si se le pide y lee sus respuestas en voz alta. Busca
+  productos parecidos a partir de una foto. Pensado para personas con
+  discapacidad visual o motriz y mayores. Opcional: se activa con
+  `ANTHROPIC_API_KEY`. Ver `docs/DECISIONES.md`, punto 16.
 - **Stock inteligente en el panel.** Avisa de los productos agotados o con
   pocas unidades para su ritmo de venta de los últimos 30 días (con las
   unidades que conviene pedir) y de las secciones con menos de tres

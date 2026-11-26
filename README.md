@@ -21,6 +21,31 @@ en franjas y tarjetas de producto centradas.
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-estricto-blue" />
 </p>
 
+## Lo que la hace diferente: comprar hablando, o con una foto
+
+Pacandé tiene un **asistente de compras con inteligencia artificial**
+pensado primero para quienes las tiendas en línea suelen dejar fuera:
+personas con discapacidad visual o motriz y adultos mayores.
+
+- **Se le habla.** «Busco un regalo para mi papá, que le gusta el
+  fútbol, de menos de 100 mil.» Responde con productos reales, con su
+  precio y disponibilidad, y **lee la respuesta en voz alta**.
+- **Se le muestra una foto.** Una foto de algo que viste en la calle, y
+  te enseña lo más parecido que hay en la tienda.
+- **Compra por ti.** «Agrégame dos de esas» llena el carrito sin tocar un
+  botón.
+- **No puede inventar.** Cada producto que nombra se comprueba contra la
+  base de datos antes de mostrarse o añadirse al carrito: si el modelo se
+  equivoca, el error no llega al cliente.
+- **Se maneja entero con teclado** y anuncia sus respuestas a los
+  lectores de pantalla, sobre una tienda que ya cumple WCAG 2.1 AA.
+
+Funciona con [Claude](https://www.anthropic.com/claude) (Anthropic). El
+reconocimiento y la lectura de voz son del propio navegador: el audio no
+sale del dispositivo. Sin clave de la API, el asistente simplemente no
+aparece y la tienda funciona igual. Detalle técnico en
+[`docs/DECISIONES.md`](docs/DECISIONES.md), punto 16.
+
 ## Qué hace
 
 **Para quien compra:** catálogo por categorías con filtros y orden,

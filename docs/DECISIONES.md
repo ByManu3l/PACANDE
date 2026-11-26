@@ -286,3 +286,37 @@ Vuelve a MIT, que era su licencia inicial:
 
 **Cambiaría si:** volviera a plantearse venderla. Aun así, las versiones
 ya publicadas bajo MIT seguirían libres para siempre.
+
+---
+
+## 16. Asistente de compras: una llamada con el catálogo entero, no un agente
+
+**Se descartó:** un agente con herramientas (buscar, filtrar, añadir al
+carrito) que el modelo llama en bucle, y una búsqueda por similitud de
+imágenes con vectores.
+
+El catálogo tiene unos cien productos: cabe entero en el contexto del
+modelo, que así no necesita buscar, solo elegir. Cada mensaje es **una
+sola llamada** a la API de Claude que recibe las instrucciones, el
+catálogo (marcado para caché, así que repetirlo cuesta una fracción) y la
+conversación, y devuelve JSON con un esquema fijo: la respuesta, los
+productos a mostrar y los que hay que añadir al carrito.
+
+- **Más rápido**: una llamada en vez de varias. Al hablar con la tienda,
+  cada segundo de espera se nota.
+- **No puede inventar**: `normalizarRespuesta` cruza cada producto con la
+  base de datos y descarta lo que no existe antes de mostrarlo o tocar el
+  carrito. El carrito lo modifica el servidor con las mismas reglas de
+  stock de siempre, nunca el modelo.
+- **La foto reutiliza lo mismo**: se adjunta la imagen al mensaje y el
+  modelo la compara con el catálogo. Sin vectores ni índices que mantener.
+- **La voz no sale del navegador**: el reconocimiento y la lectura usan la
+  Web Speech API; al servidor solo llega el texto transcrito.
+
+Límites conscientes: 20 consultas por visitante cada 10 minutos (cada una
+cuesta dinero), mensajes de 500 caracteres como máximo y fotos reducidas
+a 1024 px en el navegador antes de enviarse.
+
+**Cambiaría si:** el catálogo creciera a miles de productos. Entonces sí
+haría falta una herramienta de búsqueda —la que ya existe en
+`product.service.ts`— para que el modelo reciba solo los candidatos.

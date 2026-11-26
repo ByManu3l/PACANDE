@@ -1,5 +1,7 @@
+import { Asistente } from '@/components/shared/asistente';
 import { Footer } from '@/components/shared/footer';
 import { Navbar } from '@/components/shared/navbar';
+import { asistenteDisponible } from '@/lib/services/asistente.service';
 
 export default function StorefrontLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -9,6 +11,9 @@ export default function StorefrontLayout({ children }: { children: React.ReactNo
           versión original. */}
       <main className="mx-auto w-full max-w-[1440px] flex-1 px-5 pt-5 pb-10">{children}</main>
       <Footer />
+      {/* Sin clave de la API de Claude, el asistente no aparece y la
+          tienda funciona igual. */}
+      {asistenteDisponible() && <Asistente />}
     </div>
   );
 }

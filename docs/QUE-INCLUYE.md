@@ -13,16 +13,17 @@ administración, lista para adaptarse a tu negocio.
 
 ### Para tus clientes
 
-|                       |                                                                                                            |
-| --------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **Catálogo**          | Categorías en dos niveles, con filtros de precio, disponibilidad y valoración, y cuatro criterios de orden |
-| **Búsqueda**          | Por nombre y descripción, con los mismos filtros                                                           |
-| **Ficha de producto** | Galería con miniaturas, valoración, opiniones, productos relacionados y datos estructurados para Google    |
-| **Carrito**           | Persistente. Funciona sin cuenta y se conserva al iniciar sesión                                           |
-| **Cupones**           | Porcentaje o importe fijo, con vigencia, compra mínima y tope de usos                                      |
-| **Compra**            | Checkout con direcciones guardadas y comprobante                                                           |
-| **Cuenta**            | Perfil, contraseña, historial de pedidos, favoritos y libreta de direcciones                               |
-| **Opiniones**         | Solo de quien compró, y con moderación previa                                                              |
+|                       |                                                                                                               |
+| --------------------- | ------------------------------------------------------------------------------------------------------------- |
+| **Catálogo**          | Categorías en dos niveles, con filtros de precio, disponibilidad y valoración, y cuatro criterios de orden    |
+| **Búsqueda**          | Por nombre y descripción, con los mismos filtros                                                              |
+| **Ficha de producto** | Galería con miniaturas, valoración, opiniones, productos relacionados y datos estructurados para Google       |
+| **Carrito**           | Persistente. Funciona sin cuenta y se conserva al iniciar sesión                                              |
+| **Cupones**           | Porcentaje o importe fijo, con vigencia, compra mínima y tope de usos                                         |
+| **Compra**            | Checkout con direcciones guardadas y comprobante                                                              |
+| **Cuenta**            | Perfil, contraseña, historial de pedidos, favoritos y libreta de direcciones                                  |
+| **Opiniones**         | Solo de quien compró, y con moderación previa                                                                 |
+| **Asistente**         | Por voz, texto o foto: recomienda productos reales y los añade al carrito. Requiere clave de la API de Claude |
 
 ### Para ti
 
