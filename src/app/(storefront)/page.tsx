@@ -36,8 +36,11 @@ export default async function HomePage() {
         {siteConfig.name} — {siteConfig.description}
       </h1>
 
-      {/* Proporción de los banners (1796 × 382): se ven completos, sin recorte. */}
-      <section className="relative aspect-[1796/382] w-full overflow-hidden">
+      {/* Portada a todo el ancho de la ventana, como el carrusel del original:
+          sale del contenedor central (`left-1/2` y `-ml-[50vw]`) y pega con
+          la cabecera. Conserva la proporción de los banners (1796 × 382)
+          para que se vean completos, sin recortar el texto. */}
+      <section className="relative left-1/2 -mt-5 -ml-[50vw] aspect-[1796/382] w-screen overflow-hidden">
         <HeroCarousel images={HERO_IMAGES} />
       </section>
 
@@ -96,7 +99,7 @@ export default async function HomePage() {
                   image: producto.images[0] ?? null,
                 }}
                 variant="wide"
-                compacta
+                producto
               />
             ))}
           </div>

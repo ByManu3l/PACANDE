@@ -39,6 +39,10 @@ datos.
   carrusel estrena tres banners nuevos (`portada-1..3.jpg`, nombres nuevos
   para que ninguna caché sirva los anteriores) y su proporción pasa a la de
   esos banners para que se vean completos.
+- **Portada a todo el ancho de la ventana**, pegada a la cabecera, como el
+  carrusel del original.
+- En «Destacados» manda el producto: imagen completa sobre blanco, sin velo
+  oscuro, y el nombre en una franja discreta abajo.
 
 ### Añadido
 
