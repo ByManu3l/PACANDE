@@ -5,6 +5,7 @@ import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 
 import { applyCouponAction } from '@/actions/coupon.actions';
+import { BOTON_MUI_CONTORNO } from '@/components/shared/estilo-original';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -111,9 +112,9 @@ export function CouponForm({ onChange, applied, isAuthenticated }: CouponFormPro
           // copian, y un 0 y una O confundidos cuestan una venta.
           className="h-9 font-mono tracking-wider uppercase"
         />
-        <Button type="submit" variant="outline" size="sm" disabled={pendiente || !codigo.trim()}>
+        <button type="submit" className={BOTON_MUI_CONTORNO} disabled={pendiente || !codigo.trim()}>
           {pendiente ? '…' : 'Aplicar'}
-        </Button>
+        </button>
       </div>
     </form>
   );

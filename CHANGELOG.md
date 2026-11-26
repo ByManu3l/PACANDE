@@ -25,6 +25,14 @@ datos.
   pago, cuenta, ventanas de entrar y registrarse, 404 y pantalla de carga.
   Algunos textos cambian para coincidir con el original («Agregar al
   Carrito», «Registrarse», «Carrito de Compras», «Finalizar Compra»).
+- **Botones y cabecera como en el original.** La fila superior de la
+  cabecera reparte logotipo, buscador y accesos como la versión JavaScript;
+  el selector de moneda es una píldora como el buscador. Perfil y
+  contraseña usan el botón de `PerfilPage.jsx`; «Agregar al Carrito»,
+  «Agotado» y «Publicar opinión», el de `ProductCard.jsx`; cupón,
+  confirmación de pedido, favoritos y el diálogo de dirección, los de MUI
+  del carrito; «Reintentar», el de los errores de `OfertasPage.jsx`. El
+  botón genérico usa el rojo de la tienda.
 
 ### Añadido
 

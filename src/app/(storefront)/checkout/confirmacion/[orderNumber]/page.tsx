@@ -1,7 +1,8 @@
 import { CheckCircle2 } from 'lucide-react';
+import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 
-import { ButtonLink } from '@/components/ui/button-link';
+import { BOTON_MUI_CONTORNO, BOTON_MUI_ROJO } from '@/components/shared/estilo-original';
 import { auth } from '@/lib/auth';
 import { getOrderByNumber } from '@/lib/services/order.service';
 import { formatPrice } from '@/lib/utils/currency';
@@ -46,10 +47,12 @@ export default async function OrderConfirmationPage({
       </div>
 
       <div className="flex justify-center gap-3">
-        <ButtonLink href="/cuenta/pedidos" variant="outline">
+        <Link href="/cuenta/pedidos" className={BOTON_MUI_CONTORNO}>
           Ver mis pedidos
-        </ButtonLink>
-        <ButtonLink href="/">Seguir comprando</ButtonLink>
+        </Link>
+        <Link href="/" className={BOTON_MUI_ROJO}>
+          Seguir comprando
+        </Link>
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { updateProfileAction } from '@/actions/user.actions';
-import { Button } from '@/components/ui/button';
+import { BOTON_PERFIL } from '@/components/shared/estilo-original';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { type UpdateProfileInput, updateProfileSchema } from '@/lib/validations/user';
@@ -45,9 +45,9 @@ export function ProfileForm({ defaultValues }: { defaultValues: UpdateProfileInp
         <Input id="email" type="email" {...register('email')} />
         {errors.email && <p className="text-destructive text-sm">{errors.email.message}</p>}
       </div>
-      <Button type="submit" disabled={isSubmitting}>
+      <button type="submit" disabled={isSubmitting} className={BOTON_PERFIL}>
         {isSubmitting ? 'Guardando…' : 'Guardar cambios'}
-      </Button>
+      </button>
     </form>
   );
 }

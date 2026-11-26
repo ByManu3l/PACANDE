@@ -6,6 +6,7 @@ import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 
 import { addToCartAction } from '@/actions/cart.actions';
+import { BOTON_TIENDA } from '@/components/shared/estilo-original';
 import { Button } from '@/components/ui/button';
 
 interface AddToCartButtonProps {
@@ -20,9 +21,9 @@ export function AddToCartButton({ productId, stock }: AddToCartButtonProps) {
 
   if (stock === 0) {
     return (
-      <Button disabled className="w-full">
+      <button type="button" disabled className={`${BOTON_TIENDA} w-full`}>
         Agotado
-      </Button>
+      </button>
     );
   }
 
@@ -74,13 +75,14 @@ export function AddToCartButton({ productId, stock }: AddToCartButtonProps) {
           <Plus className="size-4" />
         </Button>
       </div>
-      <Button
+      <button
+        type="button"
         onClick={handleAdd}
         disabled={isPending}
-        className="hover:bg-brand-dark flex-1 rounded-none"
+        className={`${BOTON_TIENDA} flex-1`}
       >
         <ShoppingCart /> {isPending ? 'Agregando…' : 'Agregar al Carrito'}
-      </Button>
+      </button>
     </div>
   );
 }

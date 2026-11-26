@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { createReviewAction } from '@/actions/review.actions';
-import { Button } from '@/components/ui/button';
+import { BOTON_TIENDA } from '@/components/shared/estilo-original';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -119,9 +119,9 @@ export function ReviewForm({ productId, productName }: { productId: string; prod
         {errors.body && <p className="text-destructive text-sm">{errors.body.message}</p>}
       </div>
 
-      <Button type="submit" disabled={isSubmitting}>
+      <button type="submit" disabled={isSubmitting} className={BOTON_TIENDA}>
         {isSubmitting ? 'Publicando…' : 'Publicar opinión'}
-      </Button>
+      </button>
     </form>
   );
 }

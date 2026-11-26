@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 
 import { createAddressAction, updateAddressAction } from '@/actions/address.actions';
 import type { AddressRow } from '@/components/forms/address-list';
-import { Button } from '@/components/ui/button';
+import { BOTON_MUI_CONTORNO, BOTON_MUI_ROJO } from '@/components/shared/estilo-original';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
@@ -184,12 +184,16 @@ export function AddressFormDialog({
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <button
+              type="button"
+              className={BOTON_MUI_CONTORNO}
+              onClick={() => onOpenChange(false)}
+            >
               Cancelar
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            </button>
+            <button type="submit" disabled={isSubmitting} className={BOTON_MUI_ROJO}>
               {isSubmitting ? 'Guardando…' : 'Guardar'}
-            </Button>
+            </button>
           </DialogFooter>
         </form>
       </DialogContent>

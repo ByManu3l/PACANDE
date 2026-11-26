@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { changePasswordAction } from '@/actions/user.actions';
-import { Button } from '@/components/ui/button';
+import { BOTON_PERFIL } from '@/components/shared/estilo-original';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { type ChangePasswordInput, changePasswordSchema } from '@/lib/validations/user';
@@ -56,9 +56,9 @@ export function ChangePasswordForm() {
           <p className="text-destructive text-sm">{errors.confirmPassword.message}</p>
         )}
       </div>
-      <Button type="submit" disabled={isSubmitting}>
+      <button type="submit" disabled={isSubmitting} className={BOTON_PERFIL}>
         {isSubmitting ? 'Guardando…' : 'Cambiar contraseña'}
-      </Button>
+      </button>
     </form>
   );
 }
