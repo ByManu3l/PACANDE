@@ -78,6 +78,13 @@ const serverSchema = z.object({
    * almacén Blob al proyecto.
    */
   BLOB_READ_WRITE_TOKEN: z.string().min(1).optional(),
+
+  /**
+   * Opcional. Clave de la API de Claude para el asistente de compras y la
+   * búsqueda por foto. Sin ella, la tienda funciona igual y esas dos
+   * funciones simplemente no aparecen.
+   */
+  ANTHROPIC_API_KEY: z.string().min(1).optional(),
 });
 
 /**
@@ -122,6 +129,7 @@ function parseEnv() {
     AUTH_URL: process.env.AUTH_URL ?? vercelUrl,
     NODE_ENV: process.env.NODE_ENV,
     BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN || undefined,
+    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || undefined,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL ?? vercelUrl,
   });
 

@@ -55,7 +55,23 @@ Vercel añade `BLOB_READ_WRITE_TOKEN`. Sin este paso la tienda funciona,
 pero subir imágenes desde el panel falla, porque en Vercel el disco se
 borra entre peticiones.
 
-## Paso 4: volver a desplegar
+## Paso 4 (opcional, de pago): activar el asistente con IA
+
+Sin este paso ya funcionan, gratis, la búsqueda por voz y la búsqueda por
+foto (botón «Buscar por voz o foto»). Este paso añade encima el asistente
+con IA que conversa y añade productos al carrito; usa la API de Claude,
+que cobra por consulta.
+
+1. Crea una clave en [platform.claude.com](https://platform.claude.com)
+   (**API Keys → Create Key**). Necesita saldo; una exposición completa
+   gasta centavos de dólar.
+2. En Vercel, **Settings → Environment Variables**, añade
+   `ANTHROPIC_API_KEY` con esa clave.
+
+Cada visitante puede hacer hasta 20 consultas cada 10 minutos, para que
+nadie vacíe el saldo con un script.
+
+## Paso 5: volver a desplegar
 
 **Deployments →** el último despliegue **→ ⋯ → Redeploy.**
 
@@ -97,12 +113,16 @@ cupones y usuarios nuevos se conservan.
 
 ## Si algo falla
 
-| Síntoma                                         | Causa probable                                              |
-| ----------------------------------------------- | ----------------------------------------------------------- |
-| La compilación dice que falta `DATABASE_URL`    | La base no está conectada al entorno (paso 2)               |
-| «AUTH_SECRET debe tener al menos 32 caracteres» | Falta la variable o es corta (paso 1)                       |
-| Subir una imagen da error                       | Falta el almacén Blob (paso 3); después hay que redesplegar |
-| La página responde lento al principio           | Neon estaba dormida; se despierta con la primera petición   |
+| Síntoma                                                | Causa probable                                                  |
+| ------------------------------------------------------ | --------------------------------------------------------------- |
+| La compilación dice que falta `DATABASE_URL`           | La base no está conectada al entorno (paso 2)                   |
+| «AUTH_SECRET debe tener al menos 32 caracteres»        | Falta la variable o es corta (paso 1)                           |
+| Subir una imagen da error                              | Falta el almacén Blob (paso 3); después hay que redesplegar     |
+| La página responde lento al principio                  | Neon estaba dormida; se despierta con la primera petición       |
+| El botón dice «Buscar por voz o foto» y no «Asistente» | Falta `ANTHROPIC_API_KEY` (paso 4); después hay que redesplegar |
+| La búsqueda por foto no carga el modelo                | Sin conexión a tfhub.dev, kaggle.com o storage.googleapis.com   |
+| El asistente dice que no pudo responder                | Clave inválida o sin saldo: revisa **Logs** en Vercel           |
+| El micrófono no aparece                                | El navegador no reconoce voz (Firefox); usa Chrome o Edge       |
 
 Los registros de cada petición están en **Logs**, dentro del proyecto en
 Vercel.

@@ -32,7 +32,9 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
-      "connect-src 'self'",
+      // La búsqueda por foto descarga el modelo MobileNet desde TensorFlow
+      // Hub, que redirige a Kaggle y de ahí a Google Cloud Storage.
+      "connect-src 'self' https://tfhub.dev https://www.kaggle.com https://storage.googleapis.com",
       // Nadie puede incrustar esta tienda en un marco: es la defensa
       // contra el secuestro de clics, donde un sitio ajeno superpone
       // controles invisibles sobre los botones reales.

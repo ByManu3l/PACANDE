@@ -286,3 +286,75 @@ Vuelve a MIT, que era su licencia inicial:
 
 **Cambiaría si:** volviera a plantearse venderla. Aun así, las versiones
 ya publicadas bajo MIT seguirían libres para siempre.
+
+---
+
+## 16. Asistente de compras: una llamada con el catálogo entero, no un agente
+
+**Se descartó:** un agente con herramientas (buscar, filtrar, añadir al
+carrito) que el modelo llama en bucle, y una búsqueda por similitud de
+imágenes con vectores.
+
+El catálogo tiene unos cien productos: cabe entero en el contexto del
+modelo, que así no necesita buscar, solo elegir. Cada mensaje es **una
+sola llamada** a la API de Claude que recibe las instrucciones, el
+catálogo (marcado para caché, así que repetirlo cuesta una fracción) y la
+conversación, y devuelve JSON con un esquema fijo: la respuesta, los
+productos a mostrar y los que hay que añadir al carrito.
+
+- **Más rápido**: una llamada en vez de varias. Al hablar con la tienda,
+  cada segundo de espera se nota.
+- **No puede inventar**: `normalizarRespuesta` cruza cada producto con la
+  base de datos y descarta lo que no existe antes de mostrarlo o tocar el
+  carrito. El carrito lo modifica el servidor con las mismas reglas de
+  stock de siempre, nunca el modelo.
+- **La foto reutiliza lo mismo**: se adjunta la imagen al mensaje y el
+  modelo la compara con el catálogo. Sin vectores ni índices que mantener.
+- **La voz no sale del navegador**: el reconocimiento y la lectura usan la
+  Web Speech API; al servidor solo llega el texto transcrito.
+
+Límites conscientes: 20 consultas por visitante cada 10 minutos (cada una
+cuesta dinero), mensajes de 500 caracteres como máximo y fotos reducidas
+a 1024 px en el navegador antes de enviarse.
+
+**Cambiaría si:** el catálogo creciera a miles de productos. Entonces sí
+haría falta una herramienta de búsqueda —la que ya existe en
+`product.service.ts`— para que el modelo reciba solo los candidatos.
+
+---
+
+## 17. Búsqueda por voz y por foto gratuita, en el navegador
+
+**Se descartó:** depender solo del asistente con IA (punto 16), que cuesta
+dinero por consulta, y buscar fotos en un servidor propio.
+
+Sin presupuesto para la API, el mismo panel funciona en un modo gratuito
+que no necesita servidor nuevo ni servicio de pago:
+
+- **Voz → palabras.** El navegador transcribe lo dictado (Web Speech API)
+  y `lib/utils/busqueda-local.ts` quita el relleno («quiero», «una», «por
+  favor»), las tildes y los plurales, y puntúa cada producto por las
+  palabras que coinciden en su nombre (doble) o su categoría. No entiende
+  intenciones, pero acierta con lo que la gente dice: tipo de producto,
+  color, categoría.
+- **Foto → parecido visual.** MobileNet, una red de reconocimiento de
+  imágenes de Google, corre en el navegador con TensorFlow.js y convierte
+  cada imagen en una «huella» numérica. Se muestran los productos con la
+  huella más cercana a la de la foto. La foto nunca sale del dispositivo.
+
+**Cómo se carga sin castigar al resto de visitantes.** TensorFlow.js pesa
+~370 kB comprimido: empaquetado con la aplicación rompería el presupuesto
+de `audit:bundle` y podría precargarse en todas las páginas. Por eso
+`scripts/copiar-modelos.mjs` lo copia a `public/vendor/` al instalar, y el
+navegador solo lo pide —junto con el modelo, ~14 MB desde TensorFlow
+Hub— cuando alguien pulsa «buscar con una foto». La política de seguridad
+de contenido permite esos tres dominios solo para descargas de datos
+(`connect-src`), no para ejecutar scripts.
+
+**Límite consciente:** la primera búsqueda por foto tarda unos segundos
+(descarga del modelo y análisis del catálogo); las siguientes de la misma
+visita son inmediatas.
+
+**Cambiaría si:** hubiera presupuesto para el asistente con IA, que
+entiende pedidos complejos. Los dos modos conviven: con
+`ANTHROPIC_API_KEY` se usa la IA; sin ella, este modo.

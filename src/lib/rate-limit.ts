@@ -113,6 +113,14 @@ export const RATE_LIMITS = {
     windowMs: 10 * MINUTO,
     message: 'Demasiados intentos de compra seguidos. Espera un momento.',
   },
+  // Cada consulta al asistente cuesta dinero real en la API de Claude: el
+  // límite evita que un script vacíe el saldo. Veinte en diez minutos son
+  // de sobra para una conversación de compra.
+  asistente: {
+    limit: 20,
+    windowMs: 10 * MINUTO,
+    message: 'El asistente recibió muchas consultas seguidas. Espera unos minutos.',
+  },
 } as const satisfies Record<string, RateLimitRule>;
 
 /**
