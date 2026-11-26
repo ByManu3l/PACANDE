@@ -33,6 +33,12 @@ datos.
   confirmación de pedido, favoritos y el diálogo de dirección, los de MUI
   del carrito; «Reintentar», el de los errores de `OfertasPage.jsx`. El
   botón genérico usa el rojo de la tienda.
+- **Portada sin franjas negras.** Las secciones de categorías muestran solo
+  sus presentaciones, sin el recuadro negro de fondo; «Destacados» usa el
+  mismo formato (imagen, velo y nombre) en vez de tarjetas de producto. El
+  carrusel estrena tres banners nuevos (`portada-1..3.jpg`, nombres nuevos
+  para que ninguna caché sirva los anteriores) y su proporción pasa a la de
+  esos banners para que se vean completos.
 
 ### Añadido
 

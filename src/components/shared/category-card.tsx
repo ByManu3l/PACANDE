@@ -18,6 +18,10 @@ interface CategoryCardProps {
    */
   variant?: 'wide' | 'tall' | 'main';
   className?: string;
+  /** Destino; por defecto, la página de la categoría. */
+  href?: string;
+  /** Letra menor, para nombres largos como los de producto. */
+  compacta?: boolean;
 }
 
 /** La primera frase de la descripción: el resto queda para la cabecera
@@ -27,11 +31,17 @@ function primeraFrase(texto: string) {
   return fin === -1 ? texto.replace(/\.$/, '') : texto.slice(0, fin);
 }
 
-export function CategoryCard({ category, variant = 'main', className }: CategoryCardProps) {
+export function CategoryCard({
+  category,
+  variant = 'main',
+  className,
+  href,
+  compacta = false,
+}: CategoryCardProps) {
   if (variant === 'main') {
     return (
       <Link
-        href={`/categoria/${category.slug}`}
+        href={href ?? `/categoria/${category.slug}`}
         className={cn(
           'group relative block h-[300px] overflow-hidden rounded-xl text-white shadow-[0_4px_6px_rgba(0,0,0,0.1)] transition-all duration-300 hover:-translate-y-[5px] hover:shadow-[0_6px_12px_rgba(0,0,0,0.2)]',
           className,
@@ -64,7 +74,7 @@ export function CategoryCard({ category, variant = 'main', className }: Category
 
   return (
     <Link
-      href={`/categoria/${category.slug}`}
+      href={href ?? `/categoria/${category.slug}`}
       className={cn(
         'relative flex items-center justify-center overflow-hidden bg-neutral-800 bg-cover bg-center transition-transform duration-300 hover:scale-105 focus-visible:scale-105 focus-visible:outline-none',
         alta
@@ -87,7 +97,11 @@ export function CategoryCard({ category, variant = 'main', className }: Category
       <span
         className={cn(
           'relative px-4 text-center font-bold text-white uppercase',
-          alta ? 'text-[32px] sm:text-[40px]' : 'text-[36px] sm:text-[50px]',
+          compacta
+            ? 'text-[26px] leading-tight sm:text-[30px]'
+            : alta
+              ? 'text-[32px] sm:text-[40px]'
+              : 'text-[36px] sm:text-[50px]',
         )}
       >
         {category.name}
