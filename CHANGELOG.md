@@ -52,6 +52,7 @@ datos.
   y Hogar abren con su propio banner y el título sobre el lado libre de la
   foto. En la portada, una sección sin subcategorías (Variedad) ya no
   repite su nombre encima de la tarjeta.
+- Portada algo más baja (3,6:1): recorta solo márgenes sin texto.
 
 ### Añadido
 

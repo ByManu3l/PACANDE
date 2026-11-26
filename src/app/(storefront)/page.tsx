@@ -8,7 +8,7 @@ import { getFeaturedProducts } from '@/lib/services/product.service';
 // reemplaza estas imágenes (y el resto de public/images/brand/) por las tuyas.
 const HERO_IMAGES = [
   '/images/brand/inicio-1.jpg',
-  '/images/brand/inicio-2.jpg',
+  '/images/brand/inicio-ofertas.jpg',
   '/images/brand/inicio-3.jpg',
 ];
 
@@ -38,9 +38,11 @@ export default async function HomePage() {
 
       {/* Portada a todo el ancho de la ventana, como el carrusel del original:
           sale del contenedor central (`left-1/2` y `-ml-[50vw]`) y pega con
-          la cabecera. Conserva la proporción de los banners (2000 × 661, 3:1)
-          para que se vean completos, sin recortar el texto. */}
-      <section className="relative left-1/2 -mt-5 -ml-[50vw] aspect-[2000/661] w-screen overflow-hidden">
+          la cabecera. Proporción 3,6:1, algo más baja que la de los banners
+          (3:1): recorta solo el margen de arriba y de abajo, donde no hay
+          texto. El de ofertas, con texto casi hasta el borde, va extendido
+          a los lados para que tampoco pierda nada. */}
+      <section className="relative left-1/2 -mt-5 -ml-[50vw] aspect-[18/5] w-screen overflow-hidden">
         <HeroCarousel images={HERO_IMAGES} />
       </section>
 
