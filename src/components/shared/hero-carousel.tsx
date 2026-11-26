@@ -74,6 +74,7 @@ export function HeroCarousel({ images, intervalMs = 3000, children }: HeroCarous
           fill
           priority={i === 0}
           sizes="100vw"
+          quality={90}
           className={`object-cover transition-opacity duration-700 ease-in-out ${
             i === actual ? 'opacity-100' : 'opacity-0'
           }`}

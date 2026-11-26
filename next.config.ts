@@ -106,6 +106,9 @@ const nextConfig: NextConfig = {
    * remotas de dominios declarados aquí.
    */
   images: {
+    // 90 solo para los banners de portada: a todo el ancho, la compresión
+    // por defecto (75) se nota en el texto de los banners.
+    qualities: [75, 90],
     remotePatterns: [{ protocol: 'https', hostname: '*.public.blob.vercel-storage.com' }],
   },
 };
