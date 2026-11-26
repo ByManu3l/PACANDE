@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 
-import { Button } from '@/components/ui/button';
+import { BOTON_REINTENTAR } from '@/components/shared/estilo-original';
 import { ButtonLink } from '@/components/ui/button-link';
 
 /**
@@ -56,7 +56,9 @@ export default function GlobalError({
         <p className="text-muted-foreground font-mono text-xs">Referencia: {error.digest}</p>
       )}
       <div className="flex gap-3">
-        <Button onClick={reset}>Reintentar</Button>
+        <button type="button" onClick={reset} className={BOTON_REINTENTAR}>
+          Reintentar
+        </button>
         <ButtonLink variant="outline" href="/">
           Ir al inicio
         </ButtonLink>

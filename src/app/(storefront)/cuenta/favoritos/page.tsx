@@ -1,7 +1,8 @@
 import { HeartOff } from 'lucide-react';
+import Link from 'next/link';
 
+import { BOTON_MUI_ROJO } from '@/components/shared/estilo-original';
 import { ProductGrid } from '@/components/shared/product-grid';
-import { ButtonLink } from '@/components/ui/button-link';
 import { requireSession } from '@/lib/auth/guards';
 import { listWishlist } from '@/lib/services/wishlist.service';
 
@@ -24,9 +25,9 @@ export default async function FavoritosPage() {
           <p className="text-sm">
             Pulsa el corazón de cualquier producto para tenerlo aquí y comprarlo más tarde.
           </p>
-          <ButtonLink href="/" variant="outline" size="sm">
+          <Link href="/" className={BOTON_MUI_ROJO}>
             Explorar el catálogo
-          </ButtonLink>
+          </Link>
         </div>
       </div>
     );

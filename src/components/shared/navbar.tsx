@@ -40,7 +40,7 @@ export async function Navbar() {
     <header className="sticky top-0 z-40 bg-black/95 text-white shadow-[0_2px_15px_rgba(255,0,0,0.1)]">
       <div className="mx-auto max-w-[1400px] px-4 py-[0.3rem] sm:px-8">
         {/* Fila superior: identidad, buscador y accesos de cuenta. */}
-        <div className="flex items-center gap-2 border-b border-[rgba(255,0,0,0.1)] py-[0.3rem] sm:gap-4">
+        <div className="flex items-center justify-between gap-2 border-b border-[rgba(255,0,0,0.1)] py-[0.3rem] sm:gap-4">
           <MobileNav
             categories={categories.map((c) => ({
               slug: c.slug,
@@ -74,7 +74,7 @@ export async function Navbar() {
           <form
             action="/buscar"
             role="search"
-            className="relative mx-auto flex w-full max-w-[500px] min-w-0 items-center sm:mx-8"
+            className="relative flex max-w-[500px] min-w-0 flex-1 items-center sm:mx-8"
           >
             <Search
               aria-hidden="true"

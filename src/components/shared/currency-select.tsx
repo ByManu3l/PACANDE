@@ -1,5 +1,6 @@
 'use client';
 
+import { ChevronDown } from 'lucide-react';
 import { useTransition } from 'react';
 import { toast } from 'sonner';
 
@@ -25,7 +26,7 @@ export function CurrencySelect({ monedaActual, monedas }: CurrencySelectProps) {
   const [pendiente, iniciar] = useTransition();
 
   return (
-    <label className="flex items-center gap-1 text-xs text-white/70">
+    <label className="relative flex items-center text-white">
       <span className="sr-only">Moneda en la que se muestran los precios</span>
       <select
         value={monedaActual}
@@ -37,14 +38,20 @@ export function CurrencySelect({ monedaActual, monedas }: CurrencySelectProps) {
             if (!resultado.success) toast.error(resultado.error);
           });
         }}
-        className="cursor-pointer rounded-md border border-white/20 bg-white/5 px-2 py-1 text-white transition-colors duration-300 hover:border-red-500/60 focus-visible:border-red-600 focus-visible:outline-none disabled:opacity-50"
+        // Misma píldora que el buscador: borde rojo tenue, fondo translúcido
+        // y borde rojo pleno al pasar o enfocar.
+        className="hover:border-brand focus-visible:border-brand cursor-pointer appearance-none rounded-[20px] border-2 border-[rgba(255,0,0,0.3)] bg-white/10 py-1.5 pr-8 pl-4 text-[0.9rem] text-white transition-all duration-300 outline-none hover:bg-white/15 focus-visible:bg-white/15 disabled:opacity-50"
       >
         {monedas.map((m) => (
-          <option key={m} value={m} className="text-black">
+          <option key={m} value={m} className="bg-black text-white">
             {m}
           </option>
         ))}
       </select>
+      <ChevronDown
+        aria-hidden="true"
+        className="pointer-events-none absolute right-3 size-4 text-white/60"
+      />
     </label>
   );
 }
