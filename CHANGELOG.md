@@ -47,6 +47,11 @@ datos.
   usuario, en vez de la lista nativa del sistema.
 - Banners de portada con calidad 90 (antes 75).
 - Descripción de «Variedad» corregida: no es equipamiento deportivo.
+- **Banners nuevos.** La portada estrena tres banners de 2000 px en
+  proporción 3:1 (`inicio-1..3.jpg`), más altos y nítidos. Ropa, Tecnología
+  y Hogar abren con su propio banner y el título sobre el lado libre de la
+  foto. En la portada, una sección sin subcategorías (Variedad) ya no
+  repite su nombre encima de la tarjeta.
 
 ### Añadido
 

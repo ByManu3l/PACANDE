@@ -21,7 +21,7 @@ export function VentanaCuenta({ titulo, children, alternativa }: VentanaCuentaPr
   return (
     <div className="relative -mx-5 -mt-5 -mb-10 grid min-h-[calc(100vh-112px)] place-items-center overflow-hidden px-4 py-12">
       <Image
-        src="/images/brand/portada-1.jpg"
+        src="/images/brand/inicio-1.jpg"
         alt=""
         fill
         sizes="100vw"

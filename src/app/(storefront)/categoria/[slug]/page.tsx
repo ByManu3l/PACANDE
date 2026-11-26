@@ -11,6 +11,12 @@ import { NotFoundError } from '@/lib/utils/errors';
 import { parsePageParam } from '@/lib/utils/pagination';
 import { filtrosEnUrl, parseFilters } from '@/lib/utils/product-filters';
 
+/**
+ * Secciones cuyo banner deja libre el lado derecho (la foto de Ropa tiene
+ * el perchero a la izquierda). En las demás, el texto va a la izquierda.
+ */
+const TEXTO_A_LA_DERECHA = new Set(['ropa']);
+
 async function findCategory(slug: string) {
   return getCategoryBySlug(slug).catch((err) => {
     if (err instanceof NotFoundError) return null;
@@ -72,15 +78,62 @@ export default async function CategoryPage({
     />
   );
 
-  // Categoría con subcategorías: el título centrado con la raya roja y
-  // las tarjetas grandes de la página «Ropa» original.
+  // Categoría con subcategorías: el banner de la sección, con el título
+  // sobre el lado vacío de la foto, y las tarjetas grandes de la página
+  // «Ropa» original.
   if (hasChildren) {
+    const textoDerecha = TEXTO_A_LA_DERECHA.has(category.slug);
     return (
       <div className="mx-auto max-w-[1200px] space-y-6">
         {migas}
-        <h1 className="mb-10 text-center text-[2.5em] leading-tight font-semibold text-[#2c3e50] after:mx-auto after:mt-2.5 after:block after:h-1 after:w-[60px] after:rounded-sm after:bg-linear-to-r after:from-[#ff0000] after:to-[#ff4444] after:content-['']">
-          {category.name}
-        </h1>
+        <header className="relative mb-10 min-h-[260px] overflow-hidden rounded-[15px] bg-black text-white shadow-[0_4px_25px_rgba(0,0,0,0.15)] sm:aspect-[2000/848] sm:min-h-0">
+          {category.image && (
+            <Image
+              src={category.image}
+              alt=""
+              fill
+              priority
+              quality={90}
+              sizes="(min-width: 1240px) 1200px, 100vw"
+              // En móvil la foto se recorta: se conserva el lado de los
+              // productos, que es el contrario al del texto.
+              className={textoDerecha ? 'object-cover object-left' : 'object-cover object-right'}
+            />
+          )}
+          {/* En móvil el texto cae sobre la foto recortada: velo parejo. */}
+          <div className="absolute inset-0 bg-black/45 sm:hidden" />
+          {/* Sombra solo del lado del texto, para que se lea sin apagar
+              los productos del otro lado. */}
+          <div
+            className={
+              textoDerecha
+                ? 'absolute inset-0 bg-linear-to-l from-black/70 via-black/30 to-transparent'
+                : 'absolute inset-0 bg-linear-to-r from-black/70 via-black/30 to-transparent'
+            }
+          />
+          <div
+            className={`relative flex h-full min-h-[260px] flex-col justify-center gap-4 p-8 sm:w-1/2 sm:p-12 ${
+              textoDerecha ? 'ml-auto text-right' : ''
+            }`}
+          >
+            <h1 className="text-[2.5rem] leading-none font-extrabold tracking-[3px] uppercase [text-shadow:2px_2px_6px_rgba(0,0,0,0.6)] sm:text-[3.5rem] lg:text-[4.5rem]">
+              {category.name}
+            </h1>
+            <span
+              aria-hidden="true"
+              className={`bg-brand block h-1 w-[60px] rounded-sm ${textoDerecha ? 'ml-auto' : ''}`}
+            />
+            {category.description && (
+              <p
+                className={`max-w-[420px] text-base leading-relaxed text-white/90 sm:text-lg ${
+                  textoDerecha ? 'ml-auto' : ''
+                }`}
+              >
+                {category.description}
+              </p>
+            )}
+          </div>
+        </header>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-[30px]">
           {category.children.map((child) => (
             <CategoryCard key={child.slug} category={child} />
