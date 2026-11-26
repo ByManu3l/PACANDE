@@ -757,9 +757,9 @@
   "brand": {
     "logo": "/images/brand/logopaca.png",
     "heroSlides": [
-      "/images/brand/carrusel-1.jpg",
-      "/images/brand/carrusel-2.jpg",
-      "/images/brand/carrusel-3.jpg"
+      "/images/brand/portada-1.jpg",
+      "/images/brand/portada-2.jpg",
+      "/images/brand/portada-3.jpg"
     ]
   }
 }
