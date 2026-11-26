@@ -15,8 +15,8 @@
 // `<Button render={<Link href="..." />} nativeButton={false}>`,
 // no el `asChild` de Radix.
 //
-// MODIFICADO: `default` usa el rojo de la tienda (rojo pleno y rojo oscuro
-// al pasar el cursor, como los botones del original) y `outline` toma el
+// MODIFICADO: `default` usa el rojo accesible de la tienda (`--primary`,
+// rojo oscuro al pasar el cursor) y `outline` toma el
 // borde y el texto rojos al pasar el cursor.
 import { Button as ButtonPrimitive } from '@base-ui/react/button';
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -28,7 +28,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-brand text-white hover:bg-brand-dark',
+        default: 'bg-primary text-white hover:bg-brand-dark',
         outline:
           'border-border bg-background hover:border-brand hover:text-brand aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50',
         secondary:

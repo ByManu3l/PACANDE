@@ -25,14 +25,14 @@ export const BOTON_MUI_CONTORNO = `${BOTON_MUI} border border-[rgba(211,47,47,0.
  * ancho, sube 2 px al pasar el cursor y se vuelve gris al deshabilitarse.
  */
 export const BOTON_PERFIL =
-  'bg-brand focus-visible:ring-brand relative mt-4 flex w-full cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-[0.5rem] px-6 py-3.5 text-base font-semibold text-white transition-all duration-300 hover:not-disabled:-translate-y-0.5 hover:not-disabled:bg-[#e60000] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:not-disabled:translate-y-px disabled:cursor-not-allowed disabled:bg-[#999]';
+  'bg-primary focus-visible:ring-brand relative mt-4 flex w-full cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-[0.5rem] px-6 py-3.5 text-base font-semibold text-white transition-all duration-300 hover:not-disabled:-translate-y-0.5 hover:not-disabled:bg-brand-dark focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:not-disabled:translate-y-px disabled:cursor-not-allowed disabled:bg-[#999]';
 
 /**
  * `BuyButton` / `CartButton` de `ProductCard.jsx`: rectángulo rojo sin
  * esquinas, 10 × 20 px de relleno y rojo oscuro al pasar el cursor.
  */
 export const BOTON_TIENDA =
-  'inline-flex cursor-pointer items-center justify-center gap-2.5 rounded-none bg-brand px-5 py-2.5 text-white transition-colors duration-300 hover:not-disabled:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-60 focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:outline-none';
+  'inline-flex cursor-pointer items-center justify-center gap-2.5 rounded-none bg-primary px-5 py-2.5 text-white transition-colors duration-300 hover:not-disabled:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-60 focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:outline-none';
 
 /** Botón «Intentar nuevamente» de los errores de `OfertasPage.jsx`. */
 export const BOTON_REINTENTAR =
