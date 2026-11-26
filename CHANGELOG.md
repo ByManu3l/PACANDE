@@ -11,6 +11,13 @@ datos.
 
 ### Cambiado
 
+- **Licencia: de comercial a MIT.** Pacandé vuelve a ser un proyecto
+  académico abierto; el plan de venderla como plantilla no siguió
+  adelante. README y documentación reescritos en ese sentido. Ver
+  `docs/DECISIONES.md`, punto 15.
+- El límite de inicio de sesión cuenta solo **fallos seguidos**: un
+  acceso correcto reinicia el contador. Antes, entrar y salir varias
+  veces con la misma cuenta acababa en bloqueo.
 - **Identidad visual de la versión JavaScript original**, recuperada sobre
   Next.js, Tailwind y shadcn: fuente del sistema, rojo #ff0000 con negro,
   portada en franjas blancas y negras, tarjeta de producto centrada con
@@ -21,6 +28,12 @@ datos.
 
 ### Añadido
 
+- **Despliegue en Vercel listo:** `vercel.json` y el script
+  `vercel-build` (migraciones, catálogo de ejemplo y compilación), guía
+  paso a paso en `docs/DESPLIEGUE.md`, adaptador de Vercel Blob para las
+  imágenes subidas que se activa solo con `BLOB_READ_WRITE_TOKEN`, y
+  `AUTH_URL`/`NEXT_PUBLIC_SITE_URL` tomadas del dominio de Vercel si no se
+  configuran.
 - **Vaciar el carrito** desde la página del carrito (`clearCartAction`).
 - **Descuento por producto**, **moneda de vista** con tasas de cambio,
   **carrusel de portada** y **página de ofertas**.

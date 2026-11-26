@@ -71,6 +71,13 @@ const serverSchema = z.object({
   AUTH_URL: z.url('AUTH_URL debe ser una URL completa, p. ej. https://mitienda.com'),
 
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+
+  /**
+   * Opcional. Si existe, las imágenes subidas van a Vercel Blob en vez de
+   * al disco (ver `storage.service.ts`). Vercel la crea al conectar un
+   * almacén Blob al proyecto.
+   */
+  BLOB_READ_WRITE_TOKEN: z.string().min(1).optional(),
 });
 
 /**
@@ -99,13 +106,23 @@ const clientSchema = z.object({
 
 const schema = serverSchema.extend(clientSchema.shape);
 
+/**
+ * Dominio de producción que Vercel publica en cada despliegue. Permite no
+ * configurar a mano `AUTH_URL` ni `NEXT_PUBLIC_SITE_URL` allí: si faltan,
+ * se toman de aquí. Fuera de Vercel no existe y no cambia nada.
+ */
+const vercelUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : undefined;
+
 function parseEnv() {
   const result = schema.safeParse({
     DATABASE_URL: process.env.DATABASE_URL,
     AUTH_SECRET: process.env.AUTH_SECRET,
-    AUTH_URL: process.env.AUTH_URL,
+    AUTH_URL: process.env.AUTH_URL ?? vercelUrl,
     NODE_ENV: process.env.NODE_ENV,
-    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+    BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN || undefined,
+    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL ?? vercelUrl,
   });
 
   if (result.success) return result.data;

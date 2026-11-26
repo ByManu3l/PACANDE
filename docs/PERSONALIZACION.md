@@ -235,30 +235,20 @@ más adelante no altera los pedidos antiguos.
 
 ## 6. Almacenamiento de archivos en producción
 
-El adaptador por defecto escribe en el disco local. **Eso no funciona en
-un despliegue serverless** (Vercel, Netlify, Lambda): el sistema de
-archivos es efímero y las imágenes desaparecen entre peticiones.
+Hay dos adaptadores en
+[`src/lib/services/storage.service.ts`](../src/lib/services/storage.service.ts),
+y se elige solo:
 
-Si despliegas ahí, implementa `StorageAdapter` en
-[`src/lib/services/storage.service.ts`](../src/lib/services/storage.service.ts):
+- **Vercel Blob**, si existe la variable `BLOB_READ_WRITE_TOKEN` (Vercel
+  la crea al conectar un almacén Blob al proyecto). Es el necesario en
+  Vercel, Netlify o Lambda, donde el disco es efímero y las imágenes
+  desaparecerían entre peticiones.
+- **Disco local** (`public/uploads/`) en cualquier otro caso: desarrollo,
+  o un servidor con disco persistente (VPS, Railway, Render con volumen).
 
-```ts
-class VercelBlobAdapter implements StorageAdapter {
-  async save(file: File, directory: string, filename: string): Promise<string> {
-    /* … devuelve la URL pública … */
-  }
-  async delete(publicPath: string): Promise<void> {
-    /* … */
-  }
-}
-
-export const storage: StorageAdapter = new VercelBlobAdapter();
-```
-
-Es el único punto de la aplicación que hay que cambiar.
-
-Si despliegas en un servidor con disco persistente (VPS, Railway, Render
-con volumen), el adaptador por defecto sirve tal cual.
+Para otro proveedor (S3, R2…), escribe una clase que implemente
+`StorageAdapter` en ese mismo archivo. Es el único punto de la aplicación
+que hay que cambiar.
 
 ---
 
@@ -312,6 +302,9 @@ textos que el usuario final ve.
 
 ## Antes de publicar
 
+Para la demostración de Pacandé basta con [`DESPLIEGUE.md`](DESPLIEGUE.md).
+Esta lista es para una tienda real con tu marca:
+
 - [ ] `AUTH_SECRET` generado con `npx auth secret` (no el del ejemplo).
 - [ ] `DATABASE_URL` apuntando a la base de producción.
 - [ ] `NEXT_PUBLIC_SITE_URL` con tu dominio real — el sitemap lo usa; sin
@@ -319,6 +312,6 @@ textos que el usuario final ve.
 - [ ] Las contraseñas de ejemplo del seed cambiadas o esos usuarios
       eliminados.
 - [ ] `site.config.ts` sin rastro de "Pacandé".
-- [ ] `StorageAdapter` sustituido si el despliegue es serverless.
+- [ ] Almacén Blob conectado si el despliegue es serverless (ver §6).
 - [ ] `/terminos` y `/privacidad` con tus textos legales reales.
 - [ ] `npm run build` en verde.

@@ -1,6 +1,9 @@
 import { mkdir, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
+import { del, put } from '@vercel/blob';
+
+import { env } from '@/lib/env';
 import { logger } from '@/lib/logger';
 
 /**
@@ -76,11 +79,57 @@ class LocalDiskAdapter implements StorageAdapter {
   }
 }
 
-export const storage: StorageAdapter = new LocalDiskAdapter();
+/**
+ * Adaptador para Vercel Blob: el que se usa en el despliegue en Vercel,
+ * donde el disco se borra entre peticiones.
+ *
+ * Devuelve la URL pública completa del archivo
+ * (`https://….public.blob.vercel-storage.com/uploads/…`), que se guarda tal
+ * cual en la base de datos. `next.config.ts` autoriza ese dominio para
+ * `next/image`.
+ */
+class VercelBlobAdapter implements StorageAdapter {
+  async save(file: File, directory: string, filename: string): Promise<string> {
+    const blob = await put(`${directory}/${filename}`, file, {
+      access: 'public',
+      contentType: file.type,
+    });
+    return blob.url;
+  }
+
+  async delete(publicPath: string): Promise<void> {
+    // Mismo criterio que en disco: limpieza best-effort que nunca tumba
+    // la operación que la disparó.
+    try {
+      await del(publicPath);
+    } catch (err) {
+      logger.warn('No se pudo borrar un archivo huérfano', { publicPath, err: String(err) });
+    }
+  }
+}
+
+/**
+ * Se elige solo: si existe `BLOB_READ_WRITE_TOKEN` (Vercel la crea al
+ * conectar un almacén Blob al proyecto) se usa Blob; si no, el disco local.
+ * Así el desarrollo no necesita ninguna cuenta externa.
+ */
+export const storage: StorageAdapter = env.BLOB_READ_WRITE_TOKEN
+  ? new VercelBlobAdapter()
+  : new LocalDiskAdapter();
+
+/** Dominio de los archivos públicos de Vercel Blob. */
+const BLOB_HOST_SUFFIX = '.public.blob.vercel-storage.com';
 
 /** Rutas de archivos servidos desde `public/` que forman parte del
  * catálogo semilla versionado, no subidas de usuarios. Borrarlas dejaría
  * al seed apuntando a imágenes inexistentes. */
 export function isUserUpload(publicPath: string): boolean {
-  return publicPath.startsWith('/uploads/');
+  if (publicPath.startsWith('/uploads/')) return true;
+  // Subidas a Vercel Blob: URL absoluta del almacén, carpeta `uploads/`.
+  try {
+    const url = new URL(publicPath);
+    return url.hostname.endsWith(BLOB_HOST_SUFFIX) && url.pathname.startsWith('/uploads/');
+  } catch {
+    return false;
+  }
 }

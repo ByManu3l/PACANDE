@@ -202,7 +202,7 @@ async function seedProducts(categoryIdBySlug: Map<string, string>) {
       where: { slug },
       update: {
         name: p.name,
-        description: `${p.name}, parte del catálogo de ejemplo de esta plantilla E-commerce.`,
+        description: `${p.name}, del catálogo de demostración de Pacandé.`,
         price: priceFor(p.categorySlug, p.name),
         stock: stockFor(p.name),
         discountPercent: discountFor(p.name),
@@ -213,7 +213,7 @@ async function seedProducts(categoryIdBySlug: Map<string, string>) {
       create: {
         slug,
         name: p.name,
-        description: `${p.name}, parte del catálogo de ejemplo de esta plantilla E-commerce.`,
+        description: `${p.name}, del catálogo de demostración de Pacandé.`,
         price: priceFor(p.categorySlug, p.name),
         stock: stockFor(p.name),
         discountPercent: discountFor(p.name),

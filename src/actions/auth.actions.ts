@@ -5,7 +5,7 @@ import { AuthError } from 'next-auth';
 import { mergeGuestCartIntoSession } from '@/lib/cart-session';
 import { signIn, signOut } from '@/lib/auth';
 import { registerUser, verifyCredentials } from '@/lib/services/user.service';
-import { enforceRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
+import { enforceRateLimit, RATE_LIMITS, resetRateLimit } from '@/lib/rate-limit';
 import { runAction } from '@/lib/utils/action-result';
 import { loginSchema, registerSchema } from '@/lib/validations/auth';
 
@@ -47,6 +47,10 @@ export async function loginAction(formData: FormData) {
       }
       throw err;
     }
+
+    // Entró: los intentos previos dejan de contar. El límite es para
+    // fallos seguidos, no para quien entra y sale a menudo.
+    await resetRateLimit('login', credentials.email);
 
     await mergeGuestCartIntoSession(user.id);
 

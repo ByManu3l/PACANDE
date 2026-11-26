@@ -99,6 +99,15 @@ const nextConfig: NextConfig = {
    * conocidas— probar primero.
    */
   poweredByHeader: false,
+
+  /**
+   * Las imágenes subidas desde el panel en el despliegue de Vercel viven
+   * en Vercel Blob, en otro dominio. `next/image` solo optimiza imágenes
+   * remotas de dominios declarados aquí.
+   */
+  images: {
+    remotePatterns: [{ protocol: 'https', hostname: '*.public.blob.vercel-storage.com' }],
+  },
 };
 
 export default nextConfig;

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { enforceRateLimit, type RateLimitRule } from '@/lib/rate-limit';
+import { enforceRateLimit, resetRateLimit, type RateLimitRule } from '@/lib/rate-limit';
 import { ValidationError } from '@/lib/utils/errors';
 
 // `enforceRateLimit` lee la IP de las cabeceras de la petición, que en una
@@ -47,6 +47,19 @@ describe('límite de intentos', () => {
 
     await expect(enforceRateLimit(REGLA, scope)).rejects.toThrow(ValidationError);
     await expect(enforceRateLimit(REGLA, scope)).rejects.toThrow('Demasiados intentos.');
+  });
+
+  it('un reinicio tras un acierto vuelve a dar todos los intentos', async () => {
+    // Quien entra bien y vuelve a entrar más tarde no debe ir gastando
+    // intentos: el límite es para fallos seguidos.
+    const scope = ambitoUnico();
+
+    for (let i = 0; i < REGLA.limit; i++) await enforceRateLimit(REGLA, scope, 'a@b.test');
+    await resetRateLimit(scope, 'a@b.test');
+
+    for (let i = 0; i < REGLA.limit; i++) {
+      await expect(enforceRateLimit(REGLA, scope, 'a@b.test')).resolves.not.toThrow();
+    }
   });
 
   it('cuenta por separado cada ámbito', async () => {

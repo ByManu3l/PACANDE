@@ -33,6 +33,9 @@ export interface RateLimitStore {
    * número y ninguna llega al límite.
    */
   hit(key: string, windowMs: number): Promise<number>;
+
+  /** Olvida los intentos de una clave. */
+  reset(key: string): Promise<void>;
 }
 
 /** Estado en memoria del proceso. Ver la limitación explicada arriba. */
@@ -51,6 +54,10 @@ class MemoryStore implements RateLimitStore {
 
     actual.count += 1;
     return actual.count;
+  }
+
+  async reset(key: string): Promise<void> {
+    this.counters.delete(key);
   }
 
   /**
@@ -141,12 +148,16 @@ async function clientKey(): Promise<string> {
  * @throws {ValidationError} al superar el límite. `runAction` lo convierte
  *   en el mensaje que ve el usuario.
  */
+async function rateLimitKey(scope: string, discriminator?: string): Promise<string> {
+  return [scope, await clientKey(), discriminator ?? ''].join(':');
+}
+
 export async function enforceRateLimit(
   rule: RateLimitRule,
   scope: string,
   discriminator?: string,
 ): Promise<void> {
-  const key = [scope, await clientKey(), discriminator ?? ''].join(':');
+  const key = await rateLimitKey(scope, discriminator);
   const intentos = await rateLimitStore.hit(key, rule.windowMs);
 
   if (intentos > rule.limit) {
@@ -157,4 +168,17 @@ export async function enforceRateLimit(
     logger.warn('Límite de intentos superado', { scope, intentos, limite: rule.limit });
     throw new ValidationError(rule.message);
   }
+}
+
+/**
+ * Reinicia el contador tras una operación que salió bien.
+ *
+ * Se usa después de un inicio de sesión correcto: así el límite cuenta
+ * solo **fallos seguidos**, que es lo que delata a quien prueba
+ * contraseñas. Sin esto, alguien que entra y sale varias veces —por
+ * ejemplo al enseñar la tienda alternando entre cuentas— acabaría
+ * bloqueado sin haberse equivocado nunca.
+ */
+export async function resetRateLimit(scope: string, discriminator?: string): Promise<void> {
+  await rateLimitStore.reset(await rateLimitKey(scope, discriminator));
 }
