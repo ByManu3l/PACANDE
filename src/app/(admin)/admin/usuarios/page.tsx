@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { TITULO_ADMIN } from '@/components/shared/estilo-original';
 
 import { listUsersAction } from '@/actions/admin-user.actions';
 import { UsersTable } from '@/components/admin/users-table';
@@ -13,7 +14,7 @@ export default async function AdminUsersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Usuarios</h1>
+        <h1 className={TITULO_ADMIN}>Usuarios</h1>
         <p className="text-muted-foreground text-sm">
           {session.user.role === 'ADMIN'
             ? 'Como Admin, solo puedes editar o eliminar cuentas de Usuario.'

@@ -37,3 +37,10 @@ export const BOTON_TIENDA =
 /** Botón «Intentar nuevamente» de los errores de `OfertasPage.jsx`. */
 export const BOTON_REINTENTAR =
   'inline-flex cursor-pointer items-center justify-center rounded-[8px] bg-[#dc3545] px-5 py-2.5 text-white transition-all duration-300 hover:bg-[#c82333] focus-visible:ring-2 focus-visible:ring-[#dc3545] focus-visible:ring-offset-2 focus-visible:outline-none';
+
+/**
+ * Título de página del panel de administración: el mismo de las páginas
+ * de sección de la tienda, con la raya roja debajo.
+ */
+export const TITULO_ADMIN =
+  "text-[2rem] leading-tight font-semibold text-[#2c3e50] after:mt-2 after:block after:h-1 after:w-[60px] after:rounded-sm after:bg-linear-to-r after:from-[#ff0000] after:to-[#ff4444] after:content-['']";
