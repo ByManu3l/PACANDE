@@ -525,6 +525,10 @@ redistribuir la plantilla, lo que anula el negocio. El razonamiento
 completo, con sus consecuencias asumidas —repositorio privado, sin
 contribuciones externas—, está en `DECISIONES.md`.
 
+> **Revertido después:** el plan de venderla no siguió adelante y el
+> proyecto volvió a MIT como proyecto académico abierto. Ver el punto 15
+> de `DECISIONES.md`.
+
 **Anti-objetivos respetados.** Nada de multi-tenant, monorepo,
 microservicios, sistema de plugins, GraphQL ni capa de repositorios sobre
 Prisma. Cada uno resultó tentador en algún momento y cada uno habría

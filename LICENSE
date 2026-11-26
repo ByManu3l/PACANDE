@@ -1,126 +1,21 @@
-Licencia de Uso Comercial — Plantilla PACANDÉ
-Copyright (c) 2026 Manuel. Todos los derechos reservados.
+MIT License
 
-ESTE SOFTWARE NO ES DE CÓDIGO ABIERTO. Se licencia, no se vende.
+Copyright (c) 2026 Manuel
 
---------------------------------------------------------------------------
-1. DEFINICIONES
---------------------------------------------------------------------------
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-"Titular"    — el autor y propietario de los derechos, identificado arriba.
-"Software"   — el código fuente, la documentación, los recursos y los datos
-               de ejemplo contenidos en este repositorio.
-"Licenciata­rio" — la persona física o jurídica que ha adquirido una licencia
-               válida del Titular.
-"Producto Derivado" — una aplicación construida a partir del Software para
-               un negocio concreto, desplegada para usuarios finales.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
---------------------------------------------------------------------------
-2. CONCESIÓN
---------------------------------------------------------------------------
-
-Sujeto al pago íntegro de la licencia y al cumplimiento de estos términos,
-el Titular concede al Licenciatario un derecho no exclusivo, mundial,
-perpetuo e intransferible a:
-
-  a) Usar, copiar y modificar el Software.
-  b) Crear Productos Derivados y desplegarlos con fines comerciales.
-  c) Cobrar a los usuarios finales por el acceso a esos Productos
-     Derivados.
-  d) Usar el Software en proyectos para clientes propios, siempre que el
-     entregable sea un Producto Derivado y no el Software en sí.
-
-El número de Productos Derivados permitidos es el que indique el
-comprobante de compra. Salvo mención expresa, la licencia cubre un (1)
-Producto Derivado.
-
---------------------------------------------------------------------------
-3. RESTRICCIONES
---------------------------------------------------------------------------
-
-El Licenciatario NO podrá:
-
-  a) Redistribuir, revender, sublicenciar, publicar, ceder ni poner a
-     disposición de terceros el Software, ni en su forma original ni
-     modificada, como plantilla, kit de inicio, tema, curso o cualquier
-     otro formato cuyo valor principal resida en el propio código.
-  b) Publicar el Software en un repositorio de acceso público.
-  c) Usar el Software para crear un producto que compita con él —esto es,
-     otra plantilla o kit de inicio de comercio electrónico.
-  d) Retirar o alterar los avisos de copyright presentes en el código.
-  e) Compartir sus credenciales de acceso al repositorio del Titular.
-
-La regla en una frase: **puedes construir y vender tu tienda; no puedes
-vender la herramienta con la que la construiste.**
-
---------------------------------------------------------------------------
-4. PROPIEDAD DEL PRODUCTO DERIVADO
---------------------------------------------------------------------------
-
-El código que el Licenciatario escriba sobre el Software le pertenece
-íntegramente. El Titular no reclama derecho alguno sobre los Productos
-Derivados, sus datos, su marca ni sus ingresos.
-
-La propiedad del Software original permanece en todo momento en el
-Titular.
-
---------------------------------------------------------------------------
-5. COMPONENTES DE TERCEROS
---------------------------------------------------------------------------
-
-El Software depende de bibliotecas de terceros —Next.js, React, Prisma,
-Tailwind CSS y otras— que se distribuyen bajo sus propias licencias, en su
-mayoría de código abierto. Esta licencia no las afecta ni las sustituye;
-cada una conserva sus términos, consultables en `package.json` y en el
-directorio `node_modules`.
-
-Las imágenes del catálogo de ejemplo se incluyen únicamente con fines
-demostrativos. El Licenciatario debe sustituirlas por material propio o
-debidamente licenciado antes de desplegar en producción.
-
---------------------------------------------------------------------------
-6. SIN GARANTÍA
---------------------------------------------------------------------------
-
-EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO,
-EXPRESA O IMPLÍCITA, INCLUIDAS SIN LIMITACIÓN LAS GARANTÍAS DE
-COMERCIABILIDAD, IDONEIDAD PARA UN FIN DETERMINADO Y NO INFRACCIÓN.
-
-Se advierte de forma expresa que la pasarela de pago incluida es una
-SIMULACIÓN con fines de demostración. No procesa cobros reales y no es
-apta para producción. Integrar una pasarela real, cumplir la normativa
-aplicable —incluida PCI-DSS cuando corresponda— y asegurar el despliegue
-son responsabilidad exclusiva del Licenciatario.
-
---------------------------------------------------------------------------
-7. LIMITACIÓN DE RESPONSABILIDAD
---------------------------------------------------------------------------
-
-EN NINGÚN CASO EL TITULAR SERÁ RESPONSABLE DE RECLAMACIONES, DAÑOS U
-OTRAS RESPONSABILIDADES, YA SEA EN UNA ACCIÓN CONTRACTUAL, EXTRACONTRACTUAL
-O DE OTRO TIPO, DERIVADAS DEL SOFTWARE O DE SU USO.
-
-La responsabilidad total del Titular, por cualquier concepto, no excederá
-el importe pagado por la licencia.
-
---------------------------------------------------------------------------
-8. RESOLUCIÓN
---------------------------------------------------------------------------
-
-Esta licencia se extingue automáticamente si el Licenciatario incumple
-cualquiera de las restricciones de la sección 3. Extinguida la licencia,
-cesa el derecho a usar el Software; los Productos Derivados ya desplegados
-antes del incumplimiento podrán seguir en funcionamiento.
-
---------------------------------------------------------------------------
-9. CONTACTO
---------------------------------------------------------------------------
-
-Para licencias de equipo, licencias extendidas, uso en agencias o
-cualquier duda sobre estos términos, contacta con el Titular.
-
---------------------------------------------------------------------------
-
-NOTA PARA EL TITULAR: este documento es un punto de partida redactado con
-criterio técnico, no jurídico. Antes de comercializar el Software conviene
-que un abogado lo revise y lo adapte a la jurisdicción aplicable.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

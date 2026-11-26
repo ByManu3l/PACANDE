@@ -1,9 +1,8 @@
-# Qué incluye esta plantilla
+# Qué incluye Pacandé
 
-Documento para el cliente. Dice qué está hecho, qué no, y qué trabajo
-adicional hace falta antes de vender el primer producto. La segunda parte
-es la importante: una venta que empieza con expectativas equivocadas
-termina mal aunque el código sea impecable.
+Qué está hecho, qué no, y qué trabajo haría falta para convertir esta
+demostración en una tienda que cobre de verdad. La segunda parte es la
+importante: dice sin rodeos dónde están los límites.
 
 ---
 
@@ -134,16 +133,11 @@ tu marca y tu catálogo hay entre uno y tres días de trabajo.
 
 ---
 
-## Lo que puedes y no puedes hacer con el código
+## Lo que puedes hacer con el código
 
-**Puedes:** usarlo, modificarlo, desplegarlo con fines comerciales y
-quedarte con todo lo que ganes. El código que escribas encima es tuyo.
-
-**No puedes:** revenderlo ni redistribuirlo como plantilla, tema o kit de
-inicio, ni publicarlo en un repositorio abierto.
-
-En una frase: **puedes construir y vender tu tienda; no puedes vender la
-herramienta con la que la construiste.** El texto completo está en
+Es código abierto bajo licencia MIT: puedes usarlo, estudiarlo,
+modificarlo y redistribuirlo, también con fines comerciales, siempre que
+conserves el aviso de autoría. El texto completo está en
 [`LICENSE`](../LICENSE).
 
 ---

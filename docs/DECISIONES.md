@@ -266,40 +266,23 @@ que es la convención del ecosistema. Solo se traducen al mostrarse — ver
 
 ---
 
-## 15. Licencia comercial, no MIT
+## 15. Licencia MIT: proyecto abierto
 
-**Se descartó:** MIT, que era la licencia inicial de la plantilla.
+**Se descartó:** la licencia comercial que tuvo durante un tiempo.
 
-MIT permite a cualquiera redistribuir y revender el software. Para una
-biblioteca eso es una virtud —maximiza la adopción— pero para una
-plantilla que se vende es un fallo estructural: el primer comprador puede
-publicarla en GitHub legalmente y anular el negocio.
+Pacandé nació como proyecto académico. Después se reescribió con la idea
+de darle una segunda vida como plantilla de pago, y durante esa etapa
+tuvo una licencia comercial que prohibía redistribuirla. Ese plan no
+siguió adelante, y una licencia restrictiva sobre un proyecto que no se
+vende solo estorba: impide enseñarlo, compartirlo y que otros aprendan de
+él.
 
-La disyuntiva real es **vitrina o producto**:
+Vuelve a MIT, que era su licencia inicial:
 
-- Como **vitrina**, MIT es mejor: cualquiera puede leerla, se enseña en
-  una entrevista sin fricción y no exige gestionar licencias.
-- Como **producto**, MIT es inviable, porque no protege lo único que se
-  vende.
+- Cualquiera puede leer, usar, modificar y redistribuir el código, también
+  con fines comerciales, conservando el aviso de autoría.
+- El repositorio puede ser público y la tienda puede desplegarse como
+  demostración abierta.
 
-La decisión fue producto. La licencia permite al comprador usar, modificar
-y desplegar con fines comerciales, y le reconoce la propiedad íntegra del
-código que escriba encima; lo que prohíbe es redistribuir la plantilla en
-sí. Es el modelo estándar de las plantillas de pago.
-
-**Consecuencias que hay que asumir:**
-
-- El repositorio se mantiene privado. Enseñarlo en una entrevista exige
-  invitar a la persona o preparar una demo aparte.
-- No habrá contribuciones externas. `CONTRIBUTING.md` y las plantillas de
-  issue siguen siendo útiles para el equipo y para los compradores que
-  reporten fallos, pero el proyecto no funciona como comunidad abierta.
-- Hay que emitir comprobantes y llevar control de a quién se licenció.
-
-**Cambiaría si:** el objetivo pasara a ser reputación en vez de ingresos.
-Volver a MIT es fácil; el camino inverso, no — una vez publicado bajo MIT,
-esa versión queda liberada para siempre.
-
-> El texto de `LICENSE` está redactado con criterio técnico, no jurídico.
-> Antes de la primera venta conviene que lo revise un abogado y lo adapte
-> a la jurisdicción aplicable.
+**Cambiaría si:** volviera a plantearse venderla. Aun así, las versiones
+ya publicadas bajo MIT seguirían libres para siempre.
