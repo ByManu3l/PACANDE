@@ -23,7 +23,10 @@ export function UserMenu({ user }: UserMenuProps) {
   const nombreCorto = user.name.split(' ')[0];
 
   return (
-    <DropdownMenu>
+    // `modal={false}`: un menú modal bloquea el desplazamiento y oculta la
+    // barra de scroll; la ventana gana su ancho y los banners a todo el
+    // ancho (100vw) cambian de tamaño mientras el menú está abierto.
+    <DropdownMenu modal={false}>
       {/* Saludo en píldora con degradado rojo: el disparador de la
           cabecera original. Su texto visible es también su nombre
           accesible, así que quien usa control por voz puede decir
