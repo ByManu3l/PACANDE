@@ -85,8 +85,10 @@ export default async function CategoryPage({
     const textoDerecha = TEXTO_A_LA_DERECHA.has(category.slug);
     return (
       <div className="mx-auto max-w-[1200px] space-y-6">
-        {migas}
-        <header className="relative mb-10 min-h-[260px] overflow-hidden rounded-[15px] bg-black text-white shadow-[0_4px_25px_rgba(0,0,0,0.15)] sm:aspect-[2000/848] sm:min-h-0">
+        {/* Banner de la sección a todo el ancho y pegado a la cabecera, con
+            la misma proporción que la portada (3,6:1). Las fotos vienen
+            alargadas por su lado vacío para llenarla sin recortar productos. */}
+        <header className="relative left-1/2 -mt-5 -ml-[50vw] min-h-[260px] w-screen overflow-hidden bg-black text-white sm:aspect-[18/5] sm:min-h-0">
           {category.image && (
             <Image
               src={category.image}
@@ -94,7 +96,7 @@ export default async function CategoryPage({
               fill
               priority
               quality={90}
-              sizes="(min-width: 1240px) 1200px, 100vw"
+              sizes="100vw"
               // En móvil la foto se recorta: se conserva el lado de los
               // productos, que es el contrario al del texto.
               className={textoDerecha ? 'object-cover object-left' : 'object-cover object-right'}
@@ -111,29 +113,34 @@ export default async function CategoryPage({
                 : 'absolute inset-0 bg-linear-to-r from-black/70 via-black/30 to-transparent'
             }
           />
-          <div
-            className={`relative flex h-full min-h-[260px] flex-col justify-center gap-4 p-8 sm:w-1/2 sm:p-12 ${
-              textoDerecha ? 'ml-auto text-right' : ''
-            }`}
-          >
-            <h1 className="text-[2.5rem] leading-none font-extrabold tracking-[3px] uppercase [text-shadow:2px_2px_6px_rgba(0,0,0,0.6)] sm:text-[3.5rem] lg:text-[4.5rem]">
-              {category.name}
-            </h1>
-            <span
-              aria-hidden="true"
-              className={`bg-brand block h-1 w-[60px] rounded-sm ${textoDerecha ? 'ml-auto' : ''}`}
-            />
-            {category.description && (
-              <p
-                className={`max-w-[420px] text-base leading-relaxed text-white/90 sm:text-lg ${
-                  textoDerecha ? 'ml-auto' : ''
-                }`}
-              >
-                {category.description}
-              </p>
-            )}
+          {/* El texto se alinea con el contenido de la página, no con los
+              bordes de la ventana. */}
+          <div className="relative mx-auto h-full max-w-[1200px]">
+            <div
+              className={`flex h-full min-h-[260px] flex-col justify-center gap-4 p-8 sm:w-1/2 sm:p-12 ${
+                textoDerecha ? 'ml-auto text-right' : ''
+              }`}
+            >
+              <h1 className="text-[2.5rem] leading-none font-extrabold tracking-[3px] uppercase [text-shadow:2px_2px_6px_rgba(0,0,0,0.6)] sm:text-[3.5rem] lg:text-[4.5rem]">
+                {category.name}
+              </h1>
+              <span
+                aria-hidden="true"
+                className={`bg-brand block h-1 w-[60px] rounded-sm ${textoDerecha ? 'ml-auto' : ''}`}
+              />
+              {category.description && (
+                <p
+                  className={`max-w-[420px] text-base leading-relaxed text-white/90 sm:text-lg ${
+                    textoDerecha ? 'ml-auto' : ''
+                  }`}
+                >
+                  {category.description}
+                </p>
+              )}
+            </div>
           </div>
         </header>
+        {migas}
         <div className="grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-[30px]">
           {category.children.map((child) => (
             <CategoryCard key={child.slug} category={child} />

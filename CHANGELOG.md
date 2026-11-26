@@ -53,6 +53,8 @@ datos.
   foto. En la portada, una sección sin subcategorías (Variedad) ya no
   repite su nombre encima de la tarjeta.
 - Portada algo más baja (3,6:1): recorta solo márgenes sin texto.
+- Los banners de Ropa, Tecnología y Hogar van a todo el ancho, pegados a la
+  cabecera y con la misma proporción que la portada.
 
 ### Añadido
 
