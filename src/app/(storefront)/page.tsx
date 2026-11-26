@@ -99,7 +99,7 @@ export default async function HomePage() {
                   image: producto.images[0] ?? null,
                 }}
                 variant="wide"
-                compacta
+                producto
               />
             ))}
           </div>

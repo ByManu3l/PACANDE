@@ -20,8 +20,11 @@ interface CategoryCardProps {
   className?: string;
   /** Destino; por defecto, la página de la categoría. */
   href?: string;
-  /** Letra menor, para nombres largos como los de producto. */
-  compacta?: boolean;
+  /**
+   * Presentación de producto: la imagen completa sobre blanco, sin velo, y
+   * el nombre en una franja discreta abajo, para que mande el producto.
+   */
+  producto?: boolean;
 }
 
 /** La primera frase de la descripción: el resto queda para la cabecera
@@ -36,7 +39,7 @@ export function CategoryCard({
   variant = 'main',
   className,
   href,
-  compacta = false,
+  producto = false,
 }: CategoryCardProps) {
   if (variant === 'main') {
     return (
@@ -76,7 +79,8 @@ export function CategoryCard({
     <Link
       href={href ?? `/categoria/${category.slug}`}
       className={cn(
-        'relative flex items-center justify-center overflow-hidden bg-neutral-800 bg-cover bg-center transition-transform duration-300 hover:scale-105 focus-visible:scale-105 focus-visible:outline-none',
+        'relative flex justify-center overflow-hidden bg-cover bg-center transition-transform duration-300 hover:scale-105 focus-visible:scale-105 focus-visible:outline-none',
+        producto ? 'items-end border border-neutral-200 bg-white' : 'items-center bg-neutral-800',
         alta
           ? 'h-[420px] w-full sm:h-[650px] sm:w-[400px]'
           : 'h-[220px] w-full sm:h-[300px] sm:flex-1',
@@ -89,19 +93,20 @@ export function CategoryCard({
           alt=""
           fill
           sizes={alta ? '400px' : '(min-width: 640px) 50vw, 100vw'}
-          className="object-cover"
+          className={producto ? 'object-contain p-6 pb-12' : 'object-cover'}
         />
       )}
-      {/* Velo negro al 50 % sobre toda la imagen, como el original. */}
-      <div className="absolute inset-0 bg-black/50" />
+      {/* Velo negro al 50 % sobre toda la imagen, como el original. El
+          producto no lo lleva: se vería apagado y mandaría el texto. */}
+      {!producto && <div className="absolute inset-0 bg-black/50" />}
       <span
         className={cn(
-          'relative px-4 text-center font-bold text-white uppercase',
-          compacta
-            ? 'text-[26px] leading-tight sm:text-[30px]'
+          'relative text-center text-white uppercase',
+          producto
+            ? 'w-full bg-black/60 px-3 py-2 text-sm font-semibold tracking-wide sm:text-base'
             : alta
-              ? 'text-[32px] sm:text-[40px]'
-              : 'text-[36px] sm:text-[50px]',
+              ? 'px-4 text-[32px] font-bold sm:text-[40px]'
+              : 'px-4 text-[36px] font-bold sm:text-[50px]',
         )}
       >
         {category.name}
