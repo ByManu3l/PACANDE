@@ -7,9 +7,9 @@ import { getFeaturedProducts } from '@/lib/services/product.service';
 // Banners de ejemplo del catálogo semilla — al re-marcar la plantilla,
 // reemplaza estas imágenes (y el resto de public/images/brand/) por las tuyas.
 const HERO_IMAGES = [
-  '/images/brand/portada-1.jpg',
-  '/images/brand/portada-2.jpg',
-  '/images/brand/portada-3.jpg',
+  '/images/brand/inicio-1.jpg',
+  '/images/brand/inicio-2.jpg',
+  '/images/brand/inicio-3.jpg',
 ];
 
 /**
@@ -38,21 +38,29 @@ export default async function HomePage() {
 
       {/* Portada a todo el ancho de la ventana, como el carrusel del original:
           sale del contenedor central (`left-1/2` y `-ml-[50vw]`) y pega con
-          la cabecera. Conserva la proporción de los banners (1796 × 382)
+          la cabecera. Conserva la proporción de los banners (2000 × 661, 3:1)
           para que se vean completos, sin recortar el texto. */}
-      <section className="relative left-1/2 -mt-5 -ml-[50vw] aspect-[1796/382] w-screen overflow-hidden">
+      <section className="relative left-1/2 -mt-5 -ml-[50vw] aspect-[2000/661] w-screen overflow-hidden">
         <HeroCarousel images={HERO_IMAGES} />
       </section>
 
       {categories.map((category, index) => {
         const destinos = category.children.length > 0 ? category.children : [category];
         const alta = index % 2 === 1;
+        // Sin hijas, la sección muestra la propia categoría y su tarjeta ya
+        // lleva el nombre: el título visible lo repetiría. Queda solo para
+        // lectores de pantalla.
+        const seMuestraASiMisma = category.children.length === 0;
 
         return (
           <section key={category.slug} aria-labelledby={`seccion-${category.slug}`}>
             <h2
               id={`seccion-${category.slug}`}
-              className="mt-10 mb-5 text-[1.7rem] leading-[1.3] text-[#333] uppercase lg:text-[2rem]"
+              className={
+                seMuestraASiMisma
+                  ? 'sr-only'
+                  : 'mt-10 mb-5 text-[1.7rem] leading-[1.3] text-[#333] uppercase lg:text-[2rem]'
+              }
             >
               {category.name}
             </h2>

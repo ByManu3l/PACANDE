@@ -4,7 +4,7 @@
       "slug": "ropa",
       "name": "Ropa",
       "parentSlug": null,
-      "image": "/images/categories/chaqueta.jpg",
+      "image": "/images/categories/banner-ropa.jpg",
       "description": "Moda para hombre, mujer y niños."
     },
     {
@@ -32,7 +32,7 @@
       "slug": "tecnologia",
       "name": "Tecnología",
       "parentSlug": null,
-      "image": "/images/categories/celulares.jpg",
+      "image": "/images/categories/banner-tecnologia.jpg",
       "description": "Celulares, computadores y accesorios."
     },
     {
@@ -60,7 +60,7 @@
       "slug": "hogar",
       "name": "Hogar",
       "parentSlug": null,
-      "image": "/images/categories/decoracion.jpeg",
+      "image": "/images/categories/banner-hogar.jpg",
       "description": "Muebles, decoración y jardín para cada espacio."
     },
     {
@@ -757,9 +757,9 @@
   "brand": {
     "logo": "/images/brand/logopaca.png",
     "heroSlides": [
-      "/images/brand/portada-1.jpg",
-      "/images/brand/portada-2.jpg",
-      "/images/brand/portada-3.jpg"
+      "/images/brand/inicio-1.jpg",
+      "/images/brand/inicio-2.jpg",
+      "/images/brand/inicio-3.jpg"
     ]
   }
 }
