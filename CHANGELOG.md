@@ -43,6 +43,10 @@ datos.
   carrusel del original.
 - En «Destacados» manda el producto: imagen completa sobre blanco, sin velo
   oscuro, y el nombre en una franja discreta abajo.
+- El selector de moneda abre un menú negro con borde rojo, como el del
+  usuario, en vez de la lista nativa del sistema.
+- Banners de portada con calidad 90 (antes 75).
+- Descripción de «Variedad» corregida: no es equipamiento deportivo.
 
 ### Añadido
 
