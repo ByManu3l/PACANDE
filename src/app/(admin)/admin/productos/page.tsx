@@ -3,6 +3,7 @@ import { listProductsAction } from '@/actions/product.actions';
 import { ProductsTable } from '@/components/admin/products-table';
 import { PaginationNav } from '@/components/shared/pagination-nav';
 import { parsePageParam } from '@/lib/utils/pagination';
+import { TITULO_ADMIN } from '@/components/shared/estilo-original';
 
 export const metadata = { title: 'Productos' };
 
@@ -23,7 +24,7 @@ export default async function AdminProductsPage({ searchParams }: PageProps<'/ad
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Productos</h1>
+        <h1 className={TITULO_ADMIN}>Productos</h1>
         <p className="text-muted-foreground text-sm">
           {productos.total} {productos.total === 1 ? 'producto' : 'productos'}
         </p>

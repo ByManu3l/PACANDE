@@ -1,5 +1,6 @@
 import { PackageX, Store, TriangleAlert } from 'lucide-react';
 import Link from 'next/link';
+import { TITULO_ADMIN } from '@/components/shared/estilo-original';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -34,7 +35,7 @@ export default async function AdminDashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Panel de administración</h1>
+        <h1 className={TITULO_ADMIN}>Panel de administración</h1>
         <p className="text-muted-foreground">
           Sesión: {session?.user?.name} — rol: {session?.user?.role}
         </p>

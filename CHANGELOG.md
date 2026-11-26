@@ -59,6 +59,9 @@ datos.
   página: dejan de bloquear el desplazamiento y ocultar la barra de scroll.
 - Entrar y registrarse: el banner de fondo va a todo el ancho, completo y
   difuminado, sin recortes ni franjas blancas a los lados.
+- **Panel de administración con el estilo de la tienda:** la misma cabecera
+  y pie, menú lateral negro con separadores rojos y la opción activa en
+  rojo, títulos con la raya roja y tablas con cabecera negra.
 
 ### Añadido
 

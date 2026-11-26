@@ -1,6 +1,7 @@
 import { listReviewsAction } from '@/actions/review.actions';
 import { ReviewsFilter, ReviewsTable } from '@/components/admin/reviews-table';
 import type { ReviewStatus } from '@/generated/prisma/client';
+import { TITULO_ADMIN } from '@/components/shared/estilo-original';
 
 const ESTADOS: ReviewStatus[] = ['PENDING', 'APPROVED', 'REJECTED'];
 
@@ -20,7 +21,7 @@ export default async function AdminReviewsPage({ searchParams }: PageProps<'/adm
   return (
     <div className="space-y-6">
       <div className="space-y-3">
-        <h1 className="text-2xl font-semibold tracking-tight">Opiniones</h1>
+        <h1 className={TITULO_ADMIN}>Opiniones</h1>
         <p className="text-muted-foreground text-sm">
           Ninguna opinión se publica sola. Revisa el texto antes de aprobarla: es lo que evita que
           aparezcan insultos o enlaces de spam en la ficha de tus productos.
