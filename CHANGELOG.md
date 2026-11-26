@@ -57,6 +57,8 @@ datos.
   cabecera y con la misma proporción que la portada.
 - Abrir el menú del usuario o el de moneda ya no cambia el ancho de la
   página: dejan de bloquear el desplazamiento y ocultar la barra de scroll.
+- Entrar y registrarse: el banner de fondo va a todo el ancho, completo y
+  difuminado, sin recortes ni franjas blancas a los lados.
 
 ### Añadido
 
